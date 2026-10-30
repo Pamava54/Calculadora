@@ -1497,6 +1497,141 @@ add({
   }
 });
 
+// ===== Herramientas nuevas: pensión, cartera, caja menor, costos de producción =====
+const q2 = x => Math.round(x * 100) / 100;
+
+// ---------- Pensión de vejez (Prima Media) ----------
+add({
+  id: 'pension-vejez', group: 'con', title: 'Pensión de vejez (Prima Media)',
+  purpose: 'Calcula si una persona cumple los requisitos de pensión de vejez en el Régimen de Prima Media y cuánto sería su mesada: tasa de reemplazo, ingreso base de liquidación, mínimo y tope legal.',
+  formula: ['s = IBL ÷ SMMLV', 'Tasa inicial = 65,5 − 0,5 × s (no menor a 55 %)', 'Puntos extra = 1,5 × bloques de 50 semanas completas sobre 1.300', 'Tasa final = Tasa inicial + puntos extra (máximo 80 %)', 'Mesada = IBL × Tasa final (entre 1 y 25 SMMLV)'],
+  vars: [['IBL', 'Ingreso base de liquidación: promedio de lo cotizado en los últimos 10 años, actualizado con el IPC'], ['s', 'Número de salarios mínimos que equivale el IBL'], ['Semanas', 'Semanas cotizadas al sistema de pensiones'], ['SMMLV', 'Salario mínimo mensual legal vigente (ver parámetros)']],
+  fields: [
+    fl('sexo', 'Sexo para el requisito de edad', 'select', 'F', { opts: [['F', 'Mujer (57 años)'], ['M', 'Hombre (62 años)']] }),
+    fl('edad', 'Edad actual (años cumplidos)', 'int', 60), fl('semanas', 'Semanas cotizadas', 'int', 1450),
+    fl('ibl', 'Ingreso base de liquidación (IBL)', 'money', 4200000, { hint: 'Promedio de los últimos 10 años de cotización, actualizado con el IPC.' }),
+    fl('ibc', 'Ingreso base de cotización mensual actual (opcional)', 'money', 4500000, { hint: 'Sirve para calcular el aporte mensual a pensión.' })
+  ],
+  compute(v, P) {
+    const fem = v.sexo === 'F', reqE = fem ? 57 : 62, reqS = fem ? 1250 : 1300, sm = P.smmlv;
+    if (!(v.ibl > 0) || !(sm > 0)) return { error: 'Escriba un IBL mayor que cero.' };
+    const s = v.ibl / sm, r0 = Math.max(55, q2(65.5 - 0.5 * s)), extra = Math.max(0, v.semanas - 1300), bl = Math.floor(extra / 50), pts = 1.5 * bl;
+    const rf = Math.min(80, q2(r0 + pts)), calc = Math.round(v.ibl * rf / 100), mes = Math.min(25 * sm, Math.max(sm, calc));
+    const okE = v.edad >= reqE, okS = v.semanas >= reqS, ok = okE && okS, faltE = Math.max(0, reqE - v.edad), faltS = Math.max(0, reqS - v.semanas);
+    const steps = [
+      S('Verificar la edad', `Edad ${v.edad} frente a ${reqE} años: ${okE ? 'cumple' : 'faltan ' + faltE + ' años'}`, `Las ${fem ? 'mujeres' : 'hombres'} necesitan ${reqE} años cumplidos.`),
+      S('Verificar las semanas', `Semanas ${F.num(v.semanas, 0)} frente a ${F.num(reqS, 0)}: ${okS ? 'cumple' : 'faltan ' + F.num(faltS, 0)}`, 'Para 2026 se exigen 1.250 semanas a las mujeres y 1.300 a los hombres.'),
+      S('Pasar el IBL a salarios mínimos', `s = ${F.money(v.ibl)} ÷ ${F.money(sm)} = ${F.num(s, 2)}`, 'La tasa de reemplazo baja a medida que el IBL sube respecto al salario mínimo.'),
+      S('Calcular la tasa inicial', `Tasa inicial = 65,5 − 0,5 × ${F.num(s, 2)} = ${F.num(r0, 2)} %`, 'Nunca es menor al 55 %.'),
+      S('Sumar los puntos por semanas extra', `${F.num(extra, 0)} semanas sobre 1.300 = ${bl} bloques de 50 × 1,5 = ${F.num(pts, 1)} puntos`, 'Solo cuentan bloques completos de 50 semanas por encima de 1.300.'),
+      S('Aplicar el tope del 80 %', `Tasa final = ${F.num(r0, 2)} + ${F.num(pts, 1)} = ${F.num(Math.min(80, r0 + pts), 2)} % → ${F.num(rf, 2)} %`, 'La tasa de reemplazo no puede pasar del 80 %.'),
+      S('Calcular la mesada', `${F.money(v.ibl)} × ${F.num(rf, 2)} % = ${F.money(calc)}`, 'Después se verifica el mínimo de 1 SMMLV y el tope de 25 SMMLV.'),
+      S('Verificar mínimo y tope', `Mesada = ${F.money(mes)}`, 'Ninguna pensión puede ser menor a un salario mínimo ni mayor a 25 salarios mínimos.')
+    ];
+    const res = [R('Mesada pensional estimada', mes, 'money', 0, true), R('Cumple los requisitos', ok ? 'Sí' : 'Todavía no', 'text'), R('Tasa de reemplazo final', rf / 100, 'pct', 2), R('IBL en salarios mínimos (s)', s, 'num', 2), R('Mesada en salarios mínimos', mes / sm, 'num', 2)];
+    if (!okE) res.push(R('Años que faltan', faltE, 'num', 0));
+    if (!okS) res.push(R('Semanas que faltan', faltS, 'num', 0));
+    if (v.ibc > 0) res.push(R('Aporte mensual a pensión (16 %)', v.ibc * 0.16, 'money'), R('Parte del empleado (4 %)', v.ibc * 0.04, 'money'), R('Parte del empleador (12 %)', v.ibc * 0.12, 'money'));
+    const rows = [1300, 1350, 1400, 1450, 1500, 1550, 1600, 1700, 1800].map(w => {
+      const t = Math.min(80, q2(r0 + 1.5 * Math.floor(Math.max(0, w - 1300) / 50))), m = Math.min(25 * sm, Math.max(sm, Math.round(v.ibl * t / 100)));
+      return [w, t / 100, m];
+    });
+    return { res, steps, table: { title: 'Mesada según las semanas cotizadas', h: ['Semanas', 'Tasa de reemplazo', 'Mesada'], k: ['i', 'p2', 'm'], rows },
+      interp: (ok ? 'Cumple edad y semanas: la mesada estimada es la que se muestra.' : 'Aún no cumple todos los requisitos; la mesada es una estimación de lo que recibiría al cumplirlos.') + ' Las semanas extra suben la tasa, pero nunca más allá del 80 %. Es un cálculo de referencia del Régimen de Prima Media (Ley 100 de 1993, Ley 797 de 2003); la reforma de la Ley 2381 de 2024 no se aplica aquí. Confirme con Colpensiones o su fondo.' };
+  }
+});
+
+// ---------- Cartera: rotación y antigüedad ----------
+add({
+  id: 'cartera', group: 'con', title: 'Cartera: rotación y antigüedad',
+  purpose: 'Mide qué tan rápido cobra la empresa sus ventas a crédito: rotación de cartera, días promedio de cobro, comparación con el plazo otorgado y porcentaje de cartera vencida por edades.',
+  formula: ['Cartera promedio = (Cartera inicial + Cartera final) ÷ 2', 'Rotación = Ventas a crédito ÷ Cartera promedio', 'Días de cobro = Días del periodo ÷ Rotación', 'Morosidad = Cartera vencida ÷ Cartera total'],
+  vars: [['Rotación', 'Cuántas veces se cobra la cartera en el periodo'], ['Días de cobro', 'Días promedio que tarda un cliente en pagar'], ['Plazo', 'Días de crédito que la empresa concede'], ['Morosidad', 'Parte de la cartera que ya pasó su fecha de pago']],
+  fields: [
+    fl('ventas', 'Ventas a crédito del periodo', 'money', 480000000), fl('cini', 'Cartera al inicio del periodo', 'money', 52000000), fl('cfin', 'Cartera al final del periodo', 'money', 56000000),
+    fl('dias', 'Días del periodo', 'num', 360, { hint: '360 para un año, 90 para un trimestre, 30 para un mes.' }), fl('plazo', 'Plazo de crédito que concede (días)', 'int', 30),
+    fl('edades', 'Cartera por antigüedad', 'rows', [{ r: 'Al día', s: 30000000, v: 'n' }, { r: '1 a 30 días', s: 12000000, v: 's' }, { r: '31 a 90 días', s: 8000000, v: 's' }, { r: '91 a 180 días', s: 4000000, v: 's' }, { r: 'Más de 180 días', s: 2000000, v: 's' }],
+      { cols: [{ id: 'r', label: 'Rango', kind: 'text' }, { id: 's', label: 'Saldo', kind: 'money' }, { id: 'v', label: '¿Vencida?', kind: 'select', opts: [['n', 'No'], ['s', 'Sí']] }] })
+  ],
+  compute(v) {
+    const prom = (v.cini + v.cfin) / 2;
+    if (!(prom > 0) || !(v.dias > 0)) return { error: 'La cartera promedio y los días del periodo deben ser mayores que cero.' };
+    const rot = v.ventas / prom, dc = v.dias / rot, tot = v.edades.reduce((a, e) => a + e.s, 0), ven = v.edades.filter(e => e.v === 's').reduce((a, e) => a + e.s, 0), mor = tot > 0 ? ven / tot : 0, dif = dc - v.plazo;
+    const steps = [
+      S('Calcular la cartera promedio', `(${F.money(v.cini)} + ${F.money(v.cfin)}) ÷ 2 = ${F.money(prom)}`, 'Se promedia para no depender solo del saldo de un día.'),
+      S('Calcular la rotación', `${F.money(v.ventas)} ÷ ${F.money(prom)} = ${F.num(rot, 2)} veces`, 'Dice cuántas veces se cobró y se volvió a prestar el dinero durante el periodo.'),
+      S('Pasar la rotación a días', `${F.num(v.dias, 0)} ÷ ${F.num(rot, 2)} = ${F.num(dc, 1)} días`, 'Es el tiempo promedio que tarda un cliente en pagar.'),
+      S('Compararlo con el plazo', `${F.num(dc, 1)} − ${v.plazo} = ${F.num(dif, 1)} días`, dif > 0 ? 'Los clientes pagan más tarde de lo acordado.' : 'Los clientes pagan dentro del plazo concedido.'),
+      S('Medir la morosidad', `${F.money(ven)} ÷ ${F.money(tot)} = ${F.pct(mor, 2)}`, 'Es la parte de la cartera que ya está vencida.')
+    ];
+    const rows = v.edades.map(e => [e.r, e.s, tot > 0 ? e.s / tot : 0, e.v === 's' ? 'Vencida' : 'Al día']); rows.push(['Total', tot, 1, '']);
+    const res = [R('Días promedio de cobro', dc, 'num', 1, true), R('Rotación de cartera (veces)', rot, 'num', 2), R('Cartera promedio', prom, 'money'), R('Diferencia frente al plazo (días)', dif, 'num', 1), R('Cartera vencida', ven, 'money'), R('Índice de morosidad', mor, 'pct', 2)];
+    return { res, steps, table: { title: 'Cartera por antigüedad', h: ['Rango', 'Saldo', '% del total', 'Estado'], k: ['t', 'm', 'p2', 't'], rows },
+      interp: (dif > 0 ? 'Cobra más lento que el plazo que concede: conviene reforzar el cobro o revisar a quién se le da crédito. ' : 'Cobra dentro del plazo que concede. ') + (Math.abs(tot - v.cfin) > 1 ? 'Aviso: la suma por antigüedad (' + F.money(tot) + ') no coincide con la cartera final (' + F.money(v.cfin) + ').' : 'La cartera por antigüedad coincide con la cartera final.') + ' Para calcular cuánto provisionar, use la calculadora de provisiones.' };
+  }
+});
+
+// ---------- Caja menor: arqueo y reembolso ----------
+add({
+  id: 'caja-menor', group: 'con', title: 'Caja menor: arqueo y reembolso',
+  purpose: 'Hace el arqueo de la caja menor: compara el efectivo contado con lo que debería haber, calcula el sobrante o faltante, el valor a reembolsar para reponer el fondo y el asiento contable.',
+  formula: ['Efectivo esperado = Fondo − Comprobantes', 'Diferencia = Efectivo contado − Efectivo esperado', 'Reembolso = Fondo − Efectivo contado'],
+  vars: [['Fondo', 'Valor fijo asignado a la caja menor'], ['Comprobantes', 'Gastos pagados con soporte durante el periodo'], ['Sobrante o faltante', 'Diferencia entre lo contado y lo esperado'], ['Reembolso', 'Dinero que se entrega para dejar el fondo completo otra vez']],
+  fields: [
+    fl('fondo', 'Fondo de caja menor', 'money', 500000), fl('contado', 'Efectivo contado en la caja', 'money', 396500),
+    fl('gastos', 'Comprobantes de caja menor', 'rows', [{ c: 'Papelería y útiles de aseo', v: 45500 }, { c: 'Transporte y domicilios', v: 24000 }, { c: 'Cafetería y atención a clientes', v: 34000 }],
+      { cols: [{ id: 'c', label: 'Concepto', kind: 'text' }, { id: 'v', label: 'Valor', kind: 'money' }] })
+  ],
+  compute(v) {
+    if (!(v.fondo > 0)) return { error: 'Escriba un fondo mayor que cero.' };
+    const tot = v.gastos.reduce((a, g) => a + g.v, 0), esp = v.fondo - tot, dif = v.contado - esp, reem = v.fondo - v.contado, falt = dif < 0 ? -dif : 0, sob = dif > 0 ? dif : 0;
+    const steps = [
+      S('Sumar los comprobantes', `Total comprobantes = ${F.money(tot)}`, 'Son los gastos que ya salieron de la caja y tienen soporte.'),
+      S('Calcular el efectivo esperado', `${F.money(v.fondo)} − ${F.money(tot)} = ${F.money(esp)}`, 'Es lo que debería haber en la caja si todo está bien registrado.'),
+      S('Comparar con el efectivo contado', `${F.money(v.contado)} − ${F.money(esp)} = ${F.money(dif)}`, dif === 0 ? 'La caja cuadra.' : dif < 0 ? 'Falta dinero: se registra como faltante.' : 'Sobra dinero: se registra como sobrante.'),
+      S('Calcular el reembolso', `${F.money(v.fondo)} − ${F.money(v.contado)} = ${F.money(reem)}`, 'Es lo que se entrega al encargado para dejar el fondo completo otra vez.')
+    ];
+    const rows = v.gastos.map(g => [g.c, g.v, tot > 0 ? g.v / tot : 0]); rows.push(['Total comprobantes', tot, 1]);
+    const asRows = [['5195 Gastos diversos (comprobantes)', tot, 0]]; if (falt > 0) asRows.push(['5395 Gastos diversos (faltante de caja)', falt, 0]); if (sob > 0) asRows.push(['4295 Ingresos diversos (sobrante de caja)', 0, sob]); asRows.push(['1110 Bancos (reembolso del fondo)', 0, reem]);
+    const res = [R('Valor a reembolsar', reem, 'money', 0, true), R('Total de comprobantes', tot, 'money'), R('Efectivo esperado', esp, 'money'), R(dif < 0 ? 'Faltante' : dif > 0 ? 'Sobrante' : 'Diferencia', Math.abs(dif), 'money'), R('Parte del fondo gastada', tot / v.fondo, 'pct', 1)];
+    return { res, steps, asiento: { title: 'Asiento del reembolso', rows: asRows }, table: { title: 'Comprobantes del periodo', h: ['Concepto', 'Valor', '% del total'], k: ['t', 'm', 'p2'], rows },
+      interp: dif === 0 ? 'La caja cuadra: el efectivo contado más los comprobantes es igual al fondo.' : 'Hay una diferencia entre lo contado y lo esperado. Antes de reembolsar, revise comprobantes y conteo; si no aparece la causa, se registra el ' + (dif < 0 ? 'faltante como gasto' : 'sobrante como ingreso') + '. El reembolso repone el fondo completo.' };
+  }
+});
+
+// ---------- Costos de producción ----------
+add({
+  id: 'costos-produccion', group: 'con', title: 'Costos de producción y costo unitario',
+  purpose: 'Calcula el costo de producir en un periodo (materia prima, mano de obra y costos indirectos), el costo por unidad, el costo de ventas, la utilidad bruta y el asiento de traslado a productos terminados.',
+  formula: ['Materia prima usada = Inventario inicial + Compras − Inventario final', 'Costo primo = Materia prima usada + Mano de obra directa', 'Costo de producción = Costo primo + Costos indirectos (CIF)', 'Costo unitario = Costo de producción ÷ Unidades producidas'],
+  vars: [['MPD', 'Materia prima directa: la que se convierte en el producto'], ['MOD', 'Mano de obra directa: pago de quienes fabrican'], ['CIF', 'Costos indirectos de fabricación: arriendo de planta, energía, depreciación de maquinaria'], ['Costo primo', 'MPD más MOD'], ['Costo de conversión', 'MOD más CIF']],
+  fields: [
+    fl('mpi', 'Inventario inicial de materia prima', 'money', 6000000), fl('mpc', 'Compras de materia prima', 'money', 28000000), fl('mpf', 'Inventario final de materia prima', 'money', 4000000),
+    fl('mod', 'Mano de obra directa', 'money', 18000000),
+    fl('cif', 'Costos indirectos de fabricación', 'rows', [{ c: 'Arriendo de la planta', v: 4000000 }, { c: 'Energía de la planta', v: 1800000 }, { c: 'Depreciación de maquinaria', v: 1500000 }, { c: 'Supervisor de producción', v: 3200000 }],
+      { cols: [{ id: 'c', label: 'Concepto', kind: 'text' }, { id: 'v', label: 'Valor', kind: 'money' }] }),
+    fl('uprod', 'Unidades producidas', 'num', 2000), fl('uvend', 'Unidades vendidas', 'num', 1800), fl('precio', 'Precio de venta unitario (opcional)', 'money', 38000)
+  ],
+  compute(v) {
+    if (!(v.uprod > 0)) return { error: 'Las unidades producidas deben ser mayores que cero.' };
+    const mp = v.mpi + v.mpc - v.mpf, primo = mp + v.mod, cif = v.cif.reduce((a, c) => a + c.v, 0), conv = v.mod + cif, cp = primo + cif, cu = cp / v.uprod, cv = cu * v.uvend, ing = v.precio * v.uvend, ub = ing - cv;
+    const steps = [
+      S('Calcular la materia prima usada', `${F.money(v.mpi)} + ${F.money(v.mpc)} − ${F.money(v.mpf)} = ${F.money(mp)}`, 'Es lo que realmente se consumió en la producción del periodo.'),
+      S('Calcular el costo primo', `${F.money(mp)} + ${F.money(v.mod)} = ${F.money(primo)}`, 'Son los costos que se pueden identificar directamente con el producto.'),
+      S('Sumar los costos indirectos', `CIF = ${F.money(cif)}`, 'Se reparten entre todas las unidades porque no se pueden asignar a una sola.'),
+      S('Calcular el costo de producción', `${F.money(primo)} + ${F.money(cif)} = ${F.money(cp)}`, 'Es el valor que pasa al inventario de productos terminados.'),
+      S('Calcular el costo unitario', `${F.money(cp)} ÷ ${F.num(v.uprod, 0)} = ${F.money(cu, 2)}`, 'Es lo que cuesta fabricar cada unidad.'),
+      S('Calcular el costo de ventas', `${F.money(cu, 2)} × ${F.num(v.uvend, 0)} = ${F.money(cv)}`, 'Solo las unidades vendidas pasan a costo de ventas; las demás quedan en inventario.')
+    ];
+    const rows = [['Materia prima usada', mp, cp > 0 ? mp / cp : 0], ['Mano de obra directa', v.mod, cp > 0 ? v.mod / cp : 0]].concat(v.cif.map(c => ['CIF: ' + c.c, c.v, cp > 0 ? c.v / cp : 0])); rows.push(['Total costo de producción', cp, 1]);
+    const res = [R('Costo unitario', cu, 'money', 2, true), R('Costo de producción del periodo', cp, 'money'), R('Costo primo', primo, 'money'), R('Costo de conversión', conv, 'money'), R('Costo de ventas', cv, 'money')];
+    if (v.precio > 0) res.push(R('Utilidad bruta', ub, 'money'), R('Margen bruto', ing > 0 ? ub / ing : 0, 'pct', 2));
+    if (v.uvend > v.uprod) res.push(R('Aviso', 'Vende más de lo producido: revise el inventario de producto terminado.', 'text'));
+    return { res, steps, table: { title: 'Composición del costo de producción', h: ['Concepto', 'Valor', '% del costo'], k: ['t', 'm', 'p2'], rows },
+      asiento: { title: 'Asiento de traslado a productos terminados', rows: [['1430 Productos terminados', cp, 0], ['7105 Materia prima', 0, mp], ['7205 Mano de obra directa', 0, v.mod], ['7305 Costos indirectos de fabricación', 0, cif]] },
+      interp: 'El costo unitario es la base para fijar el precio: si el precio es menor, se pierde dinero en cada unidad. Se supone que no había producto terminado al inicio; con inventario inicial se usa promedio ponderado o PEPS (ver la calculadora de inventarios).' };
+  }
+});
 
 // ===== Interfaz =====
 (function () {
@@ -1633,14 +1768,14 @@ add({
   // ---------- categorías ----------
   const CATS = [
     { id: 'fin', name: 'Financieras', glyph: '$', desc: 'Interés, créditos, inversiones y análisis financiero', tag: 'Calculadora financiera' },
-    { id: 'lab', name: 'Laborales', glyph: '#', desc: 'Nómina mensual y prestaciones sociales', tag: 'Calculadora laboral' },
+    { id: 'lab', name: 'Laborales', glyph: '#', desc: 'Nómina mensual, prestaciones sociales y pensión', tag: 'Calculadora laboral' },
     { id: 'tri', name: 'Tributarias', glyph: '%', desc: 'IVA, retención en la fuente, ICA y renta', tag: 'Calculadora tributaria' },
     { id: 'con', name: 'Contables', glyph: 'Σ', desc: 'Depreciación, provisiones, conciliación y estados financieros', tag: 'Calculadora contable' },
     { id: 'inv', name: 'Inventarios y compras', glyph: '▦', desc: 'Costo de ventas, rotación, lote económico y proveedores', tag: 'Inventarios y compras' }
   ];
   const CAT_OF = {};
   TOOLS.forEach(t => { CAT_OF[t.id] = t.group === 'fin' ? 'fin' : t.group === 'inv' ? 'inv' : 'con'; });
-  ['nomina', 'prestaciones'].forEach(id => { CAT_OF[id] = 'lab'; });
+  ['nomina', 'prestaciones', 'pension-vejez'].forEach(id => { CAT_OF[id] = 'lab'; });
   ['iva', 'retencion-fuente', 'ica', 'impuesto-renta'].forEach(id => { CAT_OF[id] = 'tri'; });
   const GLYPH = {
     'interes-simple': '%', 'interes-compuesto': '%%', 'valor-presente-futuro': 'VP', 'tasas-interes': 'ea', 'amortizacion-creditos': 'Am',
@@ -1648,14 +1783,14 @@ add({
     'depreciacion': 'Dp', 'amortizacion-intangibles': 'Ai', 'inventarios': 'Inv', 'nomina': 'Nm', 'prestaciones': 'Pr', 'iva': 'IVA',
     'retencion-fuente': 'Rf', 'ica': 'ICA', 'impuesto-renta': 'Rta', 'provisiones': 'Pv', 'conciliacion-bancaria': 'Bco',
     'balance-general': 'Bal', 'estado-resultados': 'ER', 'flujo-efectivo': 'Fe', 'cierre-contable': 'Cc', 'cambio-inflacion': 'FX',
-    'rotacion-inventario': 'Rot', 'clasificacion-abc': 'ABC', 'eoq-reorden': 'EOQ', 'orden-compra': 'OC', 'evaluacion-proveedores': 'Ev'
+    'rotacion-inventario': 'Rot', 'clasificacion-abc': 'ABC', 'eoq-reorden': 'EOQ', 'orden-compra': 'OC', 'evaluacion-proveedores': 'Ev', 'pension-vejez': 'Pen', 'cartera': 'Car', 'caja-menor': 'CM', 'costos-produccion': 'Cos'
   };
   const KEYWORDS = {
     'amortizacion-creditos': 'cuota prestamo credito tabla frances aleman banco', 'prestaciones': 'cesantias prima vacaciones liquidacion intereses cesantias',
     'nomina': 'sueldo salario horas extras recargos seguridad social parafiscales', 'iva': 'impuesto ventas valor agregado',
     'retencion-fuente': 'retefuente retencion rte honorarios servicios compras', 'impuesto-renta': 'declaracion renta tarifa',
     'tasas-interes': 'nominal efectiva equivalente anticipada', 'evaluacion-proyectos': 'vpn van tir inversion payback', 'depreciacion': 'linea recta saldos decreciente unidades produccion',
-    'interes-compuesto': 'capitalizacion monto', 'inventarios': 'peps ueps promedio ponderado kardex costo ventas'
+    'interes-compuesto': 'capitalizacion monto', 'pension-vejez': 'jubilacion prima media colpensiones semanas mesada ibl vejez', 'cartera': 'clientes cobro morosidad rotacion dias recaudo', 'caja-menor': 'arqueo reembolso fondo efectivo comprobantes', 'costos-produccion': 'costo unitario materia prima mano de obra cif manufactura', 'inventarios': 'peps ueps promedio ponderado kardex costo ventas'
   };
   const POPULAR = ['nomina', 'prestaciones', 'iva', 'retencion-fuente', 'amortizacion-creditos', 'interes-compuesto'];
   const catOf = t => CATS.find(c => c.id === CAT_OF[t.id]);
