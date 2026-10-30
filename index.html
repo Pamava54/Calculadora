@@ -1,155 +1,276 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Calculadora Contable y Financiera</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>Centro de Calculadoras</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
-/* Concepto: libro contable. Una columna lateral de operaciones y una hoja de trabajo con reglas finas y totales a doble raya. */
-:root {
-  --bg: #f1f5f2; --surface: #ffffff; --surface2: #f6f9f7; --ink: #16241f; --muted: #52665c; --line: #d3ddd8; --line2: #e4ebe7;
-  --fin: #1b6a56; --fin-soft: #dbeee6; --con: #33579a; --con-soft: #dfe7f5; --inv: #8a5313; --inv-soft: #f6e8d3;
-  --focus: #b8820f; --warn-bg: #fbf0d4; --warn-ink: #66460a; --err-bg: #fbe3df; --err-ink: #7a2418;
-  --f-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --f-display: 'Literata', Georgia, 'Times New Roman', serif;
-  --f-num: 'IBM Plex Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+/* Concepto: teclado de calculadora. Cada categoría es una tecla de color; la portada es un tablero de teclas y la calculadora abierta se tiñe del color de su categoría. */
+:root{
+  --bg:#F3F6FB; --surface:#FFFFFF; --surface2:#EEF2F9; --ink:#0E1B2E; --muted:#56667E; --line:#DAE2EE;
+  --hero:#0E1B2E; --hero-fg:#F2F6FF; --hero-mut:#A9B8D2; --hero-line:#2A3B57;
+  --fin:#2459F5; --fin-s:#E2EAFF; --onfin:#FFFFFF;
+  --lab:#D6247A; --lab-s:#FFE2EF; --onlab:#FFFFFF;
+  --tri:#0A9468; --tri-s:#D7F4E6; --ontri:#FFFFFF;
+  --con:#EE4B24; --con-s:#FFE4DB; --oncon:#FFFFFF;
+  --inv:#F2A900; --inv-s:#FFEFC2; --oninv:#1E1500;
+  --focus:#F2A900; --err-bg:#FDE3E0; --err-ink:#7A1F14; --note-bg:#FFF4CF; --note-ink:#4B3700;
+  --shadow:0 1px 2px rgba(14,27,46,.06),0 8px 24px rgba(14,27,46,.07);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%230E1B2E' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
+  --f-num:'JetBrains Mono',ui-monospace,Consolas,monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1713; --surface: #16201c; --surface2: #1a2621; --ink: #e2ebe6; --muted: #9bb0a5; --line: #2a3a33; --line2: #212e28;
-    --fin: #66c9aa; --fin-soft: #1c3a30; --con: #90b0ee; --con-soft: #1f2d4b; --inv: #e6aa63; --inv-soft: #3b2b17;
-    --focus: #e0b04a; --warn-bg: #3a2f12; --warn-ink: #f1d58d; --err-bg: #44201b; --err-ink: #f5b9ae; color-scheme: dark;
-  }
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#09111F; --surface:#111D33; --surface2:#17253F; --ink:#E9EFFB; --muted:#93A4C0; --line:#223252;
+  --hero:#0F1D38; --hero-fg:#F2F6FF; --hero-mut:#9FB1CE; --hero-line:#2A3E63;
+  --fin:#7B9DFF; --fin-s:#16285A; --onfin:#08122B;
+  --lab:#FF7DB5; --lab-s:#4A1633; --onlab:#2B0517;
+  --tri:#3DD6A0; --tri-s:#0E382B; --ontri:#04231A;
+  --con:#FF8A66; --con-s:#4A2216; --oncon:#2E0E03;
+  --inv:#FFC93D; --inv-s:#443609; --oninv:#241A00;
+  --err-bg:#4A1D1A; --err-ink:#FFC9C2; --note-bg:#3A3010; --note-ink:#FBE7A6;
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%23FFFFFF' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E"); --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#09111F; --surface:#111D33; --surface2:#17253F; --ink:#E9EFFB; --muted:#93A4C0; --line:#223252;
+  --hero:#0F1D38; --hero-fg:#F2F6FF; --hero-mut:#9FB1CE; --hero-line:#2A3E63;
+  --fin:#7B9DFF; --fin-s:#16285A; --onfin:#08122B;
+  --lab:#FF7DB5; --lab-s:#4A1633; --onlab:#2B0517;
+  --tri:#3DD6A0; --tri-s:#0E382B; --ontri:#04231A;
+  --con:#FF8A66; --con-s:#4A2216; --oncon:#2E0E03;
+  --inv:#FFC93D; --inv-s:#443609; --oninv:#241A00;
+  --err-bg:#4A1D1A; --err-ink:#FFC9C2; --note-bg:#3A3010; --note-ink:#FBE7A6;
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%23FFFFFF' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E"); --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark}
+[data-cat="fin"]{--c:var(--fin);--cs:var(--fin-s);--onc:var(--onfin)}
+[data-cat="lab"]{--c:var(--lab);--cs:var(--lab-s);--onc:var(--onlab)}
+[data-cat="tri"]{--c:var(--tri);--cs:var(--tri-s);--onc:var(--ontri)}
+[data-cat="con"]{--c:var(--con);--cs:var(--con-s);--onc:var(--oncon)}
+[data-cat="inv"]{--c:var(--inv);--cs:var(--inv-s);--onc:var(--oninv)}
+
+body::after{content:"";position:fixed;inset:0;background-image:var(--wm);background-repeat:repeat;pointer-events:none;z-index:12}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+h1,h2,h3,h4{font-family:var(--f-display);margin:0;letter-spacing:-.015em;text-wrap:balance}
+.in{width:100%;max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* Barra superior */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--hero);color:var(--hero-fg);border-bottom:1px solid var(--hero-line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hero);z-index:30}
+.bar .in{display:flex;align-items:center;gap:10px;padding-block:10px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--f-display);font-weight:800;font-size:19px;letter-spacing:-.02em;margin-right:auto;min-width:0}
+.logo b{width:34px;height:34px;border-radius:10px;background:var(--con);color:#fff;display:grid;place-items:center;font-size:22px;box-shadow:0 3px 0 rgba(0,0,0,.35);flex:none}
+.logo span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--hero-line);background:transparent;color:var(--hero-fg);border-radius:999px;padding:7px 13px;font-weight:600;font-size:14px;white-space:nowrap}
+.pill:hover{background:rgba(255,255,255,.08)}
+.pill[aria-expanded="true"]{background:var(--hero-fg);color:var(--hero)}
+.pill .cnt{font-family:var(--f-num);font-size:12px;opacity:.8}
+@media (max-width:640px){.top-pick .chiprow{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}.top-pick .chiprow::-webkit-scrollbar{display:none}.mini{flex:none}}
+.pill svg{width:16px;height:16px;flex:none}
+@media (max-width:560px){.pill .tx{display:none}.logo span{font-size:17px}}
+
+/* Parámetros */
+#paramsbox{background:var(--surface2);border-bottom:1px solid var(--line)}
+#paramsbox .in{padding-block:18px}
+.params h3{font-size:18px}
+
+/* Portada */
+.hero{background:var(--hero);color:var(--hero-fg);overflow:hidden}
+.hero .in{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center;padding-block:40px 44px}
+.hero h1{font-size:clamp(32px,5.4vw,56px);line-height:1.02;font-weight:800;max-width:15ch}
+.hero h1 em{font-style:normal;color:var(--inv)}
+.hero p.lead{color:var(--hero-mut);font-size:clamp(16px,2vw,19px);max-width:48ch;margin:14px 0 0}
+.finder{position:relative;margin-top:24px;max-width:560px}
+.finder svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:2.4;stroke-linecap:round;pointer-events:none}
+.finder input{width:100%;height:58px;border-radius:16px;border:2px solid transparent;background:#fff;color:#0E1B2E;font-size:18px;padding:0 54px 0 52px;box-shadow:0 4px 0 rgba(0,0,0,.28)}
+.finder input::placeholder{color:#6B7B93}
+.finder input:focus{border-color:var(--inv);outline:none}
+.finder kbd{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:var(--f-num);font-size:13px;color:#56667E;border:1px solid #C9D3E3;border-radius:6px;padding:2px 8px;background:#F3F6FB}
+@media (hover:none){.finder kbd{display:none}}
+.facts{display:flex;flex-wrap:wrap;gap:8px 22px;margin:22px 0 0;padding:0;list-style:none;color:var(--hero-mut);font-size:14px}
+.facts li{display:flex;align-items:center;gap:8px}
+.facts li::before{content:"";width:8px;height:8px;border-radius:3px;background:var(--c,var(--inv))}
+.facts li:nth-child(1){--c:var(--fin)}.facts li:nth-child(2){--c:var(--tri)}.facts li:nth-child(3){--c:var(--lab)}.facts li:nth-child(4){--c:var(--con)}
+.keys{display:grid;grid-template-columns:repeat(3,64px);gap:12px;transform:rotate(-4deg);padding-right:8px}
+.key{height:64px;border-radius:16px;display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:26px;background:var(--c);color:var(--onc);box-shadow:0 6px 0 rgba(0,0,0,.38);border:0;transition:transform .12s,box-shadow .12s}
+.key:hover{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.38)}
+.key.ghost{background:#1B2E4D;color:var(--hero-mut)}
+.key.wide{grid-column:span 2}
+@media (max-width:860px){.hero .in{grid-template-columns:minmax(0,1fr)}.keys{display:none}.hero .in{padding-block:30px 34px}}
+
+/* Taller destacado */
+.taller{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px;align-items:center;margin-top:22px;background:var(--hero);color:var(--hero-fg);border-radius:22px;padding:20px clamp(16px,3vw,28px);text-decoration:none;box-shadow:0 6px 0 rgba(0,0,0,.22);border:2px solid var(--hero-line);transition:transform .15s,border-color .15s}
+.taller:hover{transform:translateY(-3px);border-color:var(--inv)}
+.taller .tk{width:64px;height:64px;border-radius:18px;background:var(--inv);color:var(--oninv);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:34px;box-shadow:0 5px 0 rgba(0,0,0,.35)}
+.taller .tg{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--inv)}
+.taller h2{font-size:clamp(22px,3.2vw,30px);margin:2px 0 4px}
+.taller p{margin:0;color:var(--hero-mut);font-size:15px;max-width:70ch}
+.taller .tgo{background:var(--inv);color:var(--oninv);font-weight:800;border-radius:14px;padding:12px 18px;white-space:nowrap;box-shadow:0 4px 0 rgba(0,0,0,.35)}
+@media (max-width:760px){.taller{grid-template-columns:auto minmax(0,1fr)}.taller .tgo{grid-column:1/-1;text-align:center}.taller .tk{width:52px;height:52px;font-size:28px}}
+
+/* Categorías */
+.cats{display:flex;gap:8px;overflow-x:auto;padding:18px 2px 6px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.chip{flex:none;display:inline-flex;align-items:center;gap:8px;border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 15px;font-weight:700;font-size:14.5px;color:var(--ink)}
+.chip i{width:10px;height:10px;border-radius:4px;background:var(--c,var(--muted))}
+.chip small{font-family:var(--f-num);font-size:12px;color:var(--muted);font-weight:600}
+.chip:hover{border-color:var(--c,var(--ink))}
+.chip[aria-pressed="true"]{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:var(--onc,var(--bg))}
+.chip[aria-pressed="true"] small{color:inherit;opacity:.85}
+.chip[aria-pressed="true"] i{background:var(--onc,var(--bg))}
+
+/* Secciones y tarjetas */
+.sec{padding-top:30px}
+.sec-h{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.sec-h .gl{width:44px;height:44px;border-radius:13px;background:var(--c);color:var(--onc);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:20px;box-shadow:0 4px 0 rgba(0,0,0,.22);flex:none}
+.sec-h h2{font-size:clamp(21px,3vw,26px)}
+.sec-h p{margin:0;color:var(--muted);font-size:14.5px}
+.sec-h .n{margin-left:auto;font-family:var(--f-num);font-size:13px;color:var(--muted);white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card-t{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.card-t:hover{transform:translateY(-3px);border-color:var(--c)}
+.card-t .top{display:flex;align-items:center;gap:12px;padding-right:38px;min-width:0}
+.cap{flex:none;width:48px;height:48px;border-radius:14px;background:var(--c);color:var(--onc);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:19px;letter-spacing:-.03em;box-shadow:0 4px 0 rgba(0,0,0,.22)}
+.cap.sm{width:34px;height:34px;border-radius:10px;font-size:14px;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.card-t h3{font-size:18px;line-height:1.15}
+.card-t p{margin:0;color:var(--muted);font-size:14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.card-t .go{font-weight:700;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:6px}
+.card-t .go::after{content:"→";transition:transform .15s;color:var(--c)}
+.card-t:hover .go::after{transform:translateX(4px)}
+.card-t a.stretch{position:absolute;inset:0;border-radius:18px;z-index:1}
+.card-t .cat{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.fav{position:absolute;top:12px;right:12px;z-index:2;width:34px;height:34px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;color:var(--muted)}
+.fav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+.fav:hover{background:var(--surface2);color:var(--ink)}
+.fav[aria-pressed="true"]{color:var(--inv)}
+.fav[aria-pressed="true"] svg{fill:currentColor}
+.empty{padding:50px 16px;text-align:center;color:var(--muted)}
+.empty b{display:block;font-family:var(--f-display);font-size:22px;color:var(--ink);margin-bottom:6px}
+.top-pick{padding-top:26px}
+.top-pick h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--f-body);font-weight:700;margin-bottom:12px}
+footer.foot{margin-top:46px;padding-block:22px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
+footer.foot p{margin:0;max-width:80ch}
+
+/* Vista de calculadora */
+.crumbs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-block:18px 14px;font-size:14.5px;font-weight:600}
+.crumbs a{text-decoration:none;color:var(--muted)}
+.crumbs a:hover{color:var(--ink)}
+.crumbs .sep{color:var(--line)}
+.crumbs .here{color:var(--ink)}
+.band{background:var(--c);color:var(--onc);border-radius:24px;padding:26px clamp(18px,4vw,34px);display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px 22px;align-items:center;box-shadow:0 6px 0 rgba(0,0,0,.2)}
+.band .cap{width:64px;height:64px;font-size:26px;background:rgba(255,255,255,.22);color:var(--onc);box-shadow:none}
+.band .tag{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.band h2{font-size:clamp(26px,4.2vw,40px);line-height:1.05;font-weight:800;margin:2px 0 6px}
+.band p{margin:0;max-width:70ch;opacity:.95;font-size:15.5px}
+.band .fav{position:static;width:44px;height:44px;color:var(--onc);background:rgba(255,255,255,.2)}
+.band .fav:hover{background:rgba(255,255,255,.34);color:var(--onc)}
+.band .fav[aria-pressed="true"]{color:var(--onc)}
+@media (max-width:640px){.band{grid-template-columns:auto minmax(0,1fr)}.band .fav{grid-column:2;justify-self:start}.band .cap{width:52px;height:52px;font-size:21px}}
+.work{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px;margin-top:20px;align-items:start}
+@media (max-width:980px){.work{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px clamp(14px,2.5vw,22px);box-shadow:var(--shadow);min-width:0}
+.card>h3,.blk-h h3{font-size:19px;margin-bottom:12px}
+.blk-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.blk-h h3{margin-bottom:12px}
+.step-badge{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:var(--cs);color:var(--ink);font-family:var(--f-num);font-size:13px;font-weight:600;margin-right:8px;vertical-align:2px}
+
+/* Formularios */
+.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 14px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field.wide{grid-column:1/-1}
+.field label,.field .lbl{font-weight:700;font-size:14px}
+.field[hidden]{display:none}
+.hint{font-size:12.5px;color:var(--muted);line-height:1.35}
+.inp{display:flex;align-items:center;background:var(--surface2);border:2px solid transparent;border-radius:12px;min-width:0}
+.inp:focus-within{border-color:var(--c,var(--fin));background:var(--surface)}
+.inp input{flex:1;min-width:0;border:0;background:transparent;padding:11px 12px;font-family:var(--f-num);font-weight:500;font-size:16px;text-align:right;outline:none}
+.inp .pre,.inp .suf{color:var(--muted);font-family:var(--f-num);padding:0 0 0 12px;font-size:15px}
+.inp .suf{padding:0 12px 0 0}
+.sel{width:100%;background:var(--surface2);border:2px solid transparent;border-radius:12px;padding:11px 12px;font-size:15px;font-weight:500}
+.sel:focus{border-color:var(--c,var(--fin));outline:none}
+.rows-ed{overflow-x:auto}
+.rows-ed table{border-collapse:collapse;width:100%;min-width:max-content}
+.rows-ed th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:4px 6px;font-weight:700}
+.rows-ed td{padding:4px 4px;vertical-align:middle}
+.rows-ed td.n{font-family:var(--f-num);font-size:13px;color:var(--muted);white-space:nowrap;padding-right:8px}
+.rows-ed .inp input{min-width:96px}
+.rows-ed .sel{padding:9px 8px}
+.formbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:9px 16px;font-weight:700;font-size:14px}
+.btn:hover{border-color:var(--c,var(--ink))}
+.btn.ghost{border-color:transparent;background:var(--cs,var(--surface2))}
+.btn.ghost:hover{border-color:var(--c,var(--ink))}
+.btn.x{padding:6px 10px;border-color:transparent;color:var(--muted)}
+.btn.x:hover{color:var(--con)}
+
+/* Fórmula */
+.formulas{display:flex;flex-direction:column;gap:8px}
+.formulas code{font-family:var(--f-num);font-weight:500;font-size:15px;background:var(--cs);border-radius:10px;padding:10px 14px;overflow-x:auto;white-space:nowrap}
+details.vars-d{margin-top:12px}
+details.vars-d summary{cursor:pointer;font-weight:700;font-size:14px;padding:4px 0}
+.vars{display:grid;gap:6px;margin:10px 0 0}
+.vars div{display:grid;grid-template-columns:minmax(52px,auto) minmax(0,1fr);gap:12px;font-size:14px;align-items:baseline}
+.vars dt{font-family:var(--f-num);font-weight:600;color:var(--c)}
+.vars dd{margin:0;color:var(--muted)}
+
+/* Resultados */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px}
+.tile{background:var(--surface2);border-radius:16px;padding:12px 14px;min-width:0}
+.tile .l{font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.3}
+.tile .v{font-family:var(--f-num);font-weight:600;font-size:clamp(16px,2vw,19px);margin-top:4px;white-space:nowrap}
+.tile .v.long{white-space:normal;overflow-wrap:anywhere;font-family:var(--f-body);font-size:16px;font-weight:700}
+.tile.main{grid-column:1/-1;background:var(--c);color:var(--onc);padding:18px 20px;box-shadow:0 5px 0 rgba(0,0,0,.2)}
+.tile.main .l{color:inherit;opacity:.9;font-size:13px;text-transform:uppercase;letter-spacing:.07em}
+.tile.main .v{white-space:normal;font-family:var(--f-display);font-weight:800;font-size:clamp(32px,6vw,52px);line-height:1.05;letter-spacing:-.02em}
+.res-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.note{background:var(--note-bg);color:var(--note-ink);border-radius:16px;padding:14px 18px;font-size:15px}
+.msg{background:var(--note-bg);color:var(--note-ink);border-radius:14px;padding:14px 18px;font-weight:600}
+.msg.err{background:var(--err-bg);color:var(--err-ink)}
+ol.proc{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+ol.proc li{counter-increment:s;position:relative;padding-left:44px;min-width:0}
+ol.proc li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:10px;background:var(--c);color:var(--onc);display:grid;place-items:center;font-family:var(--f-num);font-weight:600;font-size:14px}
+ol.proc li:not(:last-child)::after{content:"";position:absolute;left:14px;top:34px;bottom:-12px;width:2px;background:var(--line)}
+.st-t{font-weight:700}
+.st-f{display:block;font-family:var(--f-num);font-size:14px;background:var(--surface2);border-radius:10px;padding:8px 12px;margin:6px 0;overflow-x:auto;white-space:nowrap}
+.st-w{margin:0;color:var(--muted);font-size:14.5px}
+.scroll{overflow-x:auto}
+.tbl{border-collapse:collapse;width:100%;font-size:14px;min-width:max-content}
+.tbl th{text-align:right;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
+.tbl th:first-child{text-align:left}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);font-family:var(--f-num);font-size:13.5px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tbl td:first-child,.tbl td.t{text-align:left;font-family:var(--f-body);font-size:14px}
+.tbl td.t{white-space:normal;min-width:160px}
+.tbl tr.tot td{font-weight:700;background:var(--cs);border-bottom:0}
+.tbl tr.hd td{font-family:var(--f-display);font-weight:700;background:var(--surface2);color:var(--c)}
+.small{font-size:13px;color:var(--muted);margin:10px 0 0}
+.more{padding-top:34px}
+.more h2{font-size:20px;margin-bottom:12px}
+.chiprow{display:flex;gap:10px;flex-wrap:wrap}
+.mini{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 14px 8px 8px;text-decoration:none;font-weight:700;font-size:14.5px}
+.mini:hover{border-color:var(--c)}
+
+/* Barra de resultado en móvil */
+.dock{display:none}
+@media (max-width:980px){
+  .dock.on{display:flex;position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:15;margin-top:16px;align-items:center;justify-content:space-between;gap:12px;background:var(--c);color:var(--onc);border:0;border-radius:16px;padding:10px 16px;box-shadow:0 8px 24px rgba(0,0,0,.3);width:100%;text-align:left}
+  .dock .l{font-size:12px;opacity:.9;line-height:1.2}
+  .dock .v{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1.1}
+  .dock .go{font-size:13px;font-weight:700;white-space:nowrap}
 }
-:root[data-theme="dark"] {
-  --bg: #0f1713; --surface: #16201c; --surface2: #1a2621; --ink: #e2ebe6; --muted: #9bb0a5; --line: #2a3a33; --line2: #212e28;
-  --fin: #66c9aa; --fin-soft: #1c3a30; --con: #90b0ee; --con-soft: #1f2d4b; --inv: #e6aa63; --inv-soft: #3b2b17;
-  --focus: #e0b04a; --warn-bg: #3a2f12; --warn-ink: #f1d58d; --err-bg: #44201b; --err-ink: #f5b9ae; color-scheme: dark;
-}
-* { box-sizing: border-box; }
-body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
-.wrap { max-width: 1240px; margin: 0 auto; padding-block: 20px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-button, input, select, textarea { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-
-.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; padding-bottom: 16px; border-bottom: 3px double var(--line); margin-bottom: 20px; }
-.top h1 { font-family: var(--f-display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2.1rem); line-height: 1.15; margin: 0; text-wrap: balance; }
-.top p { margin: 4px 0 0; color: var(--muted); max-width: 62ch; }
-.top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-.layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 28px; align-items: start; }
-nav.side { position: sticky; top: env(safe-area-inset-top, 0px); max-height: 100vh; overflow-y: auto; padding: 2px 6px 24px 0; }
-.search { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); margin-bottom: 12px; }
-.grp { margin-bottom: 14px; }
-.grp h2 { font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; margin: 0 0 6px; padding: 0 8px; font-weight: 600; }
-.grp.fin h2 { color: var(--fin); } .grp.con h2 { color: var(--con); } .grp.inv h2 { color: var(--inv); }
-.nb { display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: 6px; padding: 6px 8px; cursor: pointer; color: var(--ink); }
-.nb:hover { background: var(--surface); }
-.grp.fin .nb[aria-current="true"] { background: var(--fin-soft); color: var(--fin); font-weight: 600; }
-.grp.con .nb[aria-current="true"] { background: var(--con-soft); color: var(--con); font-weight: 600; }
-.grp.inv .nb[aria-current="true"] { background: var(--inv-soft); color: var(--inv); font-weight: 600; }
-.picker { display: none; width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); margin-bottom: 4px; }
-
-main[data-g="fin"] { --g: var(--fin); --gs: var(--fin-soft); }
-main[data-g="con"] { --g: var(--con); --gs: var(--con-soft); }
-main[data-g="inv"] { --g: var(--inv); --gs: var(--inv-soft); }
-main { min-width: 0; }
-.tag { display: inline-block; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: var(--g); background: var(--gs); padding: 3px 9px; border-radius: 999px; }
-main h2.title { font-family: var(--f-display); font-weight: 600; font-size: clamp(1.4rem, 2.6vw, 1.9rem); margin: 8px 0 6px; line-height: 1.2; text-wrap: balance; }
-.purpose { margin: 0 0 16px; max-width: 72ch; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 16px; min-width: 0; }
-.card > h3, .blk-h h3 { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0 0 12px; }
-.formulas { display: grid; gap: 6px; margin-bottom: 12px; }
-.formulas code, .st-f { font-family: var(--f-num); font-size: 0.88rem; background: var(--surface2); border: 1px solid var(--line2); border-radius: 6px; padding: 6px 10px; display: block; overflow-x: auto; }
-.vars { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 24px; margin: 0; font-size: 0.9rem; }
-.vars div { display: flex; gap: 8px; min-width: 0; }
-.vars dt { font-family: var(--f-num); font-weight: 600; color: var(--g); white-space: nowrap; }
-.vars dd { margin: 0; color: var(--muted); }
-
-.formgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 16px; }
-.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.field.wide { grid-column: 1 / -1; }
-.field > label { font-size: 0.85rem; font-weight: 500; }
-.field .hint { font-size: 0.78rem; color: var(--muted); }
-.inp { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); overflow: hidden; }
-.inp:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
-.inp .pre, .inp .suf { padding: 0 9px; display: flex; align-items: center; color: var(--muted); background: var(--surface2); font-family: var(--f-num); font-size: 0.85rem; }
-.inp input { border: 0; background: transparent; padding: 8px 10px; width: 100%; min-width: 0; font-family: var(--f-num); font-variant-numeric: tabular-nums; outline: none; }
-select.sel { width: 100%; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); padding: 8px 10px; }
-.rows-ed { overflow-x: auto; }
-.rows-ed table { border-collapse: collapse; width: 100%; min-width: 420px; }
-.rows-ed th { text-align: left; font-size: 0.78rem; color: var(--muted); font-weight: 500; padding: 0 6px 6px 0; }
-.rows-ed td { padding: 0 6px 6px 0; vertical-align: top; }
-.rows-ed td.n { color: var(--muted); font-family: var(--f-num); font-size: 0.85rem; padding-top: 9px; white-space: nowrap; }
-.rows-ed .inp, .rows-ed select.sel { min-width: 110px; }
-.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 7px 12px; cursor: pointer; font-size: 0.88rem; }
-.btn:hover { border-color: var(--g, var(--fin)); }
-.btn.ghost { background: transparent; }
-.btn.x { padding: 7px 10px; color: var(--muted); }
-.formbar { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
-.params { border-color: var(--focus); }
-
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
-.tile { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--surface); min-width: 0; }
-.tile .l { font-size: 0.8rem; color: var(--muted); }
-.tile .v { font-family: var(--f-num); font-weight: 500; font-size: 1.15rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.tile.main { background: var(--gs); border-color: transparent; grid-column: 1 / -1; }
-.tile.main .l { color: var(--g); font-weight: 600; }
-.tile.main .v { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 600; color: var(--g); }
-.msg { border-radius: 8px; padding: 12px 14px; background: var(--warn-bg); color: var(--warn-ink); }
-.msg.err { background: var(--err-bg); color: var(--err-ink); }
-
-ol.steps { list-style: none; counter-reset: s; margin: 0; padding: 0; display: grid; gap: 14px; }
-ol.steps li { counter-increment: s; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 4px 12px; }
-ol.steps li::before { content: counter(s); grid-row: 1 / span 3; width: 26px; height: 26px; border-radius: 50%; background: var(--gs); color: var(--g); font-weight: 600; font-size: 0.82rem; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
-.st-t { font-weight: 600; }
-.st-f { margin: 2px 0; }
-.st-w { margin: 0; color: var(--muted); font-size: 0.92rem; }
-
-.blk { margin-bottom: 4px; }
-.blk-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
-.blk-h h3 { margin: 0; }
-.scroll { overflow-x: auto; max-height: 520px; overflow-y: auto; border: 1px solid var(--line2); border-radius: 8px; }
-table.tbl { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
-.tbl th { position: sticky; top: 0; background: var(--surface2); text-align: right; font-weight: 600; font-size: 0.78rem; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-.tbl th:first-child, .tbl td:first-child { text-align: left; }
-.tbl td { padding: 5px 10px; border-bottom: 1px solid var(--line2); text-align: right; font-family: var(--f-num); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.tbl td.t { text-align: left; font-family: var(--f-body); white-space: normal; min-width: 110px; }
-.tbl td:first-child { font-family: var(--f-body); white-space: normal; }
-.tbl tr.hd td { background: var(--gs); color: var(--g); font-weight: 600; letter-spacing: 0.04em; font-size: 0.8rem; }
-.tbl tr.tot td { font-weight: 600; border-top: 1px solid var(--ink); border-bottom: 3px double var(--ink); }
-.note { border: 1px solid var(--line2); background: var(--surface2); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; }
-.note strong { color: var(--g); }
-.small { font-size: 0.82rem; color: var(--muted); margin: 8px 0 0; }
-.foot { margin-top: 28px; padding-top: 14px; border-top: 3px double var(--line); font-size: 0.85rem; color: var(--muted); max-width: 80ch; }
-.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 8px; font-size: 0.88rem; z-index: 20; }
-
-@media (min-width: 701px) and (max-width: 1000px) {
-  .layout { grid-template-columns: 215px minmax(0, 1fr); gap: 18px; }
-  .nb { font-size: 0.9rem; }
-}
-@media (max-width: 700px) {
-  .layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
-  nav.side { display: none; }
-  .picker { display: block; }
-  .tbl td, .tbl th { padding-left: 8px; padding-right: 8px; }
-}
-@media (prefers-reduced-motion: no-preference) { .btn { transition: border-color 0.15s; } }
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;z-index:60;max-width:calc(100vw - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.card-t:hover,.key:hover{transform:none}}
 </style>
-
-<div class="wrap">
-  <header class="top">
-    <div>
-      <h1>Calculadora Contable y Financiera</h1>
-      <p id="sub">Cada operación muestra la fórmula, el procedimiento con sus datos y la razón de cada paso.</p>
-    </div>
-    <div class="top-actions"><button class="btn" id="btn-params" aria-expanded="false">Parámetros vigentes</button></div>
-  </header>
-  <div id="paramsbox" hidden></div>
-  <select id="picker" class="picker" aria-label="Elegir operación"></select>
-  <div class="layout">
-    <nav class="side" aria-label="Operaciones"><input class="search" id="search" type="search" placeholder="Buscar operación" aria-label="Buscar operación"><div id="nav"></div></nav>
-    <main id="main"></main>
-  </div>
-  <p class="foot">Material educativo. Los ejemplos que aparecen al abrir cada operación son datos ficticios: reemplácelos por los suyos. Los porcentajes, tarifas, bases y códigos de cuentas de referencia cambian con las normas; confirme el valor vigente antes de usarlo en documentos oficiales.</p>
-</div>
+</head><body>
+<header class="bar"><div class="in">
+<a class="logo" id="home" href="#" aria-label="Centro de Calculadoras, inicio"><b>=</b><span>Centro de Calculadoras</span></a>
+<button class="pill" id="btn-params" type="button" aria-expanded="false" aria-controls="paramsbox"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="16" cy="7" r="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="8" cy="17" r="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg><span class="tx">Parámetros</span></button>
+<button class="pill" id="btn-theme" type="button" aria-label="Cambiar entre tema claro y oscuro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg><span class="tx">Tema</span></button>
+</div></header>
+<div id="paramsbox" hidden><div class="in"></div></div>
+<div id="view"></div>
 <div class="toast" id="toast" hidden></div>
 <script>
 // ===== Núcleo: utilidades, parámetros y herramientas financieras (parte 1) =====
@@ -1374,6 +1495,7 @@ add({
   }
 });
 
+
 // ===== Interfaz =====
 (function () {
   const $ = (s, r) => (r || document).querySelector(s);
@@ -1505,16 +1627,73 @@ add({
     return w;
   }
 
+
+  // ---------- categorías ----------
+  const CATS = [
+    { id: 'fin', name: 'Financieras', glyph: '$', desc: 'Interés, créditos, inversiones y análisis financiero', tag: 'Calculadora financiera' },
+    { id: 'lab', name: 'Laborales', glyph: '#', desc: 'Nómina mensual y prestaciones sociales', tag: 'Calculadora laboral' },
+    { id: 'tri', name: 'Tributarias', glyph: '%', desc: 'IVA, retención en la fuente, ICA y renta', tag: 'Calculadora tributaria' },
+    { id: 'con', name: 'Contables', glyph: 'Σ', desc: 'Depreciación, provisiones, conciliación y estados financieros', tag: 'Calculadora contable' },
+    { id: 'inv', name: 'Inventarios y compras', glyph: '▦', desc: 'Costo de ventas, rotación, lote económico y proveedores', tag: 'Inventarios y compras' }
+  ];
+  const CAT_OF = {};
+  TOOLS.forEach(t => { CAT_OF[t.id] = t.group === 'fin' ? 'fin' : t.group === 'inv' ? 'inv' : 'con'; });
+  ['nomina', 'prestaciones'].forEach(id => { CAT_OF[id] = 'lab'; });
+  ['iva', 'retencion-fuente', 'ica', 'impuesto-renta'].forEach(id => { CAT_OF[id] = 'tri'; });
+  const GLYPH = {
+    'interes-simple': '%', 'interes-compuesto': '%%', 'valor-presente-futuro': 'VP', 'tasas-interes': 'ea', 'amortizacion-creditos': 'Am',
+    'anualidades': 'An', 'descuentos': '−%', 'evaluacion-proyectos': 'TIR', 'razones-financieras': 'a/b', 'punto-equilibrio': 'PE',
+    'depreciacion': 'Dp', 'amortizacion-intangibles': 'Ai', 'inventarios': 'Inv', 'nomina': 'Nm', 'prestaciones': 'Pr', 'iva': 'IVA',
+    'retencion-fuente': 'Rf', 'ica': 'ICA', 'impuesto-renta': 'Rta', 'provisiones': 'Pv', 'conciliacion-bancaria': 'Bco',
+    'balance-general': 'Bal', 'estado-resultados': 'ER', 'flujo-efectivo': 'Fe', 'cierre-contable': 'Cc', 'cambio-inflacion': 'FX',
+    'rotacion-inventario': 'Rot', 'clasificacion-abc': 'ABC', 'eoq-reorden': 'EOQ', 'orden-compra': 'OC', 'evaluacion-proveedores': 'Ev'
+  };
+  const KEYWORDS = {
+    'amortizacion-creditos': 'cuota prestamo credito tabla frances aleman banco', 'prestaciones': 'cesantias prima vacaciones liquidacion intereses cesantias',
+    'nomina': 'sueldo salario horas extras recargos seguridad social parafiscales', 'iva': 'impuesto ventas valor agregado',
+    'retencion-fuente': 'retefuente retencion rte honorarios servicios compras', 'impuesto-renta': 'declaracion renta tarifa',
+    'tasas-interes': 'nominal efectiva equivalente anticipada', 'evaluacion-proyectos': 'vpn van tir inversion payback', 'depreciacion': 'linea recta saldos decreciente unidades produccion',
+    'interes-compuesto': 'capitalizacion monto', 'inventarios': 'peps ueps promedio ponderado kardex costo ventas'
+  };
+  const POPULAR = ['nomina', 'prestaciones', 'iva', 'retencion-fuente', 'amortizacion-creditos', 'interes-compuesto'];
+  const catOf = t => CATS.find(c => c.id === CAT_OF[t.id]);
+  const blurb = t => { const m = t.purpose.match(/^.*?[.!?](\s|$)/); return (m ? m[0] : t.purpose).trim(); };
+  const hay = {}; TOOLS.forEach(t => { hay[t.id] = norm(t.title + ' ' + t.purpose + ' ' + (KEYWORDS[t.id] || '') + ' ' + catOf(t).name); });
+
+  // ---------- favoritas y tema ----------
+  let FAVS = [];
+  try { FAVS = JSON.parse(localStorage.getItem('cc-favs') || '[]').filter(id => TOOLS.some(t => t.id === id)); } catch (e) { FAVS = []; }
+  const saveFavs = () => { try { localStorage.setItem('cc-favs', JSON.stringify(FAVS)); } catch (e) { } };
+  const isFav = id => FAVS.includes(id);
+  function toggleFav(id) {
+    FAVS = isFav(id) ? FAVS.filter(x => x !== id) : FAVS.concat(id); saveFavs(); syncFavs();
+    toast(isFav(id) ? 'Agregada a favoritas' : 'Quitada de favoritas');
+  }
+  function syncFavs() {
+    document.querySelectorAll('.fav[data-id]').forEach(b => b.setAttribute('aria-pressed', String(isFav(b.dataset.id))));
+    const c = $('#favcnt'); if (c) c.textContent = FAVS.length;
+    if (view === 'hub') { const fc = $('#chip-fav small'); if (fc) fc.textContent = FAVS.length; if (catF === 'fav') drawResults(); }
+  }
+  const starSvg = () => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', 'M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1L3.2 9.6l6.1-.8z'); s.append(p); return s; };
+  function favBtn(id) { const b = el('button', { class: 'fav', type: 'button', 'aria-label': 'Marcar como favorita', title: 'Favorita', 'data-id': id, 'aria-pressed': String(isFav(id)), onclick: e => { e.stopPropagation(); toggleFav(id); } }); b.append(starSvg()); return b; }
+  function applyTheme(t) { if (t) document.documentElement.setAttribute('data-theme', t); }
+  try { applyTheme(localStorage.getItem('cc-theme')); } catch (e) { }
+  function toggleTheme() {
+    const root = document.documentElement, cur0 = root.getAttribute('data-theme');
+    const dark = cur0 ? cur0 === 'dark' : window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+    const nx = dark ? 'light' : 'dark'; applyTheme(nx); try { localStorage.setItem('cc-theme', nx); } catch (e) { }
+  }
+
   // ---------- estado ----------
   const RAW = {};
-  let PRAW = initRaw(PARAM_FIELDS), cur = null, formEl = null;
+  let PRAW = initRaw(PARAM_FIELDS), cur = null, formEl = null, view = 'hub', catF = 'all', Q = '';
   const DEFP = collect(PARAM_FIELDS, initRaw(PARAM_FIELDS)).out;
   function getP() { const { out } = collect(PARAM_FIELDS, PRAW); for (const k in DEFP) if (!isFinite(out[k])) out[k] = DEFP[k]; return out; }
-
+  const usesP = t => t.compute.length >= 2;
   let toastT;
   function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2400); }
-  function copyText(text) {
-    const ok = () => toast('Tabla copiada. Péguela en Excel o Word.');
+  function copyText(text, msg) {
+    const ok = () => toast(msg || 'Tabla copiada. Péguela en Excel o Word.');
     const fb = () => {
       const ta = el('textarea', { style: 'position:fixed;opacity:0;left:-999px' }); ta.value = text; document.body.append(ta); ta.select();
       let done = false; try { done = document.execCommand('copy'); } catch (e) { }
@@ -1552,19 +1731,29 @@ add({
     return el('section', { class: 'card' }, el('h3', {}, a.title), el('div', { class: 'scroll' }, el('table', { class: 'tbl' }, el('thead', {}, el('tr', {}, ['Cuenta', 'Debe', 'Haber'].map(x => el('th', {}, x)))), tbody)),
       el('p', { class: 'small' }, (Math.abs(D - H) < 0.5 ? 'Débitos y créditos iguales. ' : 'Atención: débitos y créditos no coinciden. ') + 'Los códigos son del PUC colombiano a nivel de cuenta; adáptelos a su plan de cuentas.'));
   }
+
+  // ---------- resultados ----------
+  function summaryText(t, res) {
+    return t.title + '\n' + res.res.map(it => it.l + ': ' + fmtItem(it)).join('\n');
+  }
   function renderResult(o, res) {
-    if (res.error) { o.append(el('div', { class: 'msg err' }, res.error)); return; }
+    const t = cur, dock = $('#dock');
+    if (res.error) { o.append(el('div', { class: 'msg err' }, res.error)); dock.classList.remove('on'); return; }
+    const items = res.res, mi = Math.max(0, items.findIndex(it => it.main));
     const tiles = el('div', { class: 'tiles' });
-    res.res.forEach(it => tiles.append(el('div', { class: 'tile' + (it.main ? ' main' : '') }, el('div', { class: 'l' }, it.l), el('div', { class: 'v' }, fmtItem(it)))));
-    o.append(el('section', { class: 'card' }, el('h3', {}, 'Resultado'), tiles));
+    const order = [items[mi]].concat(items.filter((_, i) => i !== mi));
+    order.forEach((it, i) => tiles.append(el('div', { class: 'tile' + (i === 0 ? ' main' : '') }, el('div', { class: 'l' }, it.l), el('div', { class: 'v' + (i > 0 && fmtItem(it).length > 22 ? ' long' : '') }, fmtItem(it)))));
+    o.append(el('section', { class: 'card' }, el('h3', {}, 'Resultado'), tiles,
+      el('div', { class: 'res-actions' }, el('button', { class: 'btn ghost', type: 'button', onclick: () => copyText(summaryText(t, res), 'Resultado copiado.') }, 'Copiar resultado'))));
+    dock.innerHTML = ''; dock.append(el('div', {}, el('div', { class: 'l' }, items[mi].l), el('div', { class: 'v' }, fmtItem(items[mi]))), el('span', { class: 'go' }, 'Ver detalle ↓'));
+    dock.classList.add('on');
     if (res.interp) o.append(el('aside', { class: 'note' }, el('strong', {}, 'Cómo interpretarlo. '), res.interp));
-    const ol = el('ol', { class: 'steps' });
+    const ol = el('ol', { class: 'proc' });
     res.steps.forEach(s => ol.append(el('li', {}, el('div', { class: 'st-t' }, s.t), s.f ? el('code', { class: 'st-f' }, s.f) : null, el('p', { class: 'st-w' }, s.w))));
     o.append(el('section', { class: 'card' }, el('h3', {}, 'Procedimiento paso a paso'), ol));
-    (res.tables || (res.table ? [res.table] : [])).forEach(t => { const x = renderTable(t); if (x) o.append(x); });
+    (res.tables || (res.table ? [res.table] : [])).forEach(tb => { const x = renderTable(tb); if (x) o.append(x); });
     if (res.asiento) { const x = renderAsiento(res.asiento); if (x) o.append(x); }
   }
-
   function update() {
     if (!cur || !formEl) return;
     const t = cur, { out, bad } = collect(t.fields, RAW[t.id]);
@@ -1572,71 +1761,131 @@ add({
     t.fields.forEach(f => { const w = formEl.querySelector('[data-fid="' + f.id + '"]'); if (w) w.hidden = !vis(f); });
     const labels = [...new Set(bad.filter(b => vis(t.fields.find(x => x.id === b.id))).map(b => b.label))];
     const o = $('#out'); o.textContent = '';
-    if (labels.length) { o.append(el('div', { class: 'msg' }, 'Revise estos datos, tienen caracteres no válidos: ' + labels.join('; ') + '.')); return; }
+    if (labels.length) { o.append(el('div', { class: 'msg' }, 'Revise estos datos, tienen caracteres no válidos: ' + labels.join('; ') + '.')); $('#dock').classList.remove('on'); return; }
     let res; try { res = t.compute(out, getP()); } catch (e) { res = { error: 'No se pudo calcular con estos datos. Revise que ningún valor esté vacío o en cero donde se divide.' }; }
     renderResult(o, res);
   }
 
+  const TALLER_URL = 'taller.html';
+  // ---------- portada ----------
+  function toolCard(t) {
+    const c = catOf(t);
+    return el('article', { class: 'card-t', 'data-cat': c.id },
+      el('div', { class: 'top' }, el('div', { class: 'cap', 'aria-hidden': 'true' }, GLYPH[t.id] || c.glyph), el('div', {}, el('div', { class: 'cat' }, c.name), el('h3', {}, t.title))),
+      el('p', {}, blurb(t)),
+      el('div', { class: 'go' }, 'Abrir calculadora'),
+      el('a', { class: 'stretch', href: '#' + t.id, 'aria-label': 'Abrir ' + t.title }),
+      favBtn(t.id));
+  }
+  function matches(t, q) { if (!q) return true; return q.split(/\s+/).every(w => hay[t.id].includes(w)); }
+  function drawResults() {
+    const box = $('#results'); if (!box) return; box.textContent = '';
+    const q = norm(Q.trim());
+    document.querySelectorAll('.chip[data-f]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === catF)));
+    if (q || catF === 'fav') {
+      let list = TOOLS.filter(t => matches(t, q));
+      if (catF === 'fav') list = list.filter(t => isFav(t.id));
+      else if (catF !== 'all') list = list.filter(t => CAT_OF[t.id] === catF);
+      if (q) list.sort((a, b) => (norm(b.title).includes(q) ? 1 : 0) - (norm(a.title).includes(q) ? 1 : 0));
+      const head = q ? (list.length + (list.length === 1 ? ' resultado para “' + Q.trim() + '”' : ' resultados para “' + Q.trim() + '”')) : 'Sus favoritas';
+      if (!list.length) {
+        box.append(el('div', { class: 'empty' }, el('b', {}, q ? 'No encontramos esa calculadora' : 'Aún no tiene favoritas'), q ? 'Pruebe con otra palabra, por ejemplo “cuota”, “iva” o “inventario”.' : 'Toque la estrella de cualquier calculadora para tenerla a mano aquí.'));
+        return;
+      }
+      box.append(el('div', { class: 'sec' }, el('div', { class: 'sec-h' }, el('div', {}, el('h2', {}, head))), el('div', { class: 'grid' }, list.map(toolCard))));
+      return;
+    }
+    if (catF === 'all') {
+      const pop = POPULAR.map(id => TOOLS.find(t => t.id === id)).filter(Boolean);
+      box.append(el('div', { class: 'top-pick' }, el('h2', {}, 'Las más usadas'), el('div', { class: 'chiprow' }, pop.map(t => {
+        const c = catOf(t); return el('a', { class: 'mini', href: '#' + t.id, 'data-cat': c.id }, el('span', { class: 'cap sm' }, GLYPH[t.id] || c.glyph), t.title);
+      }))));
+    }
+    CATS.filter(c => catF === 'all' || c.id === catF).forEach(c => {
+      const list = TOOLS.filter(t => CAT_OF[t.id] === c.id);
+      box.append(el('section', { class: 'sec', 'data-cat': c.id, id: 'cat-' + c.id },
+        el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, c.glyph), el('div', {}, el('h2', {}, c.name), el('p', {}, c.desc)), el('span', { class: 'n' }, list.length + ' calculadoras')),
+        el('div', { class: 'grid' }, list.map(toolCard))));
+    });
+  }
+  function showHub() {
+    view = 'hub'; cur = null; formEl = null; document.title = 'Centro de Calculadoras';
+    const v = $('#view'); v.textContent = '';
+    const key = (cat, txt, cls) => el('div', { class: 'key ' + (cls || ''), 'data-cat': cat, 'aria-hidden': 'true' }, txt);
+    const inp = el('input', { id: 'search', type: 'search', placeholder: 'Busque IVA, nómina, cuota…', autocomplete: 'off', 'aria-label': 'Buscar calculadora', value: Q });
+    inp.addEventListener('input', () => { Q = inp.value; drawResults(); });
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', '0 0 24 24'); svg.innerHTML = '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>';
+    v.append(el('section', { class: 'hero' }, el('div', { class: 'in' },
+      el('div', {}, el('h1', {}, 'Calcule rápido. ', el('em', {}, 'Entienda'), ' cada paso.'),
+        el('p', { class: 'lead' }, TOOLS.length + ' calculadoras de finanzas, nómina, impuestos, contabilidad e inventarios. Cada una muestra la fórmula y el procedimiento con sus datos.'),
+        el('div', { class: 'finder' }, svg, inp, el('kbd', {}, '/')),
+        el('ul', { class: 'facts' }, el('li', {}, TOOLS.length + ' calculadoras'), el('li', {}, CATS.length + ' categorías'), el('li', {}, 'Paso a paso'), el('li', {}, 'Parámetros 2026'))),
+      el('div', { class: 'keys', 'aria-hidden': 'true' }, key('fin', '÷'), key('lab', '×'), key('tri', '−'), el('div', { class: 'key ghost' }, '7'), el('div', { class: 'key ghost' }, '8'), key('con', '+'), key('inv', '=', 'wide'), el('div', { class: 'key ghost' }, '.')))));
+    v.append(el('div', { class: 'in' }, el('a', { class: 'taller', href: TALLER_URL }, el('div', { class: 'tk', 'aria-hidden': 'true' }, '±'),
+      el('div', {}, el('span', { class: 'tg' }, 'Práctica con documentos soporte'), el('h2', {}, 'Taller de asientos contables'), el('p', {}, 'Cada estudiante trabaja con su propia empresa: lee facturas, extractos y recibos, y registra los asientos en el libro diario con revisión automática.')),
+      el('span', { class: 'tgo' }, 'Abrir el taller →'))));
+    const chips = el('div', { class: 'cats', role: 'group', 'aria-label': 'Categorías' });
+    const chip = (f, label, n, cat) => { const b = el('button', { class: 'chip', type: 'button', 'data-f': f, 'data-cat': cat, id: f === 'fav' ? 'chip-fav' : null, onclick: () => { catF = f; drawResults(); } }, cat ? el('i') : null, label, el('small', {}, String(n))); return b; };
+    chips.append(chip('all', 'Todas', TOOLS.length));
+    CATS.forEach(c => chips.append(chip(c.id, c.name, TOOLS.filter(t => CAT_OF[t.id] === c.id).length, c.id)));
+    chips.append(chip('fav', '★ Favoritas', FAVS.length));
+    v.append(el('div', { class: 'in' }, chips, el('div', { id: 'results' }),
+      el('footer', { class: 'foot' }, el('p', {}, 'Material educativo. Los ejemplos que aparecen al abrir cada calculadora son datos ficticios: reemplácelos por los suyos. Los porcentajes, tarifas, bases y códigos de cuentas de referencia cambian con la norma; confírmelos con la fuente oficial antes de usarlos en un caso real. © Pamava soluciones.'))));
+    drawResults();
+  }
+
+  // ---------- calculadora ----------
   function openTool(id) {
-    const t = TOOLS.find(x => x.id === id) || TOOLS[0]; cur = t;
+    const t = TOOLS.find(x => x.id === id); if (!t) return showHub();
+    view = 'tool'; cur = t; const c = catOf(t); document.title = t.title + ' · Centro de Calculadoras';
     if (!RAW[t.id]) RAW[t.id] = initRaw(t.fields);
-    const main = $('#main'); main.dataset.g = t.group; main.textContent = '';
-    main.append(el('span', { class: 'tag' }, t.group === 'fin' ? 'Operación financiera' : t.group === 'inv' ? 'Inventarios y compras' : 'Operación contable'), el('h2', { class: 'title' }, t.title), el('p', { class: 'purpose' }, t.purpose));
-    main.append(el('section', { class: 'card' }, el('h3', {}, 'Fórmula y variables'),
-      el('div', { class: 'formulas' }, t.formula.map(f => el('code', {}, f))),
-      el('dl', { class: 'vars' }, t.vars.map(([a, b]) => el('div', {}, el('dt', {}, a), el('dd', {}, b))))));
+    const v = $('#view'); v.textContent = '';
     formEl = el('div', { class: 'formgrid' });
     t.fields.forEach(f => formEl.append(buildField(f, RAW[t.id], update)));
-    main.append(el('section', { class: 'card' }, el('h3', {}, 'Datos de ejemplo: cámbielos por los suyos'), formEl,
-      el('div', { class: 'formbar' }, el('button', { class: 'btn', type: 'button', onclick: () => { RAW[t.id] = initRaw(t.fields); openTool(t.id); } }, 'Restablecer el ejemplo'))));
-    main.append(el('div', { id: 'out' }));
-    syncNav(); update();
+    const pbtn = usesP(t) ? el('button', { class: 'btn ghost', type: 'button', onclick: () => { setParams(true); window.scrollTo(0, 0); } }, 'Usa los parámetros del año · Ver') : null;
+    const left = el('div', { class: 'col' },
+      el('section', { class: 'card' }, el('h3', {}, 'Sus datos'), el('p', { class: 'small', style: 'margin:-6px 0 14px' }, 'Los valores son un ejemplo ficticio. Cámbielos por los suyos y el resultado se actualiza solo.'), formEl,
+        el('div', { class: 'formbar' }, el('button', { class: 'btn', type: 'button', onclick: () => { RAW[t.id] = initRaw(t.fields); openTool(t.id); } }, 'Restablecer el ejemplo'), pbtn)),
+      el('section', { class: 'card' }, el('h3', {}, 'Fórmula'), el('div', { class: 'formulas' }, t.formula.map(f => el('code', {}, f))),
+        el('details', { class: 'vars-d' }, el('summary', {}, 'Qué significa cada variable'), el('dl', { class: 'vars' }, t.vars.map(([a, b]) => el('div', {}, el('dt', {}, a), el('dd', {}, b)))))));
+    const others = TOOLS.filter(x => CAT_OF[x.id] === c.id && x.id !== t.id);
+    v.append(el('div', { class: 'in', 'data-cat': c.id },
+      el('nav', { class: 'crumbs', 'aria-label': 'Ubicación' }, el('a', { href: '#' }, '← Todas las calculadoras'), el('span', { class: 'sep' }, '/'), el('span', { class: 'here' }, c.name)),
+      el('header', { class: 'band' }, el('div', { class: 'cap', 'aria-hidden': 'true' }, GLYPH[t.id] || c.glyph),
+        el('div', {}, el('div', { class: 'tag' }, c.tag), el('h2', {}, t.title), el('p', {}, t.purpose)), favBtn(t.id)),
+      el('div', { class: 'work' }, left, el('div', { class: 'col', id: 'out' })),
+      el('button', { class: 'dock', id: 'dock', type: 'button', onclick: () => $('#out').scrollIntoView({ behavior: 'smooth', block: 'start' }) }),
+      others.length ? el('section', { class: 'more' }, el('h2', {}, 'Más de ' + c.name.toLowerCase()), el('div', { class: 'chiprow' }, others.map(x => el('a', { class: 'mini', href: '#' + x.id }, el('span', { class: 'cap sm' }, GLYPH[x.id] || c.glyph), x.title)))) : null,
+      el('footer', { class: 'foot' }, el('p', {}, 'Material educativo. Los porcentajes, tarifas, bases y códigos de cuentas son de referencia; confírmelos con la norma vigente. © Pamava soluciones.'))));
+    update();
   }
 
-  // ---------- navegación ----------
-  function syncNav() {
-    document.querySelectorAll('.nb').forEach(b => { if (cur && b.dataset.id === cur.id) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
-    const p = $('#picker'); if (cur) p.value = cur.id;
-  }
-  function go(id) {
-    openTool(id);
-    try { history.replaceState(null, '', '#' + id); } catch (e) { }
-    try { if (window.scrollY > 240) window.scrollTo(0, 0); } catch (e) { }
-  }
-  function buildNav(filter) {
-    const nav = $('#nav'); nav.textContent = '';
-    [['fin', 'Financieras'], ['con', 'Contables'], ['inv', 'Inventarios y compras']].forEach(([g, name]) => {
-      const items = TOOLS.filter(t => t.group === g && norm(t.title).includes(filter));
-      if (!items.length) return;
-      const sec = el('div', { class: 'grp ' + g }, el('h2', {}, name));
-      items.forEach(t => { const b = el('button', { class: 'nb', type: 'button', onclick: () => go(t.id) }, t.title); b.dataset.id = t.id; sec.append(b); });
-      nav.append(sec);
-    });
-    syncNav();
-  }
-  function buildPicker() {
-    const p = $('#picker');
-    [['fin', 'Operaciones financieras'], ['con', 'Operaciones contables'], ['inv', 'Inventarios y compras']].forEach(([g, name]) => {
-      const og = el('optgroup', { label: name }); TOOLS.filter(t => t.group === g).forEach(t => og.append(el('option', { value: t.id }, t.title))); p.append(og);
-    });
-    p.addEventListener('change', () => go(p.value));
-  }
+  // ---------- parámetros y navegación ----------
+  function setParams(open) { const b = $('#paramsbox'); b.hidden = !open; $('#btn-params').setAttribute('aria-expanded', String(open)); }
   function buildParams() {
-    const box = $('#paramsbox'), grid = el('div', { class: 'formgrid' });
+    const grid = el('div', { class: 'formgrid' });
     PARAM_FIELDS.forEach(f => grid.append(buildField(f, PRAW, update)));
-    box.append(el('section', { class: 'card params' }, el('h3', {}, 'Parámetros vigentes (editables)'),
-      el('p', { class: 'small', style: 'margin:0 0 12px' }, 'Valores de referencia de Colombia para 2026. Se usan en nómina, prestaciones, IVA, retención e impuesto de renta. Confírmelos cada año.'), grid));
-    $('#btn-params').addEventListener('click', () => { const open = box.hidden; box.hidden = !open; $('#btn-params').setAttribute('aria-expanded', String(open)); });
+    $('#paramsbox .in').append(el('section', { class: 'params' }, el('h3', {}, 'Parámetros vigentes (editables)'),
+      el('p', { class: 'small', style: 'margin:4px 0 14px' }, 'Valores de referencia de Colombia para 2026. Se usan en nómina, prestaciones, IVA, retención e impuesto de renta. Confírmelos cada año.'), grid));
+    $('#btn-params').addEventListener('click', () => setParams($('#paramsbox').hidden));
   }
-
-  $('#sub').textContent = TOOLS.length + ' operaciones. Cada una muestra la fórmula, el procedimiento con sus datos y la razón de cada paso.';
-  buildNav(''); buildPicker(); buildParams();
-  $('#search').addEventListener('input', e => buildNav(norm(e.target.value.trim())));
-  window.addEventListener('hashchange', () => { const id = location.hash.replace('#', ''); if (TOOLS.some(t => t.id === id)) openTool(id); });
-  const h0 = location.hash.replace('#', '');
-  openTool(TOOLS.some(t => t.id === h0) ? h0 : TOOLS[0].id);
+  function route() {
+    const id = location.hash.replace('#', '');
+    if (TOOLS.some(t => t.id === id)) { openTool(id); window.scrollTo(0, 0); } else { showHub(); window.scrollTo(0, 0); }
+    syncFavs();
+  }
+  $('#btn-theme').addEventListener('click', toggleTheme);
+  $('#home').addEventListener('click', e => { if (!location.hash || location.hash === '#') { catF = 'all'; Q = ''; showHub(); e.preventDefault(); } });
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !/^(INPUT|SELECT|TEXTAREA)$/.test((e.target.tagName || ''))) {
+      e.preventDefault();
+      if (view !== 'hub') { try { history.pushState(null, '', location.pathname + location.search); } catch (x) { } showHub(); }
+      const s = $('#search'); if (s) s.focus();
+    }
+  });
+  buildParams();
+  window.addEventListener('hashchange', route);
+  route();
 })();
-
 </script>
-
 </body></html>
