@@ -236,6 +236,7 @@ const BANK = [
     const setP = (o, p, v) => { const ks = p.split('/'); let a = o; ks.slice(0, -1).forEach(k => { if (typeof a[k] !== 'object' || a[k] === null) a[k] = {}; a = a[k]; }); if (v === null) delete a[ks[ks.length - 1]]; else a[ks[ks.length - 1]] = v; };
     const notify = () => L.forEach(l => { const v = getP(mem, l.path), s = JSON.stringify(v); if (s !== l.last) { l.last = s; l.cb(v == null ? null : JSON.parse(s)); } });
     window.addEventListener('storage', e => { if (e.key === KEY) { mem = load(); notify(); } });
+    setInterval(() => { mem = load(); notify(); }, 1000);
     return {
       mode: 'local', now: () => Date.now(),
       set(p, v) { mem = load(); setP(mem, p, v === undefined ? null : v); LS.set(KEY, JSON.stringify(mem)); notify(); },
