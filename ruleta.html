@@ -266,6 +266,7 @@ const BANK = [
 
   // ---------- estado ----------
   const app = $('#app'), top = $('#tag');
+  { const nat = Element.prototype.append; app.append = (...n) => nat.apply(app, n.flat().filter(x => x != null && x !== false)); }
   let T, role = null, code = null, pid = null, myName = '', room = null, offRoom = null, lastSig = '';
   // ---------- preguntas propias del docente (se guardan solo en este navegador) ----------
   const PAL = ['--fin', '--lab', '--tri', '--con', '--inv'];
