@@ -433,7 +433,7 @@ const BANK = [
   }
   function joinRoom(c, n, err) {
     let first = true, off = null;
-    code = c; myName = n; pid = LS.get('ruleta-pid') || Math.random().toString(36).slice(2, 10); LS.set('ruleta-pid', pid); LS.set('ruleta-name', n);
+    code = c; myName = n; const pk = 'ruleta-pid-' + c + '-' + n.toLowerCase(); pid = LS.get(pk) || Math.random().toString(36).slice(2, 10); LS.set(pk, pid); LS.set('ruleta-name', n);
     off = T.on(P(), v => {
       if (first) {
         first = false;
