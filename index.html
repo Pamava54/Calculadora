@@ -1921,6 +1921,13 @@ add({
       el('p', {}, TALLER.desc), el('div', { class: 'go' }, 'Abrir el taller'),
       el('a', { class: 'stretch', href: TALLER_URL, 'aria-label': 'Abrir ' + TALLER.title }));
   }
+  function ruletaCard() {
+    return el('article', { class: 'card-t taller-c', 'data-cat': 'inv' },
+      el('div', { class: 'top' }, el('div', { class: 'cap', 'aria-hidden': 'true' }, '?'), el('div', {}, el('div', { class: 'cat' }, 'Juego en vivo'), el('h3', {}, 'Ruleta de preguntas'))),
+      el('p', {}, 'El docente gira la ruleta desde el portátil y lanza la pregunta; los estudiantes responden desde el celular con tiempo límite. Suben puntos si aciertan, bajan si fallan, y al final hay ganador.'),
+      el('div', { class: 'go' }, 'Abrir la ruleta'),
+      el('a', { class: 'stretch', href: 'ruleta.html', 'aria-label': 'Abrir Ruleta de preguntas' }));
+  }
   function matches(t, q) { if (!q) return true; return q.split(/\s+/).every(w => hay[t.id].includes(w)); }
   function drawResults() {
     const box = $('#results'); if (!box) return; box.textContent = '';
@@ -1942,7 +1949,7 @@ add({
     }
     if (catF === 'all') {
       const pop = POPULAR.map(id => TOOLS.find(t => t.id === id)).filter(Boolean);
-      box.append(el('div', { class: 'top-pick' }, el('h2', {}, 'Las más usadas'), el('div', { class: 'chiprow' }, el('a', { class: 'mini', href: TALLER_URL, 'data-cat': 'con' }, el('span', { class: 'cap sm' }, '±'), 'Taller de asientos'), pop.map(t => {
+      box.append(el('div', { class: 'top-pick' }, el('h2', {}, 'Las más usadas'), el('div', { class: 'chiprow' }, el('a', { class: 'mini', href: TALLER_URL, 'data-cat': 'con' }, el('span', { class: 'cap sm' }, '±'), 'Taller de asientos'), el('a', { class: 'mini', href: 'ruleta.html', 'data-cat': 'inv' }, el('span', { class: 'cap sm' }, '?'), 'Ruleta de preguntas'), pop.map(t => {
         const c = catOf(t); return el('a', { class: 'mini', href: '#' + t.id, 'data-cat': c.id }, el('span', { class: 'cap sm' }, GLYPH[t.id] || c.glyph), t.title);
       }))));
     }
@@ -1952,6 +1959,9 @@ add({
         el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, c.glyph), el('div', {}, el('h2', {}, c.name), el('p', {}, c.desc)), el('span', { class: 'n' }, list.length + ' calculadoras' + (c.id === 'con' ? ' + taller' : ''))),
         el('div', { class: 'grid' }, c.id === 'con' ? tallerCard() : null, list.map(toolCard))));
     });
+    if (catF === 'all') box.append(el('section', { class: 'sec', 'data-cat': 'inv', id: 'cat-jue' },
+      el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, '?'), el('div', {}, el('h2', {}, 'Juegos para clase'), el('p', {}, 'Dinámicas en vivo para practicar con los estudiantes'))),
+      el('div', { class: 'grid' }, ruletaCard())));
   }
   function showHub() {
     view = 'hub'; cur = null; formEl = null; document.title = 'Centro de Calculadoras';
