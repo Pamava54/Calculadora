@@ -1921,6 +1921,14 @@ add({
       el('p', {}, TALLER.desc), el('div', { class: 'go' }, 'Abrir el taller'),
       el('a', { class: 'stretch', href: TALLER_URL, 'aria-label': 'Abrir ' + TALLER.title }));
   }
+  const LIBROS_URL = 'libros.html';
+  const LIBROS = { title: 'Los 4 libros contables en 5 días', desc: 'Taller por días: libro diario, libros auxiliares, libro mayor y balances, balance de comprobación y libro de inventarios y balances, con revisión verde o roja al instante y nota sobre 10.', hay: 'taller libros contables diario auxiliares mayor balances comprobacion inventarios 5 dias' };
+  function librosCard() {
+    return el('article', { class: 'card-t taller-c', 'data-cat': 'con' },
+      el('div', { class: 'top' }, el('div', { class: 'cap', 'aria-hidden': 'true' }, '§'), el('div', {}, el('div', { class: 'cat' }, 'Taller práctico'), el('h3', {}, LIBROS.title))),
+      el('p', {}, LIBROS.desc), el('div', { class: 'go' }, 'Abrir el taller'),
+      el('a', { class: 'stretch', href: LIBROS_URL, 'aria-label': 'Abrir ' + LIBROS.title }));
+  }
   function ruletaCard() {
     return el('article', { class: 'card-t taller-c', 'data-cat': 'inv' },
       el('div', { class: 'top' }, el('div', { class: 'cap', 'aria-hidden': 'true' }, '?'), el('div', {}, el('div', { class: 'cat' }, 'Juego en vivo'), el('h3', {}, 'Ruleta de preguntas'))),
@@ -1939,25 +1947,26 @@ add({
       else if (catF !== 'all') list = list.filter(t => CAT_OF[t.id] === catF);
       if (q) list.sort((a, b) => (norm(b.title).includes(q) ? 1 : 0) - (norm(a.title).includes(q) ? 1 : 0));
       const showT = (catF === 'all' || catF === 'con') && (!q || q.split(/\s+/).every(w => norm(TALLER.hay).includes(w))) && catF !== 'fav';
-      const head = q ? ((list.length + (showT ? 1 : 0)) + (list.length === 1 ? ' resultado para “' + Q.trim() + '”' : ' resultados para “' + Q.trim() + '”')) : 'Sus favoritas';
-      if (!list.length && !showT) {
+      const showL = (catF === 'all' || catF === 'con') && (!q || q.split(/\s+/).every(w => norm(LIBROS.hay).includes(w))) && catF !== 'fav';
+      const head = q ? ((list.length + (showT ? 1 : 0) + (showL ? 1 : 0)) + (list.length === 1 ? ' resultado para “' + Q.trim() + '”' : ' resultados para “' + Q.trim() + '”')) : 'Sus favoritas';
+      if (!list.length && !showT && !showL) {
         box.append(el('div', { class: 'empty' }, el('b', {}, q ? 'No encontramos esa calculadora' : 'Aún no tiene favoritas'), q ? 'Pruebe con otra palabra, por ejemplo “cuota”, “iva” o “inventario”.' : 'Toque la estrella de cualquier calculadora para tenerla a mano aquí.'));
         return;
       }
-      box.append(el('div', { class: 'sec' }, el('div', { class: 'sec-h' }, el('div', {}, el('h2', {}, head))), el('div', { class: 'grid' }, showT ? tallerCard() : null, list.map(toolCard))));
+      box.append(el('div', { class: 'sec' }, el('div', { class: 'sec-h' }, el('div', {}, el('h2', {}, head))), el('div', { class: 'grid' }, showT ? tallerCard() : null, showL ? librosCard() : null, list.map(toolCard))));
       return;
     }
     if (catF === 'all') {
       const pop = POPULAR.map(id => TOOLS.find(t => t.id === id)).filter(Boolean);
-      box.append(el('div', { class: 'top-pick' }, el('h2', {}, 'Las más usadas'), el('div', { class: 'chiprow' }, el('a', { class: 'mini', href: TALLER_URL, 'data-cat': 'con' }, el('span', { class: 'cap sm' }, '±'), 'Taller de asientos'), el('a', { class: 'mini', href: 'ruleta.html', 'data-cat': 'inv' }, el('span', { class: 'cap sm' }, '?'), 'Ruleta de preguntas'), pop.map(t => {
+      box.append(el('div', { class: 'top-pick' }, el('h2', {}, 'Las más usadas'), el('div', { class: 'chiprow' }, el('a', { class: 'mini', href: TALLER_URL, 'data-cat': 'con' }, el('span', { class: 'cap sm' }, '±'), 'Taller de asientos'), el('a', { class: 'mini', href: LIBROS_URL, 'data-cat': 'con' }, el('span', { class: 'cap sm' }, '§'), 'Libros en 5 días'), el('a', { class: 'mini', href: 'ruleta.html', 'data-cat': 'inv' }, el('span', { class: 'cap sm' }, '?'), 'Ruleta de preguntas'), pop.map(t => {
         const c = catOf(t); return el('a', { class: 'mini', href: '#' + t.id, 'data-cat': c.id }, el('span', { class: 'cap sm' }, GLYPH[t.id] || c.glyph), t.title);
       }))));
     }
     CATS.filter(c => catF === 'all' || c.id === catF).forEach(c => {
       const list = TOOLS.filter(t => CAT_OF[t.id] === c.id);
       box.append(el('section', { class: 'sec', 'data-cat': c.id, id: 'cat-' + c.id },
-        el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, c.glyph), el('div', {}, el('h2', {}, c.name), el('p', {}, c.desc)), el('span', { class: 'n' }, list.length + ' calculadoras' + (c.id === 'con' ? ' + taller' : ''))),
-        el('div', { class: 'grid' }, c.id === 'con' ? tallerCard() : null, list.map(toolCard))));
+        el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, c.glyph), el('div', {}, el('h2', {}, c.name), el('p', {}, c.desc)), el('span', { class: 'n' }, list.length + ' calculadoras' + (c.id === 'con' ? ' + 2 talleres' : ''))),
+        el('div', { class: 'grid' }, c.id === 'con' ? tallerCard() : null, c.id === 'con' ? librosCard() : null, list.map(toolCard))));
     });
     if (catF === 'all') box.append(el('section', { class: 'sec', 'data-cat': 'inv', id: 'cat-jue' },
       el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, '?'), el('div', {}, el('h2', {}, 'Juegos para clase'), el('p', {}, 'Dinámicas en vivo para practicar con los estudiantes'))),

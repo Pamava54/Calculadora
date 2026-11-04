@@ -1,0 +1,352 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Libros Contables en 5 Días</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: cuaderno de trabajo por días — pestañas de día arriba, cada día con su color suave, explicación, ejercicio escrito y tabla para llenar */
+:root{
+  --bg:#F5F7FA; --surface:#FFFFFF; --ink:#1C2632; --muted:#5A6777; --line:#D7DEE7;
+  --input:#FFF8DC; --ok:#17713F; --okbg:#DCF2E3; --err:#B3261E; --errbg:#FCE2DF;
+  --d1:#3A6BA0; --d1s:#E5EDF7; --d2:#357F62; --d2s:#E2F1EA; --d3:#A86F14; --d3s:#F8EEDC;
+  --d4:#65569E; --d4s:#ECE8F6; --d5:#B65345; --d5s:#F8E5E1;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11161C; --surface:#19212A; --ink:#E5EAF0; --muted:#9BA8B6; --line:#2C3743;
+  --input:#2B2817; --ok:#74D49C; --okbg:#173826; --err:#FF8E84; --errbg:#44201C;
+  --d1:#8DB5E3; --d1s:#1C2A3B; --d2:#82C9A9; --d2s:#18302A; --d3:#E5B464; --d3s:#33291A;
+  --d4:#B5A8E6; --d4s:#272338; --d5:#EE9C8F; --d5s:#3A2320; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161C; --surface:#19212A; --ink:#E5EAF0; --muted:#9BA8B6; --line:#2C3743;
+  --input:#2B2817; --ok:#74D49C; --okbg:#173826; --err:#FF8E84; --errbg:#44201C;
+  --d1:#8DB5E3; --d1s:#1C2A3B; --d2:#82C9A9; --d2s:#18302A; --d3:#E5B464; --d3s:#33291A;
+  --d4:#B5A8E6; --d4s:#272338; --d5:#EE9C8F; --d5s:#3A2320; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);font-weight:800}
+h2{font-size:1.45rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+.top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.back{display:inline-block;margin-bottom:8px;color:var(--d1);font-weight:700;text-decoration:none}
+.back:hover{text-decoration:underline}
+.top .sub{color:var(--muted);margin-top:4px}
+.who{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.who label{font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.who input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--input);color:var(--ink);min-width:0;width:220px;max-width:100%}
+.nota{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 14px;text-align:center}
+.nota b{font-family:var(--f-display);font-size:1.6rem;display:block;font-variant-numeric:tabular-nums}
+.nota span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.tab{flex:1 0 150px;font:inherit;text-align:left;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;border-top:4px solid var(--dc)}
+.tab small{color:var(--muted);font-size:.78rem}
+.tab .t{font-weight:700;font-size:.95rem}
+.tab .sc{font-size:.8rem;font-variant-numeric:tabular-nums;color:var(--dc);font-weight:700}
+.tab[aria-selected="true"]{background:var(--ds);border-color:var(--dc)}
+.tab:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--dc,var(--d1));outline-offset:2px}
+.day{display:flex;flex-direction:column;gap:16px}
+.band{background:var(--ds);border-left:6px solid var(--dc);border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.band .eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dc);font-weight:700}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:720px){.cols{grid-template-columns:1fr}}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.box ol,.box ul{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.ej{display:flex;flex-direction:column;gap:10px}
+.ej li{padding-left:2px}
+.ej .f{font-weight:700;color:var(--dc)}
+.note{font-size:.88rem;color:var(--muted)}
+details{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+details summary{cursor:pointer;font-weight:700}
+details[open] summary{margin-bottom:10px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bg);font-weight:700}
+td.n,th.n{text-align:right}
+.asiento{display:flex;flex-direction:column;gap:8px}
+.ahead{display:flex;flex-direction:column;gap:2px}
+.ahead .lbl{font-weight:700;color:var(--dc)}
+input.num,select.cel{font:inherit;font-size:.95rem;width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:5px;background:var(--input);color:var(--ink);font-variant-numeric:tabular-nums}
+input.num{text-align:right;min-width:110px}
+select.cel{min-width:90px}
+.ok{background:var(--okbg)!important;border-color:var(--ok)!important;color:var(--ok)!important}
+.err{background:var(--errbg)!important;border-color:var(--err)!important;color:var(--err)!important}
+.ic{width:42px;text-align:center;font-weight:800;font-size:1.05rem}
+.ic.ok,.ic.err{border-radius:5px}
+.cuenta{color:var(--muted);font-size:.92rem;min-width:180px}
+tr.sum td{background:var(--bg);font-weight:700}
+.msg{font-size:.88rem;font-weight:700;padding:2px 8px;border-radius:5px;display:inline-block}
+.foot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}
+.score{font-family:var(--f-display);font-size:1.15rem}
+.score b{color:var(--dc)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;cursor:pointer;border-radius:6px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.btn.pri{background:var(--dc);border-color:var(--dc);color:var(--surface);font-weight:700}
+.confirm{display:flex;gap:8px;align-items:center;font-size:.9rem}
+.aux{display:grid;grid-template-columns:1fr;gap:16px}
+.q{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}
+.q:last-child{border-bottom:0}
+.q label{display:flex;gap:8px;align-items:flex-start;padding:6px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer}
+.q .exp{font-size:.88rem;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.85rem;color:var(--muted);align-items:center}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--line);vertical-align:-2px;margin-right:4px}
+@media (prefers-reduced-motion: no-preference){.tab,.btn{transition:background .15s,border-color .15s}}
+</style>
+
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <a class="back" href="index.html">← Centro de Calculadoras</a>
+      <h1>Los 4 libros contables en 5 días</h1>
+      <p class="sub">Papelería Aprende S.A.S. · Noviembre de 2026 · IVA 19 % · Plan Único de Cuentas (PUC)</p>
+    </div>
+    <div class="who">
+      <label for="nombre">Nombre del estudiante<input id="nombre" data-k="nombre" placeholder="Escribe tu nombre" autocomplete="off"></label>
+      <div class="nota"><span>Nota</span><b id="nota">0,0</b><span>sobre 10</span></div>
+    </div>
+  </header>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--input)"></i>Escribe aquí</span>
+    <span><i class="sw" style="background:var(--okbg)"></i>Correcto ✔</span>
+    <span><i class="sw" style="background:var(--errbg)"></i>Error ✘, revisa</span>
+    <span>Escribe los valores sin puntos ni $ (ej. 1200000). Tu avance se guarda en este navegador.</span>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  <main id="days"></main>
+</div>
+
+<script>
+const CAT={1105:"Caja",1110:"Bancos",1305:"Clientes",1435:"Mercancías no fabricadas por la empresa",1524:"Equipo de oficina",1528:"Equipo de computación y comunicación",2205:"Proveedores nacionales",2335:"Costos y gastos por pagar",2408:"Impuesto sobre las ventas por pagar (IVA)",3105:"Capital suscrito y pagado",4135:"Comercio al por mayor y al por menor",5120:"Arrendamientos",5135:"Servicios"};
+const OPS=[
+ {f:"1-nov",t:"Se crea Papelería Aprende S.A.S. Los socios aportan un capital de $10.000.000: entregan $2.000.000 en efectivo y consignan $8.000.000 en la cuenta bancaria de la empresa.",l:[[1105,2000000,0],[1110,8000000,0],[3105,0,10000000]]},
+ {f:"3-nov",t:"Compra mercancía a Distribuidora Escolar S.A.S. por $3.000.000 más IVA del 19 %, a crédito (factura de compra FE-201). La empresa queda debiendo el total.",l:[[1435,3000000,0],[2408,570000,0],[2205,0,3570000]]},
+ {f:"5-nov",t:"Compra un computador para la caja por $2.500.000 y lo paga con transferencia bancaria. En este ejercicio el computador no lleva IVA.",l:[[1528,2500000,0],[1110,0,2500000]]},
+ {f:"10-nov",t:"Vende mercancía al Colegio San José por $4.000.000 más IVA del 19 %, a crédito (factura de venta FV-001). El colegio queda debiendo el total.",l:[[1305,4760000,0],[4135,0,4000000],[2408,0,760000]]},
+ {f:"15-nov",t:"Hace un abono de $1.500.000 a Distribuidora Escolar S.A.S. con transferencia bancaria.",l:[[2205,1500000,0],[1110,0,1500000]]},
+ {f:"20-nov",t:"El Colegio San José abona $1.000.000 en efectivo (recibo de caja RC-001).",l:[[1105,1000000,0],[1305,0,1000000]]},
+ {f:"25-nov",t:"Paga en efectivo el arriendo del local de noviembre por $800.000. El arrendador es una persona que no cobra IVA.",l:[[5120,800000,0],[1105,0,800000]]}
+];
+const AUX=[
+ {c:1105,n:"Caja",tipo:"activo",r:[["1-nov","Aporte de los socios en efectivo",2000000,0,2000000],["20-nov","Abono del Colegio San José",1000000,0,3000000],["25-nov","Pago arriendo de noviembre",0,800000,2200000]]},
+ {c:1110,n:"Bancos",tipo:"activo",r:[["1-nov","Consignación del aporte de los socios",8000000,0,8000000],["5-nov","Transferencia compra de computador",0,2500000,5500000],["15-nov","Transferencia abono a Distribuidora Escolar",0,1500000,4000000]]},
+ {c:1305,n:"Clientes · Colegio San José",tipo:"activo",r:[["10-nov","Factura de venta FV-001",4760000,0,4760000],["20-nov","Abono en efectivo RC-001",0,1000000,3760000]]},
+ {c:2205,n:"Proveedores · Distribuidora Escolar S.A.S.",tipo:"pasivo",r:[["3-nov","Factura de compra FE-201",0,3570000,3570000],["15-nov","Abono por transferencia",1500000,0,2070000]]}
+];
+const MAY=[[1105,3000000,800000,2200000,"Deudor"],[1110,8000000,4000000,4000000,"Deudor"],[1305,4760000,1000000,3760000,"Deudor"],[1435,3000000,0,3000000,"Deudor"],[1528,2500000,0,2500000,"Deudor"],[2205,1500000,3570000,2070000,"Acreedor"],[2408,570000,760000,190000,"Acreedor"],[3105,0,10000000,10000000,"Acreedor"],[4135,0,4000000,4000000,"Acreedor"],[5120,800000,0,800000,"Deudor"]];
+const CLASE={1105:"Activo",1110:"Activo",1305:"Activo",1435:"Activo",1528:"Activo",2205:"Pasivo",2408:"Pasivo",3105:"Patrimonio",4135:"Ingreso",5120:"Gasto"};
+const INV=[["Cuadernos de 100 hojas",100,12000],["Cajas de colores x 12",50,20000],["Resmas de papel carta",40,20000]];
+const TOT=[["Total activos",15460000],["Total pasivos",2260000],["Utilidad del período (ingresos − gastos)",3200000],["Total patrimonio (capital + utilidad)",13200000],["Total pasivo + patrimonio",15460000]];
+const EVAL=[
+ {q:"¿En qué libro se anotan las operaciones una por una, en orden de fecha, con débito y crédito?",o:["Libro mayor y balances","Libro diario","Libro de inventarios y balances","Libro auxiliar"],a:1,e:"El libro diario registra cada operación en orden cronológico como un asiento."},
+ {q:"El libro auxiliar de Clientes sirve para:",o:["Saber cuánto debe cada cliente y sus movimientos","Calcular la utilidad del mes","Comprobar que débitos y créditos son iguales","Registrar el capital de los socios"],a:0,e:"Los auxiliares detallan una cuenta por cada tercero (cliente, proveedor, banco)."},
+ {q:"Proveedores tiene créditos por $3.570.000 y débitos por $1.500.000. Su saldo es:",o:["$2.070.000 deudor","$5.070.000 acreedor","$2.070.000 acreedor","$1.500.000 acreedor"],a:2,e:"Créditos mayores que débitos: 3.570.000 − 1.500.000 = 2.070.000, saldo acreedor."},
+ {q:"En el balance de comprobación, ¿qué debe cumplirse para que cuadre?",o:["Los activos deben ser mayores que los pasivos","Total de saldos deudores = total de saldos acreedores","Todas las cuentas deben tener saldo deudor","Los ingresos deben ser iguales a los gastos"],a:1,e:"Si el registro está bien, la suma de los saldos deudores es igual a la de los acreedores."},
+ {q:"Verdadero o falso: el libro de inventarios y balances muestra al detalle lo que la empresa tiene, lo que debe y su patrimonio en una fecha.",o:["Verdadero","Falso"],a:0,e:"Verdadero. Se resume en el estado de situación financiera, donde Activo = Pasivo + Patrimonio."}
+];
+const DAYS=[
+ {n:1,c:"d1",t:"Libro diario",
+  que:"Es el libro donde se anotan todas las operaciones de la empresa, una por una, en el orden en que suceden. Cada anotación se llama asiento. Un asiento siempre tiene al menos una cuenta al débito y una al crédito, y las dos columnas suman lo mismo.",
+  pasos:["Lee la operación y pregúntate: ¿qué recibe la empresa y qué entrega?","Busca el código de cada cuenta en el catálogo (PUC).","Lo que entra o aumenta (un activo o un gasto) va al Débito.","De dónde sale el dinero, o lo que se debe (pasivo, capital, ingreso), va al Crédito.","Si hay IVA, calcula el 19 % de la base: en compras va al Débito y en ventas al Crédito.","Revisa que las sumas del asiento sean iguales."]},
+ {n:2,c:"d2",t:"Libros auxiliares",
+  que:"Detallan una cuenta del libro diario para saber con quién y cuánto. El auxiliar de Clientes dice cuánto debe cada cliente; el de Bancos muestra cada movimiento de la cuenta bancaria.",
+  pasos:["Toma una cuenta, por ejemplo Caja.","Busca en el libro diario todas las líneas de esa cuenta, en orden de fecha.","Escribe cada valor en Débito o en Crédito, igual que en el diario.","Calcula el saldo después de cada línea.","Cuentas de activo (Caja, Bancos, Clientes): saldo anterior + débito − crédito.","Cuentas de pasivo (Proveedores): saldo anterior + crédito − débito."]},
+ {n:3,c:"d3",t:"Libro mayor y balances",sub:"Parte 1 · Del diario al mayor",
+  que:"Reúne todos los movimientos de cada cuenta en un solo lugar. Sirve para saber cuánto suma cada cuenta al débito, cuánto al crédito y cuál es su saldo.",
+  pasos:["Elige una cuenta.","Suma todos sus débitos del libro diario.","Suma todos sus créditos.","Saldo = la suma mayor menos la menor.","Si ganan los débitos, el saldo es deudor; si ganan los créditos, es acreedor.","Si una columna no tiene movimientos, escribe 0."]},
+ {n:4,c:"d4",t:"Libro mayor y balances",sub:"Parte 2 · Balance de comprobación",
+  que:"Es la lista de todas las cuentas con sus saldos. Sirve para comprobar que el registro está bien hecho: la suma de los saldos deudores debe ser igual a la de los saldos acreedores.",
+  pasos:["Copia el saldo de cada cuenta que calculaste el Día 3.","Si el saldo es deudor, escríbelo en la columna Deudor; si es acreedor, en Acreedor. Deja la otra vacía.","Suma cada columna.","Si los dos totales son iguales, el balance cuadra.","Si no cuadra, busca un saldo en la columna equivocada o un error de suma."]},
+ {n:5,c:"d5",t:"Libro de inventarios y balances",
+  que:"Muestra al detalle lo que la empresa tiene (activos), lo que debe (pasivos) y lo que pertenece a los socios (patrimonio) en una fecha. Se resume en el estado de situación financiera.",
+  pasos:["Haz el inventario detallado: cantidad × valor unitario.","Clasifica cada cuenta. El primer dígito del código da la pista: 1 Activo, 2 Pasivo, 3 Patrimonio, 4 Ingreso, 5 Gasto.","Suma los activos y suma los pasivos.","Utilidad del período = ingresos − gastos.","Patrimonio = capital + utilidad.","Comprueba que Activo = Pasivo + Patrimonio."]}
+];
+
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmt=n=>Number(n).toLocaleString("es-CO");
+const parse=v=>{const d=String(v||"").replace(/\D/g,"");return d===""?null:Number(d)};
+let store={}; try{store=JSON.parse(localStorage.getItem("libros5dias")||"{}")||{}}catch(e){store={}}
+const save=()=>{try{localStorage.setItem("libros5dias",JSON.stringify(store))}catch(e){}};
+const numIn=(k,lab)=>`<input class="num" id="${k}" data-k="${k}" inputmode="numeric" autocomplete="off" aria-label="${lab}">`;
+const codeOpts=`<option value="">—</option>`+Object.keys(CAT).map(c=>`<option value="${c}">${c}</option>`).join("");
+const ejOps=()=>`<ol class="ej">${OPS.map(o=>`<li><span class="f">${o.f}.</span> ${o.t}</li>`).join("")}</ol>`;
+const diarioRef=()=>`<details><summary>Ver el libro diario resuelto (referencia)</summary><div class="tw"><table><thead><tr><th>Asiento</th><th>Fecha</th><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th></tr></thead><tbody>${OPS.map((o,i)=>o.l.map(l=>`<tr><td>${i+1}</td><td>${o.f}</td><td>${l[0]}</td><td>${CAT[l[0]]}</td><td class="n">${l[1]?fmt(l[1]):""}</td><td class="n">${l[2]?fmt(l[2]):""}</td></tr>`).join("")).join("")}</tbody></table></div></details>`;
+const catRef=()=>`<details><summary>Ver el catálogo de cuentas (PUC)</summary><div class="tw"><table style="min-width:0"><tbody>${Object.entries(CAT).map(([c,n])=>`<tr><td>${c}</td><td>${n}</td></tr>`).join("")}</tbody></table></div></details>`;
+
+function intro(d){
+  return `<div class="band"><span class="eyebrow">Día ${d.n}${d.sub?" · "+d.sub:""}</span><h2>${d.t}</h2></div>
+  <div class="cols"><div class="box"><h3>¿Qué es?</h3><p>${d.que}</p></div>
+  <div class="box"><h3>Paso a paso</h3><ol>${d.pasos.map(p=>`<li>${p}</li>`).join("")}</ol></div></div>`;
+}
+function footer(n){
+  return `<div class="foot"><p class="score">Día ${n}: <b id="sc${n}">0</b></p><div class="btns" id="rb${n}">
+  <button class="btn" data-reset="${n}">Reiniciar día</button>${n<5?`<button class="btn pri" data-go="${n+1}">Siguiente día →</button>`:""}</div></div>`;
+}
+
+function day1(){
+  let h=`<div class="box"><h3>El ejercicio</h3><p>Registra en el libro diario las operaciones de noviembre de Papelería Aprende S.A.S.:</p>${ejOps()}</div>${catRef()}<h3>Tu libro diario</h3>`;
+  OPS.forEach((o,i)=>{
+    h+=`<div class="asiento"><div class="ahead"><span class="lbl">Asiento ${i+1} · ${o.f}</span><span class="note">${o.t}</span></div><div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th><th class="ic">✓</th></tr></thead><tbody>`;
+    o.l.forEach((_,j)=>{const k=`d1-${i}-${j}`;
+      h+=`<tr><td><select class="cel" id="${k}-c" data-k="${k}-c" aria-label="Código asiento ${i+1} línea ${j+1}">${codeOpts}</select></td><td class="cuenta" id="${k}-n"></td><td>${numIn(k+"-d","Débito")}</td><td>${numIn(k+"-cr","Crédito")}</td><td class="ic" id="${k}-i"></td></tr>`});
+    h+=`<tr class="sum"><td></td><td><span class="msg" id="d1-${i}-m"></span></td><td class="n" id="d1-${i}-sd">0</td><td class="n" id="d1-${i}-sc">0</td><td></td></tr></tbody></table></div></div>`;
+  });
+  return h;
+}
+function day2(){
+  let h=`<div class="box"><h3>El ejercicio</h3><p>Con los asientos del Día 1, lleva los auxiliares de cuatro cuentas: Caja, Bancos, Clientes (Colegio San José) y Proveedores (Distribuidora Escolar S.A.S.). Ya tienes la fecha y el detalle de cada línea. Tú escribes el valor en Débito o en Crédito y calculas el saldo.</p><p class="note">Recuerda: Proveedores es una cuenta de pasivo, así que su saldo crece con los créditos.</p></div>${diarioRef()}<div class="aux">`;
+  AUX.forEach((a,i)=>{
+    h+=`<div class="asiento"><div class="ahead"><span class="lbl">Auxiliar ${a.c} · ${a.n}</span><span class="note">Cuenta de ${a.tipo}: saldo = anterior ${a.tipo==="activo"?"+ débito − crédito":"+ crédito − débito"}</span></div><div class="tw"><table><thead><tr><th>Fecha</th><th>Detalle</th><th class="n">Débito</th><th class="n">Crédito</th><th class="n">Saldo</th><th class="ic">✓</th></tr></thead><tbody>`;
+    a.r.forEach((r,j)=>{const k=`d2-${i}-${j}`;
+      h+=`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${numIn(k+"-d","Débito")}</td><td>${numIn(k+"-cr","Crédito")}</td><td>${numIn(k+"-s","Saldo")}</td><td class="ic" id="${k}-i"></td></tr>`});
+    h+=`</tbody></table></div></div>`;
+  });
+  return h+`</div>`;
+}
+function day3(){
+  let h=`<div class="box"><h3>El ejercicio</h3><p>Pasa al libro mayor las 10 cuentas que tuvieron movimiento en noviembre. Para cada una, suma sus débitos y sus créditos del libro diario, calcula el saldo y elige si es deudor o acreedor.</p><p class="note">Ejemplo: Caja tiene débitos de 2.000.000 y 1.000.000 (total 3.000.000) y un crédito de 800.000. Su saldo es 2.200.000 deudor.</p></div>${diarioRef()}
+  <div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Total débitos</th><th class="n">Total créditos</th><th class="n">Saldo</th><th>Naturaleza</th><th class="ic">✓</th></tr></thead><tbody>`;
+  MAY.forEach((m,i)=>{const k=`d3-${i}`;
+    h+=`<tr><td>${m[0]}</td><td class="cuenta">${CAT[m[0]]}</td><td>${numIn(k+"-d","Total débitos")}</td><td>${numIn(k+"-cr","Total créditos")}</td><td>${numIn(k+"-s","Saldo")}</td><td><select class="cel" id="${k}-nt" data-k="${k}-nt" aria-label="Naturaleza"><option value="">—</option><option>Deudor</option><option>Acreedor</option></select></td><td class="ic" id="${k}-i"></td></tr>`});
+  return h+`</tbody></table></div>`;
+}
+function day4(){
+  let h=`<div class="box"><h3>El ejercicio</h3><p>Arma el balance de comprobación de Papelería Aprende S.A.S. al 30 de noviembre de 2026. Usa los saldos del Día 3: cada saldo va en su columna (Deudor o Acreedor). Al final suma las dos columnas.</p></div>
+  <div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Saldo deudor</th><th class="n">Saldo acreedor</th><th class="ic">✓</th></tr></thead><tbody>`;
+  MAY.forEach((m,i)=>{const k=`d4-${i}`;
+    h+=`<tr><td>${m[0]}</td><td class="cuenta">${CAT[m[0]]}</td><td>${numIn(k+"-d","Saldo deudor")}</td><td>${numIn(k+"-cr","Saldo acreedor")}</td><td class="ic" id="${k}-i"></td></tr>`});
+  h+=`<tr class="sum"><td></td><td>TOTALES <span class="msg" id="d4-m"></span></td><td>${numIn("d4-td","Total deudor")}</td><td>${numIn("d4-tc","Total acreedor")}</td><td class="ic" id="d4-ti"></td></tr>`;
+  return h+`</tbody></table></div>`;
+}
+function day5(){
+  let h=`<div class="box"><h3>El ejercicio</h3><p><b>A.</b> El inventario de mercancías de la papelería tiene este detalle: 100 cuadernos de 100 hojas a $12.000 cada uno, 50 cajas de colores x 12 a $20.000 cada una y 40 resmas de papel carta a $20.000 cada una. Calcula el valor de cada artículo y el total.</p><p><b>B.</b> Clasifica cada cuenta como Activo, Pasivo, Patrimonio, Ingreso o Gasto.</p><p><b>C.</b> Con los saldos del Día 3, calcula los totales del estado de situación financiera al 30 de noviembre de 2026.</p><p class="note">Simplificación: en este taller no se registra el costo de ventas, por eso el inventario conserva el valor de la compra.</p></div>
+  <h3>A. Inventario detallado de mercancías</h3><div class="tw"><table><thead><tr><th>Artículo</th><th class="n">Cantidad</th><th class="n">Valor unitario</th><th class="n">Valor total</th><th class="ic">✓</th></tr></thead><tbody>`;
+  INV.forEach((v,i)=>{h+=`<tr><td>${v[0]}</td><td class="n">${v[1]}</td><td class="n">${fmt(v[2])}</td><td>${numIn(`d5-i${i}`,"Valor total")}</td><td class="ic" id="d5-i${i}-i"></td></tr>`});
+  h+=`<tr class="sum"><td colspan="3">Total inventario (debe coincidir con la cuenta 1435)</td><td>${numIn("d5-it","Total inventario")}</td><td class="ic" id="d5-it-i"></td></tr></tbody></table></div>
+  <h3>B. Clasificación de las cuentas</h3><div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Saldo</th><th>Clase</th><th class="ic">✓</th></tr></thead><tbody>`;
+  MAY.forEach((m,i)=>{h+=`<tr><td>${m[0]}</td><td class="cuenta">${CAT[m[0]]}</td><td class="n">${fmt(m[3])}</td><td><select class="cel" id="d5-c${i}" data-k="d5-c${i}" aria-label="Clase"><option value="">—</option>${["Activo","Pasivo","Patrimonio","Ingreso","Gasto"].map(x=>`<option>${x}</option>`).join("")}</select></td><td class="ic" id="d5-c${i}-i"></td></tr>`});
+  h+=`</tbody></table></div><h3>C. Estado de situación financiera</h3><div class="tw"><table style="min-width:420px"><tbody>`;
+  TOT.forEach((t,i)=>{h+=`<tr><td>${t[0]}</td><td style="width:200px">${numIn(`d5-t${i}`,t[0])}</td><td class="ic" id="d5-t${i}-i"></td></tr>`});
+  h+=`</tbody></table></div><div class="box"><h3>Evaluación final · 5 preguntas</h3>`;
+  EVAL.forEach((q,i)=>{h+=`<div class="q"><p><b>${i+1}.</b> ${q.q}</p>${q.o.map((o,j)=>`<label id="q${i}-${j}-l"><input type="radio" name="q${i}" id="q${i}-${j}" data-k="q${i}" value="${j}"> ${o}</label>`).join("")}<p class="exp" id="q${i}-e" hidden>${q.e}</p></div>`});
+  return h+`</div>`;
+}
+
+// ---------- render ----------
+const tabs=$("#tabs"), days=$("#days");
+DAYS.forEach(d=>{
+  tabs.insertAdjacentHTML("beforeend",`<button class="tab" role="tab" id="tab${d.n}" aria-selected="false" style="--dc:var(--${d.c});--ds:var(--${d.c}s)" data-go="${d.n}"><small>Día ${d.n}</small><span class="t">${d.t}${d.sub?" ("+d.sub.split(" · ")[0].toLowerCase()+")":""}</span><span class="sc" id="tsc${d.n}">0 %</span></button>`);
+  const body=[day1,day2,day3,day4,day5][d.n-1]();
+  days.insertAdjacentHTML("beforeend",`<section class="day" id="day${d.n}" role="tabpanel" hidden style="--dc:var(--${d.c});--ds:var(--${d.c}s)">${intro(d)}${body}${footer(d.n)}</section>`);
+});
+
+// restaurar valores
+$$("[data-k]").forEach(el=>{const v=store[el.dataset.k]; if(v==null)return;
+  if(el.type==="radio") el.checked=(el.value===v); else if(el.tagName==="SELECT") el.value=v; else el.value=el.classList.contains("num")&&parse(v)!=null?fmt(parse(v)):v;});
+
+// ---------- revisión ----------
+const mark=(el,s)=>{if(!el)return;el.classList.remove("ok","err");if(s)el.classList.add(s)};
+const icon=(el,s)=>{mark(el,s);el.textContent=s==="ok"?"✔":s==="err"?"✘":""};
+// e: valor esperado (0 = vacío o cero). Devuelve [estado, correcto]
+function chk(id,e){const el=$("#"+id),v=parse(el.value);let s="",c;
+  if(e>0){c=v===e; s=v===null?"":(c?"ok":"err")} else {c=(v===null||v===0); s=v===null?"":(v===0?"ok":"err")}
+  mark(el,s); return [s,c,v];}
+const rowState=(states,allOk,anyFilled)=>allOk?"ok":(states.includes("err")?"err":(anyFilled&&false?"err":""));
+
+const sc={};
+function check(){
+  // Día 1
+  let ok1=0,tot1=0;
+  OPS.forEach((o,i)=>{let sd=0,scr=0; const used={};
+    o.l.forEach((_,j)=>{const k=`d1-${i}-${j}`;tot1++;
+      const sel=$(`#${k}-c`),code=sel.value,dEl=$(`#${k}-d`),cEl=$(`#${k}-cr`);
+      const dv=parse(dEl.value),cv=parse(cEl.value); sd+=dv||0; scr+=cv||0;
+      $(`#${k}-n`).textContent=code?CAT[code]:"";
+      const sol=o.l.find(l=>String(l[0])===code); used[code]=(used[code]||0)+1;
+      let codeOk=!!sol&&used[code]===1;
+      mark(sel,code?(codeOk?"ok":"err"):"");
+      let st="",good=false;
+      if(codeOk){const a=chk(`${k}-d`,sol[1]),b=chk(`${k}-cr`,sol[2]);
+        good=a[1]&&b[1]&&(a[2]!==null||b[2]!==null);
+        st=good?"ok":(a[0]==="err"||b[0]==="err"?"err":"");}
+      else {mark(dEl,"");mark(cEl,""); st=code?"err":"";}
+      icon($(`#${k}-i`),st); if(good)ok1++;});
+    $(`#d1-${i}-sd`).textContent=fmt(sd); $(`#d1-${i}-sc`).textContent=fmt(scr);
+    const m=$(`#d1-${i}-m`); if(!sd&&!scr){mark(m,"");m.textContent=""} else if(sd===scr){mark(m,"ok");m.textContent="✔ Sumas iguales"} else {mark(m,"err");m.textContent="✘ Las sumas no cuadran"}
+  });
+  sc[1]=[ok1,tot1];
+  // Día 2
+  let ok2=0,tot2=0;
+  AUX.forEach((a,i)=>a.r.forEach((r,j)=>{const k=`d2-${i}-${j}`;tot2++;
+    const x=[chk(k+"-d",r[2]),chk(k+"-cr",r[3]),chk(k+"-s",r[4])];
+    const good=x.every(z=>z[1]); if(good)ok2++;
+    icon($(`#${k}-i`),good?"ok":(x.some(z=>z[0]==="err")?"err":""));}));
+  sc[2]=[ok2,tot2];
+  // Día 3
+  let ok3=0;
+  MAY.forEach((m,i)=>{const k=`d3-${i}`;
+    const x=[chk(k+"-d",m[1]),chk(k+"-cr",m[2]),chk(k+"-s",m[3])];
+    const nt=$(`#${k}-nt`); const ntOk=nt.value===m[4]; mark(nt,nt.value?(ntOk?"ok":"err"):"");
+    const good=x.every(z=>z[1])&&ntOk; if(good)ok3++;
+    icon($(`#${k}-i`),good?"ok":(x.some(z=>z[0]==="err")||(nt.value&&!ntOk)?"err":""));});
+  sc[3]=[ok3,MAY.length];
+  // Día 4
+  let ok4=0,sumD=0,sumC=0;
+  MAY.forEach((m,i)=>{const k=`d4-${i}`;const deu=m[4]==="Deudor";
+    const a=chk(k+"-d",deu?m[3]:0),b=chk(k+"-cr",deu?0:m[3]); sumD+=a[2]||0; sumC+=b[2]||0;
+    const good=a[1]&&b[1]; if(good)ok4++;
+    icon($(`#${k}-i`),good?"ok":(a[0]==="err"||b[0]==="err"?"err":""));});
+  const t1=chk("d4-td",16260000),t2=chk("d4-tc",16260000);
+  const tg=t1[1]&&t2[1]; if(t1[1])ok4++; if(t2[1])ok4++;
+  icon($("#d4-ti"),tg?"ok":(t1[0]==="err"||t2[0]==="err"?"err":""));
+  const m4=$("#d4-m"); if(t1[2]!=null&&t2[2]!=null){const eq=t1[2]===t2[2];mark(m4,eq?"ok":"err");m4.textContent=eq?"✔ Cuadra":"✘ No cuadra"} else {mark(m4,"");m4.textContent=""}
+  sc[4]=[ok4,MAY.length+2];
+  // Día 5
+  let ok5=0,tot5=0;
+  INV.forEach((v,i)=>{tot5++;const a=chk(`d5-i${i}`,v[1]*v[2]); if(a[1])ok5++; icon($(`#d5-i${i}-i`),a[0])});
+  tot5++; {const a=chk("d5-it",3000000); if(a[1])ok5++; icon($("#d5-it-i"),a[0])}
+  MAY.forEach((m,i)=>{tot5++;const s=$(`#d5-c${i}`),g=s.value===CLASE[m[0]]; mark(s,s.value?(g?"ok":"err"):""); icon($(`#d5-c${i}-i`),s.value?(g?"ok":"err"):""); if(g)ok5++});
+  TOT.forEach((t,i)=>{tot5++;const a=chk(`d5-t${i}`,t[1]); if(a[1])ok5++; icon($(`#d5-t${i}-i`),a[0])});
+  let okE=0;
+  EVAL.forEach((q,i)=>{q.o.forEach((_,j)=>mark($(`#q${i}-${j}-l`),""));
+    const r=$(`input[name="q${i}"]:checked`); const e=$(`#q${i}-e`);
+    if(r){const j=+r.value,g=j===q.a; mark($(`#q${i}-${j}-l`),g?"ok":"err"); if(g)okE++; e.hidden=false} else e.hidden=true;});
+  sc[5]=[ok5,tot5,okE,EVAL.length];
+
+  // puntajes
+  const pct={1:ok1/tot1,2:ok2/tot2,3:ok3/MAY.length,4:ok4/(MAY.length+2),5:0.5*ok5/tot5+0.5*okE/EVAL.length};
+  $("#sc1").textContent=`${ok1} de ${tot1} líneas correctas`;
+  $("#sc2").textContent=`${ok2} de ${tot2} líneas correctas`;
+  $("#sc3").textContent=`${ok3} de ${MAY.length} cuentas correctas`;
+  $("#sc4").textContent=`${ok4} de ${MAY.length+2} correctas`;
+  $("#sc5").textContent=`actividad ${ok5} de ${tot5} · evaluación ${okE} de ${EVAL.length}`;
+  let nota=0; for(let n=1;n<=5;n++){nota+=2*pct[n]; $("#tsc"+n).textContent=Math.round(pct[n]*100)+" %"}
+  $("#nota").textContent=(Math.round(nota*10)/10).toLocaleString("es-CO",{minimumFractionDigits:1,maximumFractionDigits:1});
+}
+
+// ---------- eventos ----------
+function show(n){DAYS.forEach(d=>{$("#day"+d.n).hidden=d.n!==n;$("#tab"+d.n).setAttribute("aria-selected",d.n===n)});
+  try{localStorage.setItem("libros5dias-tab",n)}catch(e){}}
+document.addEventListener("input",e=>{const el=e.target;if(!el.dataset.k)return;
+  store[el.dataset.k]=el.type==="radio"?el.value:el.value; save(); check();});
+document.addEventListener("change",e=>{const el=e.target;if(!el.dataset.k)return;store[el.dataset.k]=el.value;save();check();});
+document.addEventListener("focusout",e=>{const el=e.target;if(el.classList&&el.classList.contains("num")){const v=parse(el.value);if(v!=null)el.value=fmt(v)}});
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]"); if(g){show(+g.dataset.go); if(!g.classList.contains("tab"))window.scrollTo({top:0}); return;}
+  const r=e.target.closest("[data-reset]"); if(r){const n=r.dataset.reset,box=$("#rb"+n);
+    box.dataset.html=box.innerHTML;
+    box.innerHTML=`<span class="confirm">¿Borrar todo lo del Día ${n}? <button class="btn pri" data-yes="${n}">Sí, borrar</button><button class="btn" data-no="${n}">Cancelar</button></span>`; return;}
+  const y=e.target.closest("[data-yes]"); if(y){const n=y.dataset.yes;
+    $$(`#day${n} [data-k]`).forEach(el=>{delete store[el.dataset.k]; if(el.type==="radio")el.checked=false; else el.value=""});
+    save(); check(); const box=$("#rb"+n); box.innerHTML=box.dataset.html; return;}
+  const no=e.target.closest("[data-no]"); if(no){const box=$("#rb"+no.dataset.no); box.innerHTML=box.dataset.html;}
+});
+let start=1; try{start=+localStorage.getItem("libros5dias-tab")||1}catch(e){}
+show(start>=1&&start<=5?start:1); check();
+</script>
+
+</body></html>
