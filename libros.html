@@ -95,6 +95,19 @@ tr.sum td{background:var(--bg);font-weight:700}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.85rem;color:var(--muted);align-items:center}
 .sw{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--line);vertical-align:-2px;margin-right:4px}
 @media (prefers-reduced-motion: no-preference){.tab,.btn{transition:background .15s,border-color .15s}}
+
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:999px;padding:12px 18px;background:var(--dc,var(--d1));color:var(--surface);box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:4px solid var(--dc,var(--d1));box-shadow:0 -6px 24px rgba(0,0,0,.2);max-height:42vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet-in{width:100%;max-width:980px;margin:0 auto;min-height:0;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sheet-h{display:flex;gap:8px;align-items:center;justify-content:space-between;padding-block:8px;border-bottom:1px solid var(--line)}
+.sheet-t{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sheet-t .lbl{font-weight:700;color:var(--dc);margin-right:6px}
+.stab{font:inherit;font-size:.9rem;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px}
+.stab[aria-pressed="true"]{background:var(--dc);border-color:var(--dc);color:var(--surface);font-weight:700}
+.sheet-b{overflow:auto;padding-block:10px;min-height:0}
+.sheet-b .box{border:0;padding:0}
+html.sheet-open{scroll-padding-bottom:46vh}
+html.sheet-open .wrap{padding-bottom:calc(42vh + 24px)}
 </style>
 
 </head><body>
@@ -119,6 +132,17 @@ tr.sum td{background:var(--bg);font-weight:700}
   <nav class="tabs" id="tabs" role="tablist"></nav>
   <main id="days"></main>
 </div>
+
+<button class="fab" id="fab" type="button" aria-expanded="false" aria-controls="sheet">Ver ejercicio</button>
+<aside class="sheet" id="sheet" hidden aria-label="Ejercicio del día">
+  <div class="sheet-in">
+    <div class="sheet-h">
+      <div class="sheet-t"><span class="lbl" id="sheetDay"></span><button class="stab" type="button" data-sv="ej" aria-pressed="true">Ejercicio</button><button class="stab" type="button" data-sv="pa" aria-pressed="false">Paso a paso</button></div>
+      <button class="btn" type="button" id="sheetClose">Cerrar</button>
+    </div>
+    <div class="sheet-b" id="sheetBody"></div>
+  </div>
+</aside>
 
 <script>
 const CAT={1105:"Caja",1110:"Bancos",1305:"Clientes",1435:"Mercancías no fabricadas por la empresa",1524:"Equipo de oficina",1528:"Equipo de computación y comunicación",2205:"Proveedores nacionales",2335:"Costos y gastos por pagar",2408:"Impuesto sobre las ventas por pagar (IVA)",3105:"Capital suscrito y pagado",4135:"Comercio al por mayor y al por menor",5120:"Arrendamientos",5135:"Servicios"};
@@ -329,7 +353,7 @@ function check(){
 }
 
 // ---------- eventos ----------
-function show(n){DAYS.forEach(d=>{$("#day"+d.n).hidden=d.n!==n;$("#tab"+d.n).setAttribute("aria-selected",d.n===n)});
+function show(n){curDay=n;if(typeof renderSheet==="function"&&!$("#sheet").hidden)renderSheet();DAYS.forEach(d=>{$("#day"+d.n).hidden=d.n!==n;$("#tab"+d.n).setAttribute("aria-selected",d.n===n)});
   try{localStorage.setItem("libros5dias-tab",n)}catch(e){}}
 document.addEventListener("input",e=>{const el=e.target;if(!el.dataset.k)return;
   store[el.dataset.k]=el.type==="radio"?el.value:el.value; save(); check();});
@@ -345,6 +369,32 @@ document.addEventListener("click",e=>{
     save(); check(); const box=$("#rb"+n); box.innerHTML=box.dataset.html; return;}
   const no=e.target.closest("[data-no]"); if(no){const box=$("#rb"+no.dataset.no); box.innerHTML=box.dataset.html;}
 });
+
+// ---------- panel del ejercicio ----------
+let curDay=1, sheetView="ej";
+function renderSheet(){
+  const sec=$("#day"+curDay); if(!sec)return;
+  const d=DAYS[curDay-1];
+  $("#sheet").style.setProperty("--dc","var(--"+d.c+")");
+  $("#fab").style.setProperty("--dc","var(--"+d.c+")");
+  $("#sheetDay").textContent="Día "+curDay+" · "+d.t;
+  $$(".stab").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.sv===sheetView)));
+  const boxes=[...sec.querySelectorAll(".box")];
+  const src=sheetView==="ej"?boxes.find(b=>b.querySelector("h3")&&b.querySelector("h3").textContent.trim()==="El ejercicio"):sec.querySelector(".cols .box:nth-child(2)");
+  const body=$("#sheetBody"); body.textContent="";
+  if(src){const c=src.cloneNode(true); c.removeAttribute("id"); body.appendChild(c);}
+}
+function setSheet(open){
+  $("#sheet").hidden=!open; $("#fab").hidden=open;
+  $("#fab").setAttribute("aria-expanded",String(open));
+  document.documentElement.classList.toggle("sheet-open",open);
+  if(open)renderSheet();
+}
+$("#fab").addEventListener("click",()=>setSheet(true));
+$("#sheetClose").addEventListener("click",()=>setSheet(false));
+document.addEventListener("click",e=>{const b=e.target.closest("[data-sv]"); if(b){sheetView=b.dataset.sv;renderSheet();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden)setSheet(false)});
+
 let start=1; try{start=+localStorage.getItem("libros5dias-tab")||1}catch(e){}
 show(start>=1&&start<=5?start:1); check();
 </script>
