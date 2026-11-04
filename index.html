@@ -137,6 +137,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .card-t h3{font-size:18px;line-height:1.15}
 .card-t p{margin:0;color:var(--muted);font-size:14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}
 .card-t .go{font-weight:700;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:6px}
+.sec-apart{margin-top:44px;padding-top:30px;border-top:2px dashed var(--c)}
 .taller-c{background:linear-gradient(0deg,var(--cs),var(--surface));border-color:var(--c)}
 .taller-c .cat{color:var(--c)}
 .card-t .go::after{content:"→";transition:transform .15s;color:var(--c)}
@@ -1929,6 +1930,14 @@ add({
       el('p', {}, LIBROS.desc), el('div', { class: 'go' }, 'Abrir el taller'),
       el('a', { class: 'stretch', href: LIBROS_URL, 'aria-label': 'Abrir ' + LIBROS.title }));
   }
+  const ESTADOS_URL = 'estados.html';
+  const ESTADOS = { title: 'Estados financieros resueltos', desc: 'Los cinco estados de la Unidad 4 ya diligenciados con una empresa de ejemplo: situación financiera, resultados, cambios en el patrimonio, flujos de efectivo y notas. Al pasar el mouse sobre cada total se explica cómo se calcula y por qué cambió.', hay: 'estados financieros resueltos ejemplo situacion financiera balance resultados patrimonio flujos efectivo notas totales unidad 4' };
+  function estadosCard() {
+    return el('article', { class: 'card-t taller-c', 'data-cat': 'lab' },
+      el('div', { class: 'top' }, el('div', { class: 'cap', 'aria-hidden': 'true' }, '≡'), el('div', {}, el('div', { class: 'cat' }, 'Ejemplo resuelto'), el('h3', {}, ESTADOS.title))),
+      el('p', {}, ESTADOS.desc), el('div', { class: 'go' }, 'Abrir los estados'),
+      el('a', { class: 'stretch', href: ESTADOS_URL, 'aria-label': 'Abrir ' + ESTADOS.title }));
+  }
   function matches(t, q) { if (!q) return true; return q.split(/\s+/).every(w => hay[t.id].includes(w)); }
   function drawResults() {
     const box = $('#results'); if (!box) return; box.textContent = '';
@@ -1941,12 +1950,13 @@ add({
       if (q) list.sort((a, b) => (norm(b.title).includes(q) ? 1 : 0) - (norm(a.title).includes(q) ? 1 : 0));
       const showT = (catF === 'all' || catF === 'con') && (!q || q.split(/\s+/).every(w => norm(TALLER.hay).includes(w))) && catF !== 'fav';
       const showL = (catF === 'all' || catF === 'con') && (!q || q.split(/\s+/).every(w => norm(LIBROS.hay).includes(w))) && catF !== 'fav';
-      const head = q ? ((list.length + (showT ? 1 : 0) + (showL ? 1 : 0)) + (list.length === 1 ? ' resultado para “' + Q.trim() + '”' : ' resultados para “' + Q.trim() + '”')) : 'Sus favoritas';
-      if (!list.length && !showT && !showL) {
+      const showE = catF === 'all' && (!q || q.split(/\s+/).every(w => norm(ESTADOS.hay).includes(w))) && catF !== 'fav';
+      const head = q ? ((list.length + (showT ? 1 : 0) + (showL ? 1 : 0) + (showE ? 1 : 0)) + (list.length === 1 ? ' resultado para “' + Q.trim() + '”' : ' resultados para “' + Q.trim() + '”')) : 'Sus favoritas';
+      if (!list.length && !showT && !showL && !showE) {
         box.append(el('div', { class: 'empty' }, el('b', {}, q ? 'No encontramos esa calculadora' : 'Aún no tiene favoritas'), q ? 'Pruebe con otra palabra, por ejemplo “cuota”, “iva” o “inventario”.' : 'Toque la estrella de cualquier calculadora para tenerla a mano aquí.'));
         return;
       }
-      box.append(el('div', { class: 'sec' }, el('div', { class: 'sec-h' }, el('div', {}, el('h2', {}, head))), el('div', { class: 'grid' }, showT ? tallerCard() : null, showL ? librosCard() : null, list.map(toolCard))));
+      box.append(el('div', { class: 'sec' }, el('div', { class: 'sec-h' }, el('div', {}, el('h2', {}, head))), el('div', { class: 'grid' }, showT ? tallerCard() : null, showL ? librosCard() : null, showE ? estadosCard() : null, list.map(toolCard))));
       return;
     }
     if (catF === 'all') {
@@ -1961,6 +1971,9 @@ add({
         el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, c.glyph), el('div', {}, el('h2', {}, c.name), el('p', {}, c.desc)), el('span', { class: 'n' }, list.length + ' calculadoras' + (c.id === 'con' ? ' + 2 talleres' : ''))),
         el('div', { class: 'grid' }, c.id === 'con' ? tallerCard() : null, c.id === 'con' ? librosCard() : null, list.map(toolCard))));
     });
+    if (catF === 'all') box.append(el('section', { class: 'sec sec-apart', 'data-cat': 'lab', id: 'cat-est' },
+      el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, '≡'), el('div', {}, el('h2', {}, 'Estados financieros resueltos'), el('p', {}, 'Material de clase: ejemplos ya diligenciados para explicar y estudiar'))),
+      el('div', { class: 'grid' }, estadosCard())));
   }
   function showHub() {
     view = 'hub'; cur = null; formEl = null; document.title = 'Centro de Calculadoras';

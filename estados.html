@@ -1,0 +1,652 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Estados Financieros Diligenciados</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+/* Layout: una pestaña por estado financiero; cada una con su color suave, igual que las diapositivas de la Unidad 4. Arriba la pregunta que responde, en medio el estado diligenciado, abajo lo importante y qué hacer para mejorar. */
+:root{
+  --bg:#F6F5F8; --surface:#FFFFFF; --ink:#231F2B; --muted:#5E5A69; --line:#DDD9E3;
+  --esf:#8A2F5F; --esf-s:#F8E6EE; --er:#1D7565; --er-s:#DFF2ED; --ecp:#2F5FA3; --ecp-s:#E4EBF8; --efe:#9A5E0A; --efe-s:#FBEDD3;
+  --nt:#5B4B9A; --nt-s:#ECE8F7;
+  --ok:#1B7A47; --err:#B3261E;
+  --f-display:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141218; --surface:#1D1A22; --ink:#ECE9F1; --muted:#A8A3B4; --line:#342F3D;
+  --esf:#EDA8C8; --esf-s:#3A1F2D; --er:#86D6C5; --er-s:#17302B; --ecp:#A5C1F2; --ecp-s:#1C2A40; --efe:#EDBF70; --efe-s:#3A2D15;
+  --nt:#BDB0F0; --nt-s:#272238;
+  --ok:#7FD8A4; --err:#FF9189; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141218; --surface:#1D1A22; --ink:#ECE9F1; --muted:#A8A3B4; --line:#342F3D;
+  --esf:#EDA8C8; --esf-s:#3A1F2D; --er:#86D6C5; --er-s:#17302B; --ecp:#A5C1F2; --ecp-s:#1C2A40; --efe:#EDBF70; --efe-s:#3A2D15;
+  --nt:#BDB0F0; --nt-s:#272238;
+  --ok:#7FD8A4; --err:#FF9189; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding-block:20px 56px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+.head h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:700}
+.back{display:inline-block;margin-bottom:8px;color:var(--esf);font-weight:700;text-decoration:none}
+.back:hover{text-decoration:underline}
+.head p{color:var(--muted);margin-top:4px}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media (max-width:900px){.tabs{display:flex;overflow-x:auto;padding-bottom:4px}.tab{flex:0 0 190px}}
+.tab{font:inherit;text-align:left;cursor:pointer;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.tab small{color:var(--c);font-weight:700;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+.tab .t{font-weight:700;font-size:.95rem;line-height:1.25}
+.tab[aria-selected="true"]{background:var(--cs);border-color:var(--c)}
+.tab:focus-visible,summary:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.s-esf{--c:var(--esf);--cs:var(--esf-s)} .s-er{--c:var(--er);--cs:var(--er-s)} .s-ecp{--c:var(--ecp);--cs:var(--ecp-s)} .s-efe{--c:var(--efe);--cs:var(--efe-s)} .s-nt{--c:var(--nt);--cs:var(--nt-s)}
+.panel{display:flex;flex-direction:column;gap:16px}
+.title{display:flex;flex-direction:column;gap:8px}
+.pill{align-self:flex-start;background:var(--c);color:var(--surface);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 14px;border-radius:999px}
+.ttl{display:flex;gap:12px;align-items:center}
+.num{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:var(--c);color:var(--surface);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:1.3rem}
+.ttl h2{font-size:clamp(1.4rem,3.6vw,2rem);font-weight:700}
+.q{font-style:italic;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:720px){.cols{grid-template-columns:1fr}}
+.card{background:var(--cs);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card h3{color:var(--c);font-size:1.05rem;font-weight:700}
+.plain{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.plain h3{font-size:1.1rem;color:var(--c)}
+.sub{font-size:.88rem;color:var(--muted)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.cap{padding:12px 14px 4px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.cap b{font-family:var(--f-display);font-size:1.05rem}
+.cap span{font-size:.85rem;color:var(--muted)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums;font-size:.93rem}
+th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:baseline}
+th{background:var(--cs);color:var(--c);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase}
+th.n,td.n{text-align:right;white-space:nowrap}
+td.code{color:var(--muted);font-size:.82rem;white-space:nowrap}
+tr.sec td{background:var(--bg);color:var(--c);font-weight:700;font-size:.8rem;letter-spacing:.07em;text-transform:uppercase}
+tr.in td:first-child{padding-left:26px}
+tr.tot td{font-weight:700;border-top:1px solid var(--ink)}
+tr.grand td{font-weight:700;background:var(--cs);color:var(--ink);border-top:2px solid var(--c)}
+.check{font-weight:700;color:var(--ok);padding:8px 14px;font-size:.9rem}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:8px;padding:10px 12px;background:var(--surface);display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .nm{font-size:.8rem;color:var(--muted);font-weight:700;letter-spacing:.03em}
+.kpi .v{font-family:var(--f-display);font-size:1.45rem;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi .v small{font-family:var(--f-body);font-size:.8rem;color:var(--muted);font-weight:400}
+.kpi .rd{font-size:.84rem;color:var(--muted)}
+ul.small{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+ul.pts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+ul.pts li{padding-left:22px;position:relative}
+ul.pts li::before{content:"";position:absolute;left:4px;top:.62em;width:8px;height:8px;border-radius:2px;background:var(--c)}
+ul.ok li::before{border-radius:50%;background:none;border:2px solid var(--ok);width:10px;height:10px;top:.5em}
+.act b{color:var(--c)}
+details{border:1px dashed var(--c);border-radius:8px;padding:10px 14px;background:var(--surface)}
+summary{cursor:pointer;font-weight:700;color:var(--c)}
+details[open] summary{margin-bottom:6px}
+.bars{display:flex;flex-direction:column;gap:8px;padding:6px 4px}
+.br{display:grid;grid-template-columns:100px 1fr 120px;gap:10px;align-items:center;font-size:.9rem}
+.tr{position:relative;height:22px;background:var(--bg);border-radius:4px}
+.tr::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--muted)}
+.fill{position:absolute;top:2px;bottom:2px;border-radius:3px}
+.pos{left:50%;background:var(--ok)} .neg{right:50%;background:var(--err)}
+.br .vv{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.link{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.link h2{font-size:1.25rem}
+.link ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.note{font-size:.84rem;color:var(--muted)}
+
+.has-tip{cursor:help}
+tr.has-tip:hover td,tr.has-tip:focus td{box-shadow:inset 0 0 0 999px rgba(127,127,127,.12)}
+tr.has-tip:focus-visible{outline:3px solid var(--c);outline-offset:-3px}
+.ib{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;border:1.5px solid var(--c);color:var(--c);background:var(--surface);font:700 .7rem/1 var(--f-body);margin-left:8px;vertical-align:1px;font-style:normal}
+.how{display:flex;gap:6px;align-items:center;justify-content:center;font-size:.84rem;color:var(--muted);padding-top:4px;text-align:left}
+.how .ib{margin:0;flex:0 0 auto}
+.pop{position:fixed;left:0;top:0;z-index:60;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.30);padding:14px 16px;display:flex;flex-direction:column;gap:12px;font-size:.93rem;overflow:auto;overscroll-behavior:contain}
+.pop[hidden]{display:none}
+.pop h4{margin:0 0 4px;font-family:var(--f-body);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.pop p{margin:0}
+.pop-h{display:flex;flex-direction:column;gap:4px;padding-right:34px}
+.pop-h .nm{font-family:var(--f-display);font-weight:700;font-size:1.1rem;line-height:1.2}
+.pop-h .big{font-family:var(--f-display);font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;align-self:flex-start;background:var(--cs);color:var(--c);font-weight:700;font-size:.8rem;border-radius:999px;padding:3px 10px}
+.pop-x{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;line-height:1}
+.pop-x:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.calc{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;overflow:hidden;font-variant-numeric:tabular-nums}
+.calc div{display:grid;grid-template-columns:18px 1fr auto;gap:8px;padding:5px 10px;border-bottom:1px solid var(--line);align-items:baseline}
+.calc div:last-child{border-bottom:0;background:var(--cs);font-weight:700}
+.calc .sg{color:var(--c);font-weight:700;text-align:center}
+.calc .am{text-align:right;white-space:nowrap}
+ul.mv{margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+ul.mv li{display:grid;grid-template-columns:20px 1fr;gap:6px;align-items:baseline}
+ul.mv .ar{color:var(--c);font-size:.8rem;text-align:center}
+.key{background:var(--cs);border-radius:6px;padding:9px 11px}
+.key b{color:var(--c)}
+@media (prefers-reduced-motion: no-preference){.tab{transition:background .15s,border-color .15s}}
+</style>
+
+</head><body>
+<div class="wrap">
+  <header class="head">
+    <a class="back" href="index.html">← Centro de Calculadoras</a>
+    <h1>Estados financieros diligenciados</h1>
+    <p>Papelería Aprende S.A.S. · año 2026 comparado con 2025 · cifras en pesos colombianos · IVA no incluido en los estados</p>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Estados financieros" id="tabs"></nav>
+  <main id="panels"></main>
+  <section class="link" id="link"></section>
+  <p class="note">Empresa y cifras de ejemplo, realistas pero ficticias, para practicar. El impuesto de renta usa la tarifa general del 35 %. Los códigos entre paréntesis son del PUC.</p>
+</div>
+
+<script>
+// ---------- utilidades ----------
+const grp=n=>String(Math.abs(Math.round(n))).replace(/\B(?=(\d{3})+(?!\d))/g,".");
+const money=n=>n<0?"("+grp(n)+")":grp(n);
+const dec=(n,d=1)=>n.toFixed(d).replace(".",",");
+const pct=(n,d=1)=>dec(n*100,d)+" %";
+const vpct=(a,b)=>{if(!b)return "—";const v=(a/b-1)*100;if(Math.abs(v)<0.05)return "0,0 %";return (v>0?"+":"−")+dec(Math.abs(v),1)+" %"};
+const $=s=>document.querySelector(s);
+const sum=(rows,i)=>rows.reduce((s,r)=>s+r[i],0);
+
+// ---------- datos: Estado de resultados (valores positivos; los costos y gastos se muestran entre paréntesis) ----------
+const VB=[480000000,420000000], DEV=[12000000,10000000], CV=[308880000,266500000];
+const ADM=[["Gastos de personal",62400000,57600000],["Arrendamientos",24000000,21600000],["Servicios",9600000,8400000],["Depreciación",6000000,5000000],["Diversos",4800000,4200000]];
+const VEN=[["Publicidad",7200000,5000000],["Fletes y domicilios",6000000,4800000]];
+const IFIN=[1200000,900000], GFIN=[5400000,3000000];
+const VN=[VB[0]-DEV[0],VB[1]-DEV[1]];
+const UB=[VN[0]-CV[0],VN[1]-CV[1]];
+const TADM=[sum(ADM,1),sum(ADM,2)], TVEN=[sum(VEN,1),sum(VEN,2)];
+const UO=[UB[0]-TADM[0]-TVEN[0],UB[1]-TADM[1]-TVEN[1]];
+const UAI=[UO[0]+IFIN[0]-GFIN[0],UO[1]+IFIN[1]-GFIN[1]];
+const IMP=[Math.round(UAI[0]*0.35),Math.round(UAI[1]*0.35)];
+const UN=[UAI[0]-IMP[0],UAI[1]-IMP[1]];
+
+// ---------- datos: Estado de situación financiera ----------
+const ACT_C=[["Efectivo y equivalentes (Caja y Bancos)","1105 · 1110",31698000,38000000],["Clientes","1305",52000000,38000000],["Inventarios de mercancías","1435",74000000,60000000],["Anticipo de impuestos (retenciones a favor)","1355",3000000,2500000]];
+const ACT_N=[["Equipo de oficina","1524",18000000,16000000],["Equipo de computación y comunicación","1528",12000000,10000000],["Flota y equipo de transporte","1540",24000000,24000000],["(−) Depreciación acumulada","1592",-18000000,-12000000]];
+const PAS_C=[["Proveedores nacionales","2205",61000000,48000000],["Obligaciones financieras (cuotas del año)","2105",12000000,6000000],["Impuestos por pagar (renta e IVA)","2404 · 2408",16000000,15000000],["Obligaciones laborales","25",9000000,8000000],["Costos y gastos por pagar","2335",4000000,3500000]];
+const PAS_N=[["Obligaciones financieras a largo plazo","2105",18000000,30000000]];
+const PAT=[["Capital suscrito y pagado","3105",40000000,40000000],["Reservas","33",3000000,0],["Utilidades acumuladas","3705",11000000,3380000],["Utilidad del ejercicio","3605",UN[0],UN[1]]];
+const T={};
+[["AC",ACT_C],["AN",ACT_N],["PC",PAS_C],["PN",PAS_N],["PT",PAT]].forEach(([k,r])=>T[k]=[sum(r,2),sum(r,3)]);
+T.A=[T.AC[0]+T.AN[0],T.AC[1]+T.AN[1]]; T.P=[T.PC[0]+T.PN[0],T.PC[1]+T.PN[1]];
+const cartera=[ACT_C[1][2],ACT_C[1][3]], inv=[ACT_C[2][2],ACT_C[2][3]], prov=[PAS_C[0][2],PAS_C[0][3]];
+const dCart=[cartera[0]/VN[0]*365,cartera[1]/VN[1]*365], dInv=[inv[0]/CV[0]*365,inv[1]/CV[1]*365], dProv=[prov[0]/CV[0]*365,prov[1]/CV[1]*365];
+const liq=[T.AC[0]/T.PC[0],T.AC[1]/T.PC[1]], acida=[(T.AC[0]-inv[0])/T.PC[0],(T.AC[1]-inv[1])/T.PC[1]];
+const kt=[T.AC[0]-T.PC[0],T.AC[1]-T.PC[1]], endeud=[T.P[0]/T.A[0],T.P[1]/T.A[1]];
+const liberaCart=cartera[0]-VN[0]/365*30, liberaInv=inv[0]-CV[0]/365*75;
+const retraso20=VN[0]/365*20;
+
+// ---------- datos: patrimonio y efectivo ----------
+const DIV=12000000;
+const ECP=[
+ ["Saldo al 31 de diciembre de 2025",40000000,0,3380000,UN[1]],
+ ["Aportes de los socios en 2026",0,0,0,0],
+ ["Traslado de la utilidad de 2025 a utilidades acumuladas",0,0,UN[1],-UN[1]],
+ ["Dividendos decretados y pagados",0,0,-DIV,0],
+ ["Constitución de reservas",0,3000000,-3000000,0],
+ ["Utilidad del ejercicio 2026",0,0,0,UN[0]]];
+const rowTot=r=>r[1]+r[2]+r[3]+r[4];
+const ECP_F=[1,2,3,4].map(i=>sum(ECP,i));
+const ECP_TOT0=rowTot(ECP[0]), ECP_TOTF=ECP_F.reduce((a,b)=>a+b,0);
+const EFE_OP=[["Utilidad neta del año",UN[0]],["(+) Depreciación (gasto que no sale efectivo)",6000000],["(−) Aumento de clientes",-14000000],["(−) Aumento de inventarios",-14000000],["(−) Aumento de anticipo de impuestos",-500000],["(+) Aumento de proveedores",13000000],["(+) Aumento de impuestos por pagar",1000000],["(+) Aumento de obligaciones laborales",1000000],["(+) Aumento de costos y gastos por pagar",500000]];
+const EFE_IN=[["Compra de equipo de oficina",-2000000],["Compra de equipo de computación",-2000000]];
+const EFE_FI=[["Pago de cuotas de obligaciones financieras",-6000000],["Pago de dividendos a los socios",-DIV]];
+const fOp=EFE_OP.reduce((s,r)=>s+r[1],0), fIn=EFE_IN.reduce((s,r)=>s+r[1],0), fFi=EFE_FI.reduce((s,r)=>s+r[1],0);
+const fNet=fOp+fIn+fFi, efIni=ACT_C[0][3], efFin=efIni+fNet;
+
+// ---------- constructores ----------
+const th=(a)=>`<tr>${a.map((h,i)=>`<th class="${i>0&&h.n?'n':''}">${h.t||h}</th>`).join("")}</tr>`;
+function kpis(list){return `<div class="kpis">${list.map(k=>`<div class="kpi"><span class="nm">${k[0]}</span><span class="v">${k[1]} <small>antes ${k[2]}</small></span><span class="rd">${k[3]}</span></div>`).join("")}</div>`}
+const pts=a=>`<ul class="pts">${a.map(t=>`<li>${t}</li>`).join("")}</ul>`;
+const acts=a=>`<ul class="pts ok act">${a.map(t=>`<li>${t}</li>`).join("")}</ul>`;
+const think=(q,a)=>`<details><summary>Para pensar: ${q}</summary><p>${a}</p></details>`;
+const cap=(t,s)=>`<div class="cap"><b>PAPELERÍA APRENDE S.A.S. · ${t}</b><span>${s}</span><span class="how"><i class="ib" aria-hidden="true">i</i> Pasa el mouse sobre las filas de totales (o tócalas en el celular) para ver cómo se calculan y por qué cambiaron.</span></div>`;
+const tipA=id=>id?` tabindex="0" data-tip="${id}"`:"";
+const tipC=id=>id?" has-tip":"";
+const tipI=id=>id?`<i class="ib" aria-hidden="true">i</i>`:"";
+
+function esfRows(){
+  let h="";
+  const row=(r,cls="in")=>`<tr class="${cls}"><td>${r[0]}</td><td class="code">${r[1]}</td><td class="n">${money(r[2])}</td><td class="n">${money(r[3])}</td><td class="n">${vpct(r[2],r[3])}</td></tr>`;
+  const tot=(l,v,cls="tot",id)=>`<tr class="${cls}${tipC(id)}"${tipA(id)}><td colspan="2">${l}${tipI(id)}</td><td class="n">${money(v[0])}</td><td class="n">${money(v[1])}</td><td class="n">${vpct(v[0],v[1])}</td></tr>`;
+  h+=`<tr class="sec"><td colspan="5">Activo</td></tr><tr class="sec"><td colspan="5" style="text-transform:none;letter-spacing:0">Activo corriente (se convierte en efectivo en 12 meses o menos)</td></tr>`;
+  h+=ACT_C.map(r=>row(r)).join("")+tot("Total activo corriente",T.AC,"tot","ac");
+  h+=`<tr class="sec"><td colspan="5" style="text-transform:none;letter-spacing:0">Activo no corriente (propiedades, planta y equipo)</td></tr>`;
+  h+=ACT_N.map(r=>row(r)).join("")+tot("Total activo no corriente",T.AN,"tot","an")+tot("TOTAL ACTIVO",T.A,"grand","a");
+  h+=`<tr class="sec"><td colspan="5">Pasivo</td></tr><tr class="sec"><td colspan="5" style="text-transform:none;letter-spacing:0">Pasivo corriente (se paga en 12 meses o menos)</td></tr>`;
+  h+=PAS_C.map(r=>row(r)).join("")+tot("Total pasivo corriente",T.PC,"tot","pc");
+  h+=`<tr class="sec"><td colspan="5" style="text-transform:none;letter-spacing:0">Pasivo no corriente</td></tr>`;
+  h+=PAS_N.map(r=>row(r)).join("")+tot("Total pasivo no corriente",T.PN,"tot","pn")+tot("TOTAL PASIVO",T.P,"grand","p");
+  h+=`<tr class="sec"><td colspan="5">Patrimonio</td></tr>`;
+  h+=PAT.map(r=>row(r)).join("")+tot("TOTAL PATRIMONIO",T.PT,"grand","pt");
+  h+=tot("TOTAL PASIVO + PATRIMONIO",[T.P[0]+T.PT[0],T.P[1]+T.PT[1]],"grand","pp");
+  return h;
+}
+function erRows(){
+  const base=VN[0];
+  const line=(l,v,o={})=>{const neg=o.neg;const f=x=>neg?money(-x):money(x);
+    return `<tr class="${o.cls||''}${tipC(o.id)}"${tipA(o.id)}><td>${l}${tipI(o.id)}</td><td class="n">${f(v[0])}</td><td class="n">${pct(v[0]/base)}</td><td class="n">${f(v[1])}</td><td class="n">${vpct(v[0],v[1])}</td></tr>`};
+  let h="";
+  h+=line("Ingresos por ventas (4135)",VB);
+  h+=line("(−) Devoluciones y descuentos (4175)",DEV,{neg:1,cls:"in"});
+  h+=line("Ventas netas",VN,{cls:"tot",id:"vn"});
+  h+=line("(−) Costo de ventas (6135)",CV,{neg:1,cls:"in"});
+  h+=line("UTILIDAD BRUTA",UB,{cls:"grand",id:"ub"});
+  h+=`<tr class="sec"><td colspan="5">Gastos operacionales de administración (51)</td></tr>`;
+  h+=ADM.map(r=>line(r[0],[r[1],r[2]],{neg:1,cls:"in"})).join("")+line("Total gastos de administración",TADM,{neg:1,cls:"tot",id:"tadm"});
+  h+=`<tr class="sec"><td colspan="5">Gastos operacionales de ventas (52)</td></tr>`;
+  h+=VEN.map(r=>line(r[0],[r[1],r[2]],{neg:1,cls:"in"})).join("")+line("Total gastos de ventas",TVEN,{neg:1,cls:"tot",id:"tven"});
+  h+=line("UTILIDAD OPERACIONAL",UO,{cls:"grand",id:"uo"});
+  h+=`<tr class="sec"><td colspan="5">Otros ingresos y gastos (no operacionales)</td></tr>`;
+  h+=line("(+) Ingresos financieros (intereses ganados)",IFIN,{cls:"in"});
+  h+=line("(−) Gastos financieros (5305)",GFIN,{neg:1,cls:"in"});
+  h+=line("Utilidad antes de impuestos",UAI,{cls:"tot",id:"uai"});
+  h+=line("(−) Impuesto de renta (35 %) (2404)",IMP,{neg:1,cls:"in"});
+  h+=line("UTILIDAD NETA DEL EJERCICIO (3605)",UN,{cls:"grand",id:"un"});
+  return h;
+}
+function ecpTable(){
+  const c=v=>v===0?"—":money(v);
+  return `<table><thead>${th(["Movimiento",{t:"Capital (3105)",n:1},{t:"Reservas (33)",n:1},{t:"Utilidades acumuladas (3705)",n:1},{t:"Utilidad del ejercicio (3605)",n:1},{t:"Total patrimonio",n:1}])}</thead><tbody>
+  ${ECP.map((r,i)=>`<tr class="${i?'in':'tot'}"><td>${r[0]}</td>${[1,2,3,4].map(j=>`<td class="n">${c(r[j])}</td>`).join("")}<td class="n">${c(rowTot(r))}</td></tr>`).join("")}
+  <tr class="grand has-tip" tabindex="0" data-tip="ecpf"><td>Saldo al 31 de diciembre de 2026<i class="ib" aria-hidden="true">i</i></td>${ECP_F.map(v=>`<td class="n">${money(v)}</td>`).join("")}<td class="n">${money(ECP_TOTF)}</td></tr></tbody></table>
+  <p class="check">✔ Coincide: el total de $${grp(ECP_TOTF)} es el patrimonio del estado de situación financiera.</p>`;
+}
+function efeTable(){
+  const r=(l,v,c="in",id)=>`<tr class="${c}${tipC(id)}"${tipA(id)}><td>${l}${tipI(id)}</td><td class="n">${money(v)}</td></tr>`;
+  return `<table style="min-width:420px"><thead>${th(["Concepto",{t:"2026",n:1}])}</thead><tbody>
+  <tr class="sec"><td colspan="2">Actividades de operación (el negocio del día a día)</td></tr>
+  ${EFE_OP.map(x=>r(x[0],x[1])).join("")}${r("Flujo de efectivo de la operación",fOp,"grand","fop")}
+  <tr class="sec"><td colspan="2">Actividades de inversión (compra de equipos)</td></tr>
+  ${EFE_IN.map(x=>r(x[0],x[1])).join("")}${r("Flujo de efectivo de inversión",fIn,"grand","finv")}
+  <tr class="sec"><td colspan="2">Actividades de financiación (deudas y socios)</td></tr>
+  ${EFE_FI.map(x=>r(x[0],x[1])).join("")}${r("Flujo de efectivo de financiación",fFi,"grand","ffin")}
+  ${r("Variación neta del efectivo",fNet,"tot","fnet")}${r("(+) Efectivo al 1 de enero de 2026",efIni,"in")}${r("EFECTIVO AL 31 DE DICIEMBRE DE 2026",efFin,"grand","efin")}</tbody></table>`;
+}
+function bars(){
+  const items=[["Operación",fOp],["Inversión",fIn],["Financiación",fFi],["Variación neta",fNet]];
+  const mx=Math.max(...items.map(i=>Math.abs(i[1])));
+  return `<div class="bars" role="img" aria-label="Flujos de efectivo del año">${items.map(i=>{const w=Math.abs(i[1])/mx*50;
+    return `<div class="br"><span>${i[0]}</span><div class="tr"><div class="fill ${i[1]>=0?'pos':'neg'}" style="width:${w}%"></div></div><span class="vv">${money(i[1])}</span></div>`}).join("")}</div>`;
+}
+
+// ---------- datos de las notas ----------
+const CAJA=[["Caja general (110505)",3698000],["Cuenta corriente (Bancos)",20000000],["Cuenta de ahorros",8000000]];
+const AGING=[["Al día o hasta 30 días",34000000],["Entre 31 y 60 días",12000000],["Más de 60 días",6000000]];
+const INVD=[["Cuadernos y libretas",30000000],["Útiles escolares",24000000],["Papel y resmas",12000000],["Tintas, arte y otros",8000000]];
+// activo; costo 2025; adiciones; costo 2026; depreciación acumulada (negativa); valor en libros; vida útil
+const PPE=[["Equipo de oficina",16000000,2000000,18000000,-6400000,11600000,"10 años"],["Equipo de computación y comunicación",10000000,2000000,12000000,-8000000,4000000,"5 años"],["Flota y equipo de transporte",24000000,0,24000000,-3600000,20400000,"10 años"]];
+const NT={caja:sum(CAJA,1),cli:sum(AGING,1),inv:sum(INVD,1),ppe:sum(PPE,5),deuda:PAS_C[1][2]+PAS_N[0][2]};
+function smallTable(head,rows,total){
+  return `<div class="tw"><table style="min-width:420px"><thead>${th(head)}</thead><tbody>${rows.join("")}${total||""}</tbody></table></div>`;
+}
+function notasHTML(){
+  const n=(i,t,b)=>`<div class="plain"><h3>Nota ${i} · ${t}</h3>${b}</div>`;
+  const r2=(l,v)=>`<tr class="in"><td>${l}</td><td class="n">${money(v)}</td></tr>`;
+  const t2=(l,v,id)=>`<tr class="grand${tipC(id)}"${tipA(id)}><td>${l}${tipI(id)}</td><td class="n">${money(v)}</td></tr>`;
+  const okAll = NT.caja===ACT_C[0][2] && NT.cli===ACT_C[1][2] && NT.inv===ACT_C[2][2] && NT.ppe===T.AN[0] && NT.deuda===PAS_C[1][2]+PAS_N[0][2];
+  let h=`${cap("NOTAS A LOS ESTADOS FINANCIEROS","Al 31 de diciembre de 2026 · en pesos colombianos")}`;
+  h+=n(1,"Información general",`<p>Papelería Aprende S.A.S. es una sociedad por acciones simplificada que comercializa papelería, útiles escolares y de oficina. Los estados cubren el año terminado el 31 de diciembre de 2026, se presentan en pesos colombianos y se comparan con 2025.</p>`);
+  h+=n(2,"Base de preparación y políticas contables",`<ul class="small"><li><b>Marco normativo:</b> para este ejemplo se aplican las NIIF para las PYMES, y la gerencia declara que los estados cumplen con ellas.</li><li><b>Inventarios:</b> se miden al costo, con el método de promedio ponderado.</li><li><b>Propiedades, planta y equipo:</b> costo menos depreciación en línea recta; las compras de diciembre empiezan a depreciarse en 2027.</li><li><b>Ingresos:</b> se reconocen cuando la mercancía se entrega al cliente.</li><li><b>Impuesto de renta:</b> tarifa general del 35 % sobre la utilidad antes de impuestos.</li></ul>`);
+  h+=n(3,"Efectivo y equivalentes",smallTable(["Concepto",{t:"Valor",n:1}],CAJA.map(r=>r2(r[0],r[1])),t2("Total efectivo",NT.caja,"n_caja")));
+  h+=n(4,"Clientes (antigüedad de la cartera)",smallTable(["Antigüedad",{t:"Valor",n:1},{t:"% del total",n:1}],AGING.map(r=>`<tr class="in"><td>${r[0]}</td><td class="n">${money(r[1])}</td><td class="n">${pct(r[1]/NT.cli)}</td></tr>`),`<tr class="grand has-tip" tabindex="0" data-tip="n_cli"><td>Total clientes<i class="ib" aria-hidden="true">i</i></td><td class="n">${money(NT.cli)}</td><td class="n">100,0 %</td></tr>`)+`<p class="sub">No se ha registrado deterioro. La cartera con más de 60 días es la que debe evaluarse.</p>`);
+  h+=n(5,"Inventarios",smallTable(["Grupo",{t:"Valor",n:1}],INVD.map(r=>r2(r[0],r[1])),t2("Total inventarios (promedio ponderado)",NT.inv,"n_inv")));
+  h+=n(6,"Propiedades, planta y equipo",`<div class="tw"><table><thead>${th(["Activo",{t:"Costo 2025",n:1},{t:"Adiciones",n:1},{t:"Costo 2026",n:1},{t:"Depreciación acumulada",n:1},{t:"Valor en libros",n:1},{t:"Vida útil",n:1}])}</thead><tbody>${PPE.map(r=>`<tr class="in"><td>${r[0]}</td><td class="n">${money(r[1])}</td><td class="n">${r[2]?money(r[2]):"—"}</td><td class="n">${money(r[3])}</td><td class="n">${money(r[4])}</td><td class="n">${money(r[5])}</td><td class="n">${r[6]}</td></tr>`).join("")}<tr class="grand has-tip" tabindex="0" data-tip="n_ppe"><td>Total<i class="ib" aria-hidden="true">i</i></td><td class="n">${money(sum(PPE,1))}</td><td class="n">${money(sum(PPE,2))}</td><td class="n">${money(sum(PPE,3))}</td><td class="n">${money(sum(PPE,4))}</td><td class="n">${money(NT.ppe)}</td><td></td></tr></tbody></table></div><p class="sub">Método de depreciación: línea recta. El gasto del año fue de $${grp(ADM[3][1])}.</p>`);
+  h+=n(7,"Obligaciones financieras",smallTable(["Concepto",{t:"Valor",n:1}],[r2("Porción corriente (cuotas de 2027)",PAS_C[1][2]),r2("Porción a largo plazo",PAS_N[0][2])],t2("Total deuda con el Banco Didáctico",NT.deuda,"n_deuda"))+`<p class="sub">Tasa aproximada del 16 % efectivo anual. Garantía: prenda sobre el vehículo. Gastos por intereses del año: $${grp(GFIN[0])}.</p>`);
+  h+=n(8,"Patrimonio",`<p>El capital está dividido en 40.000 acciones de $1.000 cada una, suscritas y pagadas. En el año la asamblea de accionistas decretó dividendos por $${grp(DIV)} y constituyó reservas por $${grp(ECP_F[1])}.</p>`);
+  h+=n(9,"Partes relacionadas",`<p>Uno de los socios es el dueño del local y se lo arrienda a la empresa. En 2026 se pagaron $${grp(ADM[1][1])} de arriendo, a precios de mercado.</p>`);
+  h+=n(10,"Juicios, estimaciones y hechos posteriores",`<p>Las estimaciones más importantes son la vida útil de los equipos y el posible deterioro de la cartera. Entre el 31 de diciembre de 2026 y la fecha de aprobación de los estados no ocurrieron hechos que cambien las cifras. En enero de 2027 se hace la compra de la temporada escolar.</p>`);
+  h+=`<p class="check">${okAll?"✔":"✘"} Cada nota suma lo mismo que su cifra en los estados: efectivo, clientes, inventarios, equipos y deuda.</p>`;
+  return h;
+}
+
+// ---------- contenido de cada estado ----------
+const S=[
+{id:"situacion",cls:"s-esf",n:1,tab:"Situación financiera",t:"Estado de situación financiera",q:"¿Qué tiene la empresa, qué debe y qué es de los socios? Antes se llamaba balance general: es una foto en una fecha.",
+ que:"Muestra lo que la empresa tiene (activos), lo que debe (pasivos) y lo que es de los dueños (patrimonio) a una fecha de corte. Siempre se cumple: Activo = Pasivo + Patrimonio.",
+ sirve:"Saber cuánto vale la empresa, si puede pagar sus deudas y cómo se financia: con deuda o con aportes de los socios.",
+ org:"Activos y pasivos se separan en corrientes (se cobran o se pagan en 12 meses o menos) y no corrientes. Cada grupo se ordena de lo más líquido a lo menos líquido: primero el efectivo y al final los equipos. Los activos suman lo mismo que los pasivos más el patrimonio.",
+ tabla:()=>`${cap("ESTADO DE SITUACIÓN FINANCIERA","Al 31 de diciembre de 2026 y 2025 · en pesos colombianos")}<div class="tw"><table><thead>${th(["Cuenta","Código PUC",{t:"2026",n:1},{t:"2025",n:1},{t:"Variación",n:1}])}</thead><tbody>${esfRows()}</tbody></table></div><p class="check">✔ Cuadra: Activo ${money(T.A[0])} = Pasivo ${money(T.P[0])} + Patrimonio ${money(T.PT[0])}</p>`,
+ kpi:()=>kpis([
+  ["Liquidez corriente",dec(liq[0],2),dec(liq[1],2),`Por cada $1 de deuda a corto plazo tiene $${dec(liq[0],2)} en activos corrientes.`],
+  ["Prueba ácida",dec(acida[0],2),dec(acida[1],2),`Sin contar el inventario solo tiene $${dec(acida[0],2)} por cada $1 de deuda corriente.`],
+  ["Capital de trabajo","$"+grp(kt[0]),"$"+grp(kt[1]),"Lo que sobra del activo corriente después de pagar la deuda corriente."],
+  ["Endeudamiento",pct(endeud[0]),pct(endeud[1]),"Qué parte de los activos se financió con deudas."],
+  ["Días de cartera",dec(dCart[0],1),dec(dCart[1],1),"Cuántos días tardan en pagar los clientes."],
+  ["Días de inventario",dec(dInv[0],1),dec(dInv[1],1),"Cuántos días tarda en venderse la mercancía."],
+  ["Días de pago a proveedores",dec(dProv[0],1),dec(dProv[1],1),"Cuántos días tarda la empresa en pagar sus compras."]]),
+ imp:()=>pts([
+  `El activo total es <b>$${grp(T.A[0])}</b>: se financia con <b>$${grp(T.P[0])}</b> de deudas (${pct(endeud[0])}) y <b>$${grp(T.PT[0])}</b> de los socios.`,
+  `La liquidez bajó de ${dec(liq[1],2)} a <b>${dec(liq[0],2)}</b>: sigue pagando sus deudas a corto plazo, pero con menos holgura.`,
+  `La prueba ácida es <b>${dec(acida[0],2)}</b>, menor que 1: para pagar todo lo que vence en el año depende de vender el inventario.`,
+  `Clientes e inventarios suman <b>$${grp(cartera[0]+inv[0])}</b>, el ${pct((cartera[0]+inv[0])/T.A[0],0)} del activo. Es plata que está quieta y no está en caja.`,
+  `El efectivo bajó de $${grp(efIni)} a $${grp(efFin)}, aunque la empresa tuvo utilidad.`]),
+ mej:()=>acts([
+  `<b>Cobrar más rápido.</b> Bajar los días de cartera de ${dec(dCart[0],1)} a 30 libera cerca de <b>$${dec(liberaCart/1e6,1)} millones</b>. Cómo: descuento por pronto pago, recordatorio de cobro antes del vencimiento y cupo de crédito por cliente.`,
+  `<b>Rotar el inventario.</b> Bajar de ${dec(dInv[0],0)} a 75 días libera cerca de <b>$${dec(liberaInv/1e6,1)} millones</b>. Cómo: liquidar lo que no rota y comprar según las ventas, con fuerte compra solo para la temporada escolar.`,
+  `<b>Cuidar el plazo con proveedores.</b> Hoy paga a ${dec(dProv[0],0)} días. Conviene mantenerlo o ampliarlo sin perder descuentos por pronto pago.`,
+  `<b>No tomar más deuda</b> hasta que la prueba ácida supere 1,0. Usar el efectivo liberado para pagar las cuotas.`,
+  `<b>Mantener un colchón de efectivo</b> de un mes de gastos operacionales (cerca de $${dec((TADM[0]+TVEN[0])/12/1e6,1)} millones).`]),
+ pen:()=>think("si los clientes se demoran 20 días más en pagar, ¿qué pasa con el efectivo?",`Queda atrapado más dinero en clientes: unos <b>$${dec(retraso20/1e6,1)} millones</b> más. Como el efectivo actual es de $${dec(efFin/1e6,1)} millones, la empresa casi se quedaría sin caja y tendría que pedir plazo o crédito.`)},
+
+{id:"resultados",cls:"s-er",n:2,tab:"Resultados",t:"Estado de resultados",q:"¿Ganó o perdió la empresa en el año? Es una película de un período, no una foto.",
+ que:"Muestra los ingresos, los costos y los gastos de un período y termina en la utilidad o la pérdida neta.",
+ sirve:"Saber si la actividad deja ganancia, en qué punto se pierde dinero y qué tan rentable es el negocio frente a lo que vende.",
+ org:"En cascada: ventas − costo de ventas = utilidad bruta; − gastos de administración y de ventas = utilidad operacional; ± ingresos y gastos financieros = utilidad antes de impuestos; − impuesto de renta = utilidad neta. Nota NIIF: en NIIF se llama estado del resultado integral porque puede incluir el otro resultado integral (ORI). Este ejemplo no tiene ORI.",
+ tabla:()=>`${cap("ESTADO DE RESULTADOS","Del 1 de enero al 31 de diciembre de 2026 y 2025 · en pesos colombianos")}<div class="tw"><table><thead>${th(["Concepto",{t:"2026",n:1},{t:"% de ventas netas",n:1},{t:"2025",n:1},{t:"Variación",n:1}])}</thead><tbody>${erRows()}</tbody></table></div>`,
+ kpi:()=>kpis([
+  ["Crecimiento de ventas netas",vpct(VN[0],VN[1]),"",`De $${grp(VN[1])} a $${grp(VN[0])}.`],
+  ["Crecimiento de la utilidad neta",vpct(UN[0],UN[1]),"",`De $${grp(UN[1])} a $${grp(UN[0])}.`],
+  ["Margen bruto",pct(UB[0]/VN[0]),pct(UB[1]/VN[1]),"Lo que queda de cada $100 vendidos después de pagar la mercancía."],
+  ["Margen operacional",pct(UO[0]/VN[0]),pct(UO[1]/VN[1]),"Lo que queda después de pagar también los gastos de operar."],
+  ["Margen neto",pct(UN[0]/VN[0],2),pct(UN[1]/VN[1],2),"Lo que queda de cada $100 vendidos después de todo, incluso impuestos."]]),
+ imp:()=>pts([
+  `Las ventas netas crecieron <b>${vpct(VN[0],VN[1])}</b>, pero la utilidad neta solo <b>${vpct(UN[0],UN[1])}</b>: vender más no siempre significa ganar más.`,
+  `El margen bruto bajó de ${pct(UB[1]/VN[1])} a <b>${pct(UB[0]/VN[0])}</b>: la mercancía costó proporcionalmente más.`,
+  `Los gastos de administración subieron ${vpct(TADM[0],TADM[1])}, menos que las ventas. Pero los gastos de ventas subieron <b>${vpct(TVEN[0],TVEN[1])}</b> y los financieros <b>${vpct(GFIN[0],GFIN[1])}</b>, mucho más que las ventas.`,
+  `De cada $100 de ventas netas quedan <b>$${dec(UN[0]/VN[0]*100,2)}</b> de utilidad neta (antes $${dec(UN[1]/VN[1]*100,2)}).`]),
+ mej:()=>acts([
+  `<b>Recuperar margen bruto.</b> Negociar descuentos por volumen, comprar directo al fabricante y revisar los precios de los productos que dejan poco margen. Cada punto de margen vale <b>$${grp(VN[0]*0.01)}</b> más de utilidad antes de impuestos.`,
+  `<b>Medir la publicidad.</b> Los gastos de ventas crecieron mucho más que las ventas. Invertir donde hay retorno (por ejemplo, temporada escolar) y dejar de pagar lo que no trae clientes.`,
+  `<b>Reducir gastos financieros.</b> Refinanciar o adelantar el pago de la deuda con el efectivo liberado de cartera e inventarios. Cada punto de tasa que se baje en los $${grp(PAS_C[1][2]+PAS_N[0][2])} de deuda ahorra cerca de $${grp((PAS_C[1][2]+PAS_N[0][2])*0.01)} al año.`,
+  `<b>Mejorar la mezcla de productos.</b> Vender más de lo que más margen deja: marca propia, impresión y fotocopias, kits escolares.`,
+  `<b>Vigilar los gastos fijos.</b> Revisar arriendo, servicios y horas del personal antes de que crezcan más que las ventas.`]),
+ pen:()=>think("si el costo de ventas sube de 66 % a 68 % de las ventas, ¿cuánto baja la utilidad antes de impuestos?",`Baja 2 % de las ventas netas: <b>$${grp(VN[0]*0.02)}</b>. La utilidad antes de impuestos pasaría de $${grp(UAI[0])} a $${grp(UAI[0]-VN[0]*0.02)}.`)},
+
+{id:"patrimonio",cls:"s-ecp",n:3,tab:"Cambios en el patrimonio",t:"Estado de cambios en el patrimonio",q:"¿Cómo cambió lo que es de los socios durante el año?",
+ que:"Muestra cómo cambió el patrimonio entre el inicio y el final del período: aportes de capital, utilidades que se quedan y dividendos que se reparten.",
+ sirve:"Saber si el patrimonio crece, de dónde viene ese crecimiento y cuánto reparten los socios en vez de reinvertir en la empresa.",
+ org:"Una columna por cada parte del patrimonio (capital, reservas, utilidades acumuladas y utilidad del ejercicio) más el total. Una fila por cada movimiento: saldo inicial, aportes de socios, traslado de resultados, dividendos, reservas, resultado del período y saldo final. Idea clave: saldo inicial + utilidad − dividendos = saldo final, y debe coincidir con el patrimonio del estado de situación financiera.",
+ tabla:()=>`${cap("ESTADO DE CAMBIOS EN EL PATRIMONIO","Del 1 de enero al 31 de diciembre de 2026 · en pesos colombianos")}<div class="tw">${ecpTable()}</div>`,
+ kpi:()=>kpis([
+  ["Crecimiento del patrimonio",vpct(ECP_TOTF,ECP_TOT0),"",`De $${grp(ECP_TOT0)} a $${grp(ECP_TOTF)}.`],
+  ["Dividendos sobre la utilidad de 2025",pct(DIV/UN[1],0),"","Qué parte de la utilidad del año anterior se repartió."],
+  ["Rentabilidad para los socios (ROE)",pct(UN[0]/T.PT[0]),pct(UN[1]/ECP_TOT0),"Utilidad neta dividida entre el patrimonio final."]]),
+ imp:()=>pts([
+  `El patrimonio creció de <b>$${grp(ECP_TOT0)}</b> a <b>$${grp(ECP_TOTF)}</b> (${vpct(ECP_TOTF,ECP_TOT0)}).`,
+  `El capital no cambió (<b>$${grp(ECP_F[0])}</b>): el crecimiento viene de las utilidades que se quedaron en la empresa.`,
+  `Se repartieron <b>$${grp(DIV)}</b> de dividendos (el ${pct(DIV/UN[1],0)} de la utilidad de 2025) y se separaron <b>$${grp(ECP_F[1])}</b> como reservas.`,
+  `La rentabilidad para los socios fue <b>${pct(UN[0]/T.PT[0])}</b>, menor que el ${pct(UN[1]/ECP_TOT0)} anterior.`]),
+ mej:()=>acts([
+  `<b>Definir una política de dividendos.</b> Repartir según la caja que genera la empresa y no solo según la utilidad. Este año el efectivo bajó $${grp(-fNet)}.`,
+  `<b>Reinvertir mientras haya deuda.</b> Dejar utilidades para pagar los $${grp(PAS_C[1][2]+PAS_N[0][2])} de obligaciones financieras reduce los intereses.`,
+  `<b>Considerar un aporte de capital</b> si hay una oportunidad de crecer sin endeudarse más.`,
+  `<b>Subir el ROE con el negocio,</b> mejorando el margen y rotando mejor cartera e inventarios, no pidiendo más deuda.`,
+  `<b>Dejar constancia.</b> Los dividendos se aprueban en la asamblea de accionistas y quedan en el acta.`]),
+ pen:()=>think("si los socios hubieran repartido $20.000.000 en vez de $12.000.000, ¿cómo cambian el patrimonio y el efectivo?",`Se reparten $8.000.000 más: el patrimonio final sería de <b>$${grp(ECP_TOTF-8000000)}</b> y el efectivo bajaría a <b>$${grp(efFin-8000000)}</b>.`)},
+
+{id:"efectivo",cls:"s-efe",n:4,tab:"Flujos de efectivo",t:"Estado de flujos de efectivo",q:"¿De dónde llegó el dinero y en qué se gastó? Explica por qué cambió la caja.",
+ que:"Muestra las entradas y salidas de efectivo del período, en tres actividades: operación (el negocio del día a día), inversión (compra de equipos) y financiación (deudas y socios).",
+ sirve:"Explicar por qué cambió el efectivo y por qué una empresa puede tener utilidad y aun así quedarse sin plata.",
+ org:"Tres actividades: operación (cobros a clientes, pagos a proveedores, nómina e impuestos), inversión (compra o venta de equipos e inversiones) y financiación (préstamos, aportes y dividendos). Este ejemplo usa el método indirecto: parte de la utilidad y la ajusta. El método directo muestra los cobros y pagos. Idea clave: utilidad no es efectivo; una venta a crédito sube la utilidad pero no la caja.",
+ tabla:()=>`${cap("ESTADO DE FLUJOS DE EFECTIVO","Del 1 de enero al 31 de diciembre de 2026 · método indirecto · en pesos colombianos")}<div class="tw">${efeTable()}</div><div class="plain"><h3>Resumen del año</h3>${bars()}<p class="sub">Las barras muestran cuánto efectivo entró (verde) o salió (rojo) en cada actividad.</p></div><p class="check">✔ Coincide: el efectivo final de $${grp(efFin)} es el mismo de Caja y Bancos en el estado de situación financiera.</p>`,
+ kpi:()=>kpis([
+  ["Flujo de la operación","$"+grp(fOp),"",`Es el ${pct(fOp/UN[0],0)} de la utilidad neta de $${grp(UN[0])}.`],
+  ["Variación del efectivo","$"+money(fNet),"",`De $${grp(efIni)} a $${grp(efFin)}.`],
+  ["Capital de trabajo consumido","$"+grp(EFE_OP.slice(2).reduce((s,r)=>s+r[1],0)*-1),"","Lo que se llevaron clientes e inventarios, menos lo que financiaron proveedores y otras deudas."]]),
+ imp:()=>pts([
+  `La operación generó <b>$${grp(fOp)}</b>, bastante menos que la utilidad de $${grp(UN[0])}: <b>$${grp(-EFE_OP.slice(2).reduce((s,r)=>s+r[1],0))}</b> quedaron atrapados en clientes e inventarios, aliviados en parte por lo que se debe a proveedores.`,
+  `En inversión salieron <b>$${grp(-fIn)}</b> para comprar equipos.`,
+  `En financiación salieron <b>$${grp(-fFi)}</b>: $${grp(-EFE_FI[0][1])} de cuotas de deuda y $${grp(DIV)} de dividendos.`,
+  `El efectivo bajó <b>$${grp(-fNet)}</b>, de $${grp(efIni)} a $${grp(efFin)}. Salió más de lo que entró.`]),
+ mej:()=>acts([
+  `<b>Convertir la utilidad en caja.</b> Llevar la cartera a 30 días y el inventario a 75 libera cerca de <b>$${dec((liberaCart+liberaInv)/1e6,0)} millones</b>.`,
+  `<b>Hacer un presupuesto de caja mensual.</b> Proyectar las entradas y salidas de los próximos 3 meses, sobre todo antes de la temporada escolar de enero y febrero.`,
+  `<b>Pagar dividendos y deuda según la caja,</b> es decir, según los $${grp(fOp)} que generó la operación, y no según la utilidad.`,
+  `<b>Tener una línea de crédito rotativa</b> para las compras de temporada, en vez de deuda larga que cuesta intereses todo el año.`,
+  `<b>Pagar a proveedores lo más tarde posible</b> dentro del plazo acordado, sin perder los descuentos.`]),
+ pen:()=>think("la utilidad fue de $22.698.000 pero el efectivo bajó. ¿Por qué?",`Porque utilidad no es lo mismo que efectivo. Se vendió a crédito y se compró inventario (cerca de $28 millones quedaron en clientes e inventarios), y además se pagaron $6 millones de deuda, $12 millones de dividendos y $4 millones de equipos.`)},
+
+{id:"notas",cls:"s-nt",n:5,lbl:"Notas",tab:"Notas a los estados financieros",t:"Notas a los estados financieros",q:"Parte integral de los estados: las cifras no se entienden sin ellas.",
+ que:"Explican y detallan las cifras de los otros cuatro estados y dan la información que no cabe en ellos.",
+ sirve:"Dicen cómo se midieron los inventarios, cómo se deprecian los equipos o qué deudas tienen garantía.",
+ org:"Cada nota lleva un número y explica una cifra de los estados: base de preparación y declaración de cumplimiento de las normas (NIIF), políticas contables, desglose de las partidas importantes, juicios y estimaciones, partes relacionadas y hechos posteriores al cierre. Cada nota debe sumar lo mismo que la cifra que explica.",
+ tabla:()=>notasHTML(),
+ imp:()=>pts([
+  `Cada nota coincide con su cifra: efectivo <b>$${grp(NT.caja)}</b>, clientes <b>$${grp(NT.cli)}</b>, inventarios <b>$${grp(NT.inv)}</b>, equipos <b>$${grp(NT.ppe)}</b> y deuda <b>$${grp(NT.deuda)}</b>.`,
+  `La nota de clientes revela algo que el estado no muestra: <b>$${grp(AGING[2][1])}</b> (${pct(AGING[2][1]/NT.cli)}) llevan más de 60 días sin pagarse.`,
+  `La nota de deuda dice que está respaldada con una <b>prenda sobre el vehículo</b>, que vale $${grp(PPE[2][5])} en libros: ese activo queda comprometido.`,
+  `Todo el arriendo ($${grp(ADM[1][1])}) se paga a un socio. La nota de partes relacionadas permite juzgar si el valor es de mercado.`,
+  `Los computadores ya están depreciados en un ${pct(-PPE[1][4]/PPE[1][3],0)}: la nota anuncia que habrá que reponerlos pronto.`]),
+ mej:()=>acts([
+  `<b>Revelar todo lo que cambia la lectura:</b> cartera vencida, garantías, partes relacionadas y hechos posteriores.`,
+  `<b>Evaluar el deterioro de la cartera</b> de $${grp(AGING[2][1])} con más de 60 días y decidir si se provisiona o se cobra con urgencia.`,
+  `<b>Revisar las vidas útiles cada año</b> y planear la reposición de los computadores.`,
+  `<b>Verificar que cada nota cuadra</b> con su estado antes de entregar los informes.`,
+  `<b>Actualizar las notas en cada cierre</b> y guardar los soportes: facturas, extractos, contratos y actas.`]),
+ pen:()=>think("¿qué cambia en la lectura del estado de situación financiera si $6.000.000 de clientes no se llegan a cobrar?",`El activo corriente bajaría a <b>$${grp(T.AC[0]-AGING[2][1])}</b> y la liquidez de ${dec(liq[0],2)} a <b>${dec((T.AC[0]-AGING[2][1])/T.PC[0],2)}</b>. Por eso la nota de clientes importa tanto como la cifra.`)}
+];
+
+
+// ---------- explicaciones de cada total ----------
+const fm=n=>(n<0?"−$":"$")+grp(n);
+const mm=n=>{const v=Math.abs(n)/1e6;const t=Math.abs(v-Math.round(v))<0.05?String(Math.round(v)):dec(v,1);return "$"+t+" millones"};
+const cl=l=>l.replace(/^\(−\)\s*/,"");
+const calcFrom=rows=>rows.map(r=>[cl(r[0]),r[2]]);
+const pr=rows=>rows.map(r=>[cl(r[0]),r[2],r[3]]);
+const dCli=ACT_C[1][2]-ACT_C[1][3], dInvt=ACT_C[2][2]-ACT_C[2][3], dEfe=ACT_C[0][2]-ACT_C[0][3];
+const dEquipos=(ACT_N[0][2]-ACT_N[0][3])+(ACT_N[1][2]-ACT_N[1][3])+(ACT_N[2][2]-ACT_N[2][3]);
+const dDep=ACT_N[3][2]-ACT_N[3][3];
+const dAct=T.A[0]-T.A[1], dPas=T.P[0]-T.P[1], dPat=T.PT[0]-T.PT[1];
+const dProvM=PAS_C[0][2]-PAS_C[0][3];
+const dUB=UB[0]-UB[1], dGas=(TADM[0]+TVEN[0])-(TADM[1]+TVEN[1]);
+const margenB=[UB[0]/VN[0],UB[1]/VN[1]];
+const otros=EFE_OP.slice(2);
+const cxc=-(EFE_OP[2][1]+EFE_OP[3][1]+EFE_OP[4][1]);          // clientes + inventarios + anticipos
+const deudasOp=EFE_OP[5][1]+EFE_OP[6][1]+EFE_OP[7][1]+EFE_OP[8][1]; // lo que se debe y aún no se paga
+const TIPS={
+ ac:{title:"Total activo corriente",v:T.AC[0],p:T.AC[1],
+  simple:"Es todo lo que la empresa tiene y puede convertir en dinero en menos de un año: el efectivo, lo que le deben los clientes y la mercancía para vender.",
+  calc:calcFrom(ACT_C),parts:pr(ACT_C),
+  why:`Subió ${vpct(T.AC[0],T.AC[1])}. Clientes e inventarios crecieron ${mm(dCli+dInvt)} juntos, pero el efectivo bajó ${mm(-dEfe)}. Tener más activo corriente no significa tener más plata en la caja.`,
+  clave:"Cuando el activo corriente sube porque suben clientes e inventarios, la empresa tiene más cosas, pero no más efectivo."},
+ an:{title:"Total activo no corriente",v:T.AN[0],p:T.AN[1],
+  simple:"Son los bienes que la empresa usa para trabajar durante varios años: muebles, computadores y vehículo. Cada año se les resta la depreciación porque se van gastando.",
+  calc:calcFrom(ACT_N),parts:pr(ACT_N),
+  why:`Bajó ${vpct(T.AN[0],T.AN[1])}. Se compraron equipos por ${mm(dEquipos)}, pero la depreciación acumulada creció ${mm(-dDep)}. Se gastó más de lo que se compró.`,
+  clave:"La depreciación no es plata que sale de la caja. Es el desgaste de los equipos que se reparte en los años de uso."},
+ a:{title:"Total activo",v:T.A[0],p:T.A[1],
+  simple:"Es todo lo que la empresa tiene y le sirve para trabajar o para cobrar: el dinero en caja y bancos, lo que le deben, la mercancía y los equipos.",
+  calc:[["Total activo corriente",T.AC[0]],["Total activo no corriente",T.AN[0]]],parts:pr(ACT_C.concat(ACT_N)),
+  why:`Pasó de ${fm(T.A[1])} a ${fm(T.A[0])}: subió ${fm(dAct)} (${vpct(T.A[0],T.A[1])}). Lo empujaron hacia arriba los clientes (+${mm(dCli)}), los inventarios (+${mm(dInvt)}) y las compras de equipos (+${mm(dEquipos)}). Lo bajaron la depreciación (−${mm(-dDep)}) y el efectivo (−${mm(-dEfe)}). ¿Quién financió ese aumento? Las deudas subieron ${mm(dPas)} y el patrimonio, o sea los socios, ${mm(dPat)}.`,
+  clave:"Que el activo suba es buena señal solo si lo que sube es útil. Aquí creció más lo que está por cobrar y por vender que el dinero en caja."},
+ pc:{title:"Total pasivo corriente",v:T.PC[0],p:T.PC[1],
+  simple:"Son las deudas que la empresa debe pagar en menos de un año: proveedores, cuotas del banco, impuestos y obligaciones con los empleados.",
+  calc:calcFrom(PAS_C),parts:pr(PAS_C),
+  why:`Subió ${vpct(T.PC[0],T.PC[1])}. Se compró más mercancía a crédito (proveedores +${mm(dProvM)}) y las cuotas del banco que vencen en 2027 son de ${mm(PAS_C[1][2])}, el doble de las del año anterior.`,
+  clave:`Las deudas a corto plazo (${mm(T.PC[0])}) son mucho mayores que el efectivo (${mm(ACT_C[0][2])}). Para pagarlas la empresa depende de cobrar y de vender.`},
+ pn:{title:"Total pasivo no corriente",v:T.PN[0],p:T.PN[1],
+  simple:"Son las deudas que se pagan en más de un año. Aquí es la parte del préstamo bancario que vence después de 2027.",
+  calc:calcFrom(PAS_N),parts:pr(PAS_N),
+  why:`Bajó ${vpct(T.PN[0],T.PN[1])}, o sea ${mm(T.PN[1]-T.PN[0])}, porque esa parte del préstamo ya vence en 2027 y pasó al pasivo corriente. La deuda sigue existiendo, solo cambió de lugar. En total el préstamo bajó de ${mm(PAS_C[1][3]+PAS_N[0][3])} a ${mm(NT_DEUDA())} porque se pagaron ${mm(-EFE_FI[0][1])}.`,
+  clave:"Una deuda no desaparece cuando pasa de largo a corto plazo. Solo se acerca su fecha de pago."},
+ p:{title:"Total pasivo",v:T.P[0],p:T.P[1],
+  simple:"Es todo lo que la empresa debe a otras personas: proveedores, el banco, la DIAN y los empleados.",
+  calc:[["Total pasivo corriente",T.PC[0]],["Total pasivo no corriente",T.PN[0]]],parts:pr(PAS_C.concat(PAS_N)),
+  why:`Subió ${fm(dPas)} (${vpct(T.P[0],T.P[1])}). Los proveedores aportaron +${mm(dProvM)}, y el préstamo bancario bajó ${mm(-(PAS_C[1][2]+PAS_N[0][2]-PAS_C[1][3]-PAS_N[0][3]))} porque se pagaron cuotas.`,
+  clave:`De cada $100 de activos, $${dec(endeud[0]*100,0)} se deben a terceros. Eso se llama endeudamiento.`},
+ pt:{title:"Total patrimonio",v:T.PT[0],p:T.PT[1],
+  simple:"Es la parte de la empresa que es de los socios: lo que aportaron más las utilidades que se quedaron en la empresa.",
+  calc:calcFrom(PAT),parts:null,
+  why:`Subió ${fm(dPat)} (${vpct(T.PT[0],T.PT[1])}). La cuenta es sencilla: la utilidad del año (${fm(UN[0])}) menos los dividendos que se repartieron (${fm(DIV)}) deja ${fm(UN[0]-DIV)}.`,
+  clave:"Patrimonio final = patrimonio inicial + utilidad − dividendos. Es la misma cuenta del estado de cambios en el patrimonio."},
+ pp:{title:"Total pasivo + patrimonio",v:T.P[0]+T.PT[0],p:T.P[1]+T.PT[1],
+  simple:"Es de dónde salió la plata para tener los activos: o se debe a otros (pasivo) o es de los socios (patrimonio).",
+  calc:[["Total pasivo",T.P[0]],["Total patrimonio",T.PT[0]]],parts:null,
+  why:`Subió igual que el activo, ${vpct(T.P[0]+T.PT[0],T.P[1]+T.PT[1])}, porque los dos siempre deben ser iguales: ${fm(T.A[0])} = ${fm(T.P[0])} + ${fm(T.PT[0])}. De cada $100, $${dec(endeud[0]*100,0)} vienen de deudas y $${dec(100-endeud[0]*100,0)} son de los socios.`,
+  clave:"Activo = Pasivo + Patrimonio. Si no cuadra, hay un error en la contabilidad."},
+ vn:{title:"Ventas netas",v:VN[0],p:VN[1],
+  simple:"Es lo que de verdad vendió la empresa: las ventas menos lo que los clientes devolvieron.",
+  calc:[["Ingresos por ventas",VB[0]],["Devoluciones",-DEV[0]]],parts:[["Ingresos por ventas",VB[0],VB[1]],["Devoluciones",-DEV[0],-DEV[1]]],
+  why:`Subió ${vpct(VN[0],VN[1])}: se vendieron ${mm(VB[0]-VB[1])} más que en 2025 y las devoluciones subieron de ${mm(DEV[1])} a ${mm(DEV[0])}.`,
+  clave:"Vender más es el comienzo. Falta ver cuánto cuesta lo vendido y cuánto queda al final."},
+ ub:{title:"Utilidad bruta",v:UB[0],p:UB[1],
+  simple:"Es lo que queda de las ventas después de pagar la mercancía que se vendió. Con este dinero se pagan los gastos.",
+  calc:[["Ventas netas",VN[0]],["Costo de ventas",-CV[0]]],parts:[["Ventas netas",VN[0],VN[1]],["Costo de ventas",-CV[0],-CV[1]]],
+  why:`Subió ${vpct(UB[0],UB[1])}, menos que las ventas (${vpct(VN[0],VN[1])}), porque la mercancía costó ${mm(CV[0]-CV[1])} más. El margen bruto bajó de ${pct(margenB[1])} a ${pct(margenB[0])}.`,
+  clave:"Si el margen baja, hay que revisar los precios de venta o lo que se paga a los proveedores."},
+ tadm:{title:"Total gastos de administración",v:TADM[0],p:TADM[1],
+  simple:"Son los gastos de mantener la empresa funcionando, sin importar cuánto se venda: sueldos, arriendo, servicios y depreciación.",
+  calc:ADM.map(r=>[r[0],r[1]]),parts:ADM.map(r=>[r[0],-r[1],-r[2]]),
+  why:`Subieron ${vpct(TADM[0],TADM[1])} (${mm(TADM[0]-TADM[1])} más). Subieron menos que las ventas (${vpct(VN[0],VN[1])}), y eso es una buena noticia.`,
+  clave:"Los gastos de administración deberían crecer más despacio que las ventas."},
+ tven:{title:"Total gastos de ventas",v:TVEN[0],p:TVEN[1],
+  simple:"Son los gastos de vender: la publicidad y los domicilios.",
+  calc:VEN.map(r=>[r[0],r[1]]),parts:VEN.map(r=>[r[0],-r[1],-r[2]]),
+  why:`Subieron ${vpct(TVEN[0],TVEN[1])}, mucho más que las ventas (${vpct(VN[0],VN[1])}). Hay que revisar si esa inversión realmente está trayendo clientes.`,
+  clave:"Un gasto de ventas es bueno si trae más ventas que lo que cuesta."},
+ uo:{title:"Utilidad operacional",v:UO[0],p:UO[1],
+  simple:"Es lo que ganó la empresa solo con su negocio, antes de contar intereses e impuestos.",
+  calc:[["Utilidad bruta",UB[0]],["Gastos de administración",-TADM[0]],["Gastos de ventas",-TVEN[0]]],parts:[["Utilidad bruta",UB[0],UB[1]],["Gastos de administración",-TADM[0],-TADM[1]],["Gastos de ventas",-TVEN[0],-TVEN[1]]],
+  why:`Subió ${vpct(UO[0],UO[1])}. La utilidad bruta subió ${mm(dUB)}, pero los gastos subieron ${mm(dGas)} y se comieron casi todo.`,
+  clave:"Si la utilidad operacional crece menos que las ventas, el negocio es menos eficiente que antes."},
+ uai:{title:"Utilidad antes de impuestos",v:UAI[0],p:UAI[1],
+  simple:"Es la utilidad después de sumar los intereses que ganó y restar los que pagó.",
+  calc:[["Utilidad operacional",UO[0]],["Ingresos financieros",IFIN[0]],["Gastos financieros",-GFIN[0]]],parts:[["Utilidad operacional",UO[0],UO[1]],["Ingresos financieros",IFIN[0],IFIN[1]],["Gastos financieros",-GFIN[0],-GFIN[1]]],
+  why:`Casi no cambió (${vpct(UAI[0],UAI[1])}). La utilidad operacional subió ${mm(UO[0]-UO[1])}, pero los intereses que paga subieron ${mm(GFIN[0]-GFIN[1])}.`,
+  clave:"Los intereses de la deuda también le restan ganancia a la empresa."},
+ un:{title:"Utilidad neta del ejercicio",v:UN[0],p:UN[1],
+  simple:"Es lo que de verdad le queda a los dueños después de pagar todo, incluso los impuestos.",
+  calc:[["Utilidad antes de impuestos",UAI[0]],["Impuesto de renta (35 %)",-IMP[0]]],parts:[["Utilidad antes de impuestos",UAI[0],UAI[1]],["Impuesto de renta",-IMP[0],-IMP[1]]],
+  why:`Es casi igual a la de 2025 (${vpct(UN[0],UN[1])}). La empresa vendió ${pct(VN[0]/VN[1]-1,0)} más pero ganó casi lo mismo, porque el costo de la mercancía, los gastos de ventas y los intereses subieron más rápido que las ventas.`,
+  clave:`De cada $100 que vende, le quedan $${dec(UN[0]/VN[0]*100,2)} de utilidad neta.`},
+ ecpf:{title:"Patrimonio al 31 de diciembre de 2026",v:ECP_TOTF,p:ECP_TOT0,
+  simple:"Es el patrimonio con el que termina el año: lo que había al empezar, más lo que ganó la empresa, menos lo que se repartió.",
+  calc:[["Patrimonio al empezar",ECP_TOT0],["Utilidad del año",UN[0]],["Dividendos repartidos",-DIV]],parts:null,
+  why:`Creció ${vpct(ECP_TOTF,ECP_TOT0)}. Las reservas y el traslado de utilidades solo cambian de columna dentro del patrimonio: no lo aumentan ni lo bajan.`,
+  clave:"Este total debe ser igual al patrimonio del estado de situación financiera."},
+ fop:{title:"Flujo de efectivo de la operación",v:fOp,p:null,
+  simple:"Es la plata que entró y salió por el negocio del día a día: cobros a clientes, pagos a proveedores, nómina e impuestos.",
+  calc:EFE_OP.map(r=>[cl(r[0]).replace(/^\(\+\)\s*/,""),r[1]]),parts:null,
+  why:`La utilidad fue de ${fm(UN[0])}, pero solo ${fm(fOp)} se volvieron efectivo. ${mm(cxc)} quedaron atrapados en clientes, inventarios y anticipos, y se compensaron en parte con ${mm(deudasOp)} que se deben a proveedores y otros.`,
+  clave:"Utilidad no es lo mismo que efectivo."},
+ finv:{title:"Flujo de efectivo de inversión",v:fIn,p:null,
+  simple:"Es la plata que se gastó en comprar equipos para trabajar.",
+  calc:EFE_IN.map(r=>[r[0],r[1]]),parts:null,
+  why:"Salieron "+mm(-fIn)+" para comprar un equipo de oficina y un equipo de computación.",
+  clave:"Un flujo de inversión negativo es normal: la empresa está comprando para crecer."},
+ ffin:{title:"Flujo de efectivo de financiación",v:fFi,p:null,
+  simple:"Es la plata que entró o salió por las deudas y por los socios.",
+  calc:EFE_FI.map(r=>[r[0],r[1]]),parts:null,
+  why:"Salió dinero: "+mm(-EFE_FI[0][1])+" de cuotas del préstamo y "+mm(DIV)+" de dividendos. No entró ningún préstamo nuevo.",
+  clave:"Pagar dividendos y deudas gasta caja, aunque no sea un gasto del estado de resultados."},
+ fnet:{title:"Variación neta del efectivo",v:fNet,p:null,
+  simple:"Es la diferencia entre todo el dinero que entró y todo el que salió durante el año.",
+  calc:[["Operación",fOp],["Inversión",fIn],["Financiación",fFi]],parts:null,
+  why:`Entraron ${mm(fOp)} por la operación, pero salieron ${mm(-(fIn+fFi))} en inversión y financiación. Por eso la caja bajó ${mm(-fNet)}.`,
+  clave:"Una empresa puede tener utilidad y aun así quedarse con menos efectivo."},
+ efin:{title:"Efectivo al 31 de diciembre de 2026",v:efFin,p:null,
+  simple:"Es el dinero que tiene la empresa al terminar el año, entre caja y bancos.",
+  calc:[["Efectivo al empezar el año",efIni],["Variación neta del año",fNet]],parts:null,
+  why:`Es el mismo valor de «Efectivo y equivalentes» en el estado de situación financiera: ${fm(ACT_C[0][2])}.`,
+  clave:"El estado de flujos de efectivo siempre debe terminar en el efectivo del estado de situación financiera."},
+ n_caja:{title:"Total efectivo (nota 3)",v:NT.caja,p:null,simple:"Es el dinero que hay en la caja y en las cuentas del banco.",
+  calc:CAJA.map(r=>[r[0],r[1]]),parts:null,why:`Es el mismo valor de «Efectivo y equivalentes» en el estado de situación financiera: ${fm(ACT_C[0][2])}.`,clave:"Cada nota debe sumar lo mismo que su cifra en los estados."},
+ n_cli:{title:"Total clientes (nota 4)",v:NT.cli,p:null,simple:"Es lo que los clientes le deben a la empresa, separado por cuánto tiempo llevan sin pagar.",
+  calc:AGING.map(r=>[r[0],r[1]]),parts:null,why:`Es el mismo valor de «Clientes» en el estado de situación financiera. La nota agrega algo que el estado no muestra: ${mm(AGING[2][1])} llevan más de 60 días sin pagarse.`,clave:"Entre más vieja es la cartera, más difícil es cobrarla."},
+ n_inv:{title:"Total inventarios (nota 5)",v:NT.inv,p:null,simple:"Es la mercancía que la empresa tiene en bodega para vender, separada por grupos.",
+  calc:INVD.map(r=>[r[0],r[1]]),parts:null,why:`Es el mismo valor de «Inventarios de mercancías» en el estado de situación financiera: ${fm(ACT_C[2][2])}.`,clave:"El inventario se mide al costo, con el método de promedio ponderado."},
+ n_ppe:{title:"Valor en libros de los equipos (nota 6)",v:NT.ppe,p:null,simple:"Es lo que valen los equipos en los libros: lo que costaron menos lo que ya se desgastó.",
+  calc:[["Costo de los equipos",sum(PPE,3)],["Depreciación acumulada",sum(PPE,4)]],parts:null,why:`Es el mismo valor del «Total activo no corriente» del estado de situación financiera: ${fm(T.AN[0])}.`,clave:"Valor en libros = costo − depreciación acumulada."},
+ n_deuda:{title:"Total deuda con el banco (nota 7)",v:NT.deuda,p:null,simple:"Es lo que la empresa le debe al Banco Didáctico, dividido entre lo que vence pronto y lo que vence más adelante.",
+  calc:[["Cuotas de 2027 (corto plazo)",PAS_C[1][2]],["Después de 2027 (largo plazo)",PAS_N[0][2]]],parts:null,why:`Aparece en dos partes del estado de situación financiera: ${fm(PAS_C[1][2])} en el pasivo corriente y ${fm(PAS_N[0][2])} en el no corriente. La deuda está respaldada con una prenda sobre el vehículo.`,clave:"Un activo en garantía queda comprometido hasta que se pague la deuda."}
+};
+function NT_DEUDA(){return PAS_C[1][2]+PAS_N[0][2]}
+
+// ---------- ventana que explica cada total ----------
+const pop=document.createElement("aside");
+pop.className="pop"; pop.id="pop"; pop.hidden=true; pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Explicación del total");
+document.body.appendChild(pop);
+let shownId=null, shownRow=null, pinned=false, hideT=null;
+function movHTML(parts){
+  const m=parts.map(p=>({l:p[0],d:p[1]-p[2]})).filter(x=>x.d!==0).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)).slice(0,6);
+  return `<ul class="mv">${m.map(x=>`<li><span class="ar">${x.d>0?"▲":"▼"}</span><span><b>${x.l}</b> aporta <span style="white-space:nowrap">${x.d>0?"+":"−"}$${grp(x.d)}</span></span></li>`).join("")}</ul>`;
+}
+function popHTML(t){
+  const chip=t.p==null?"":`<span class="chip">${t.v>=t.p?"▲":"▼"} ${vpct(t.v,t.p)} frente a 2025</span>`;
+  const lines=t.calc.map((c,i)=>`<div><span class="sg">${i===0?"":(c[1]<0?"−":"+")}</span><span>${c[0]}</span><span class="am">${i===0?money(c[1]):grp(c[1])}</span></div>`).join("");
+  const sumv=t.calc.reduce((a,c)=>a+c[1],0);
+  return `<button class="pop-x" type="button" aria-label="Cerrar">✕</button>
+  <div class="pop-h"><span class="nm">${t.title}</span><span class="big">${fm(t.v)}</span>${chip}</div>
+  <section><h4>En palabras simples</h4><p>${t.simple}</p></section>
+  <section><h4>Cómo se calcula</h4><div class="calc">${lines}<div><span class="sg">=</span><span>${t.title}</span><span class="am">${money(sumv)}</span></div></div></section>
+  <section><h4>${t.p==null?"Para entenderlo":"Por qué cambió"}</h4><p>${t.why}</p>${t.parts?`<p class="sub" style="margin-top:8px">Lo que más movió este total (contra 2025):</p>${movHTML(t.parts)}`:""}</section>
+  ${t.clave?`<p class="key"><b>Idea clave:</b> ${t.clave}</p>`:""}`;
+}
+function place(){
+  if(pop.hidden||!shownRow)return;
+  const vw=innerWidth, vh=innerHeight;
+  if(vw<=620){pop.style.left="8px";pop.style.right="8px";pop.style.top="auto";pop.style.bottom="calc(8px + env(safe-area-inset-bottom, 0px))";pop.style.width="auto";pop.style.maxHeight="64vh";return;}
+  pop.style.right="auto";pop.style.bottom="auto";pop.style.width=Math.min(470,vw-24)+"px";pop.style.maxHeight="none";
+  const rr=shownRow.getBoundingClientRect(), pw=pop.offsetWidth, ph=pop.offsetHeight;
+  const below=vh-rr.bottom-10, above=rr.top-10;
+  let top, mh;
+  if(ph<=below){top=rr.bottom+2;mh=ph}
+  else if(ph<=above){top=rr.top-ph-2;mh=ph}
+  else if(Math.max(below,above)>=220){ if(below>=above){top=rr.bottom+2;mh=below}else{mh=above;top=rr.top-mh-2} }
+  else {mh=Math.min(ph,vh-16);top=8}
+  pop.style.maxHeight=mh+"px";
+  const left=Math.min(Math.max(12,rr.left+16),vw-pw-12);
+  pop.style.left=left+"px"; pop.style.top=top+"px";
+}
+function openTip(row,pin){
+  clearTimeout(hideT);
+  const id=row.dataset.tip; if(!TIPS[id])return;
+  shownId=id; shownRow=row; pinned=!!pin;
+  const sc=[...row.closest(".panel").classList].find(c=>c.indexOf("s-")===0)||"";
+  pop.className="pop "+sc; pop.innerHTML=popHTML(TIPS[id]); pop.scrollTop=0; pop.hidden=false; place();
+}
+function closeTip(){clearTimeout(hideT);pop.hidden=true;shownId=null;shownRow=null;pinned=false}
+const rowOf=e=>e.target&&e.target.closest?e.target.closest(".has-tip"):null;
+document.addEventListener("mouseover",e=>{const r=rowOf(e);if(r&&!pinned)openTip(r,false)});
+document.addEventListener("mouseout",e=>{const r=rowOf(e);if(r&&!pinned&&!(e.relatedTarget&&(r.contains(e.relatedTarget)||pop.contains(e.relatedTarget))))hideT=setTimeout(closeTip,180)});
+pop.addEventListener("mouseenter",()=>clearTimeout(hideT));
+pop.addEventListener("mouseleave",()=>{if(!pinned)hideT=setTimeout(closeTip,180)});
+document.addEventListener("click",e=>{
+  if(e.target.closest&&e.target.closest(".pop-x")){closeTip();return}
+  const r=rowOf(e);
+  if(r){ if(shownId===r.dataset.tip&&pinned)closeTip(); else openTip(r,true); return }
+  if(!pop.hidden&&!pop.contains(e.target))closeTip();
+});
+document.addEventListener("focusin",e=>{const r=rowOf(e);if(r&&!pinned)openTip(r,false)});
+document.addEventListener("focusout",e=>{const r=rowOf(e);if(r&&!pinned)closeTip()});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&!pop.hidden){closeTip();return}
+  const r=rowOf(e); if(r&&(e.key==="Enter"||e.key===" ")){e.preventDefault(); if(shownId===r.dataset.tip&&pinned)closeTip(); else openTip(r,true)}
+});
+addEventListener("scroll",()=>{if(!pop.hidden)place()},{passive:true});
+addEventListener("resize",place);
+
+// ---------- armar la página ----------
+const tabs=$("#tabs"), panels=$("#panels");
+S.forEach(s=>{
+  tabs.insertAdjacentHTML("beforeend",`<button class="tab ${s.cls}" role="tab" id="tab-${s.id}" aria-selected="false" aria-controls="p-${s.id}" data-id="${s.id}"><small>${s.lbl||"Estado "+s.n}</small><span class="t">${s.tab}</span></button>`);
+  panels.insertAdjacentHTML("beforeend",`<section class="panel ${s.cls}" id="p-${s.id}" role="tabpanel" aria-labelledby="tab-${s.id}" hidden>
+   <div class="title"><span class="pill">Unidad 4 · Estados financieros</span><div class="ttl"><span class="num">${s.n}</span><h2>${s.t}</h2></div><p class="q">${s.q}</p></div>
+   <div class="cols"><div class="card"><h3>${s.n===5?"Qué son":"Qué es"}</h3><p>${s.que}</p></div><div class="card"><h3>${s.n===5?"Para qué sirven":"Para qué sirve"}</h3><p>${s.sirve}</p></div></div>
+   <div class="card"><h3>${s.n===5?"Qué contienen":"Cómo se organiza"}</h3><p>${s.org}</p></div>
+   ${s.tabla()}
+   ${s.kpi?`<div class="plain"><h3>Indicadores para leerlo</h3>${s.kpi()}</div>`:""}
+   <div class="cols"><div class="plain"><h3>Lo más importante</h3>${s.imp()}</div><div class="plain"><h3>Qué hacer para mejorar</h3>${s.mej()}</div></div>
+   ${s.pen()}
+  </section>`);
+});
+$("#link").innerHTML=`<h2>Cómo se conectan los estados y las notas</h2><ul>
+ <li>La utilidad neta del <b>estado de resultados</b> ($${grp(UN[0])}) pasa al <b>estado de cambios en el patrimonio</b>.</li>
+ <li>El patrimonio final ($${grp(ECP_TOTF)}) es el mismo del <b>estado de situación financiera</b>.</li>
+ <li>El <b>estado de flujos de efectivo</b> parte de la utilidad neta y termina en el efectivo del estado de situación financiera ($${grp(efFin)}).</li>
+ <li>Las <b>notas</b> explican cada cifra de los cuatro estados y deben sumar lo mismo que ellos.</li>
+ <li>Siempre se cumple: Activo $${grp(T.A[0])} = Pasivo $${grp(T.P[0])} + Patrimonio $${grp(T.PT[0])}.</li></ul>`;
+
+function show(id){
+  closeTip();
+  if(!S.some(s=>s.id===id)) id="situacion";
+  S.forEach(s=>{$("#p-"+s.id).hidden=s.id!==id;$("#tab-"+s.id).setAttribute("aria-selected",String(s.id===id))});
+}
+tabs.addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;location.hash=b.dataset.id;show(b.dataset.id)});
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+show(location.hash.slice(1));
+</script>
+
+</body></html>
