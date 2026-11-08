@@ -59,6 +59,15 @@ p{margin:0}
 .ej li{padding-left:2px}
 .ej .f{font-weight:700;color:var(--dc)}
 .note{font-size:.88rem;color:var(--muted)}
+.exp1{border-left:5px solid var(--dc);background:var(--ds)}
+.exp1 summary{color:var(--dc)}
+.exp1 p{margin:6px 0}
+.mov{list-style:none;padding:0!important;margin:8px 0!important;display:flex;flex-direction:column;gap:8px}
+.mov li{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.lado{flex:0 0 auto;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border-radius:4px;padding:2px 8px;margin-top:2px}
+.lado.deb{background:var(--d2s);color:var(--d2);border:1px solid var(--d2)}
+.lado.cre{background:var(--d4s);color:var(--d4);border:1px solid var(--d4)}
+.cuadra{font-weight:700;color:var(--ok)}
 .vals{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .val{display:inline-flex;flex-direction:column;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:3px 10px;line-height:1.25}
 .val small{font-size:.72rem;color:var(--muted)}
@@ -203,34 +212,34 @@ const CAT={1105:"Caja",1110:"Bancos",1305:"Clientes",1355:"Anticipo de impuestos
 // f: fecha · t: enunciado · v: valores que ve el estudiante · d: detalle para los auxiliares · l: [código, débito, crédito]
 const OPS=[
  {f:"1-nov",t:"Se constituye Papelería Aprende S.A.S. Los socios suscriben y pagan un capital de $20.000.000: entregan $3.000.000 en efectivo y consignan $17.000.000 en la cuenta corriente de la empresa.",
-  v:[["Efectivo",3000000],["Consignación",17000000],["Capital total",20000000]],d:"Aporte de los socios",
+  v:[["Efectivo",3000000],["Consignación",17000000],["Capital total",20000000]],d:"Aporte de los socios",x:{p:"Los dueños (socios) ponen dinero para arrancar el negocio. Ese dinero entra a la empresa por dos lados: una parte a la caja (billetes) y otra al banco.",w:["La caja recibe dinero, o sea que aumenta. Lo que aumenta en la empresa va al Débito.","El banco también recibe dinero y aumenta, así que también va al Débito.","¿De dónde salió el dinero? De los socios. Ese aporte es el patrimonio de los dueños y va al Crédito."]},
   l:[[1105,3000000,0],[1110,17000000,0],[3105,0,20000000]]},
  {f:"3-nov",t:"Compra mercancía a Distribuidora Escolar S.A.S. a crédito, factura electrónica FE-201. La empresa practica retención en la fuente por compras del 2,5 % sobre la base (sin IVA) y queda debiendo el neto.",
-  v:[["Base",6000000],["IVA 19 %",1140000],["Total factura",7140000],["Retención 2,5 %",150000],["Neto por pagar",6990000]],d:"Factura de compra FE-201",
+  v:[["Base",6000000],["IVA 19 %",1140000],["Total factura",7140000],["Retención 2,5 %",150000],["Neto por pagar",6990000]],d:"Factura de compra FE-201",x:{p:"La papelería compra cuadernos, colores y papel para venderlos, y no los paga todavía. Además se queda con un pedacito de la factura (la retención) porque la ley le pide entregárselo a la DIAN.",w:["Llega mercancía para vender: el inventario aumenta. Va al Débito solo por la base, sin IVA.","El IVA que pagamos al comprar después se puede descontar del IVA que cobremos en las ventas. Por eso va al Débito.","La retención (2,5 % de la base) no se le paga al proveedor: se le debe a la DIAN. Una deuda nueva va al Crédito.","Al proveedor le quedamos debiendo el total de la factura menos la retención: 7.140.000 − 150.000 = 6.990.000. Es una deuda, va al Crédito."]},
   l:[[1435,6000000,0],[2408,1140000,0],[2365,0,150000],[2205,0,6990000]]},
  {f:"5-nov",t:"Compra a Tecnoandes S.A.S. un computador para la caja y lo paga con transferencia. Se le practica retención del 2,5 % sobre la base. Ojo: el IVA de un activo fijo no es descontable; se suma al costo del computador.",
-  v:[["Base",2800000],["IVA 19 %",532000],["Total factura",3332000],["Retención 2,5 %",70000],["Neto transferido",3262000]],d:"Compra de computador a Tecnoandes",
+  v:[["Base",2800000],["IVA 19 %",532000],["Total factura",3332000],["Retención 2,5 %",70000],["Neto transferido",3262000]],d:"Compra de computador a Tecnoandes",x:{p:"La papelería compra un computador para usarlo en el negocio (no para venderlo). Lo paga desde el banco y retiene una parte para la DIAN.",w:["El computador es un bien de la empresa que aumenta: va al Débito. Aquí va por el total con IVA (2.800.000 + 532.000), porque el IVA de un activo fijo no se descuenta: se vuelve parte de lo que costó el equipo.","La retención (2,5 % de 2.800.000) no se le paga al vendedor: se le debe a la DIAN. Va al Crédito.","Del banco sale lo que de verdad se transfirió: 3.332.000 − 70.000 = 3.262.000. Si sale dinero, el banco disminuye y va al Crédito."]},
   l:[[1528,3332000,0],[2365,0,70000],[1110,0,3262000]]},
  {f:"8-nov",t:"Vende mercancía a crédito al Colegio San José, factura de venta FV-001. El colegio es agente de retención y le descuenta a la papelería una retención del 2,5 % sobre la base; esa retención queda como un anticipo de impuestos a favor de la empresa.",
-  v:[["Base",5000000],["IVA 19 %",950000],["Total factura",5950000],["Retención que nos practican 2,5 %",125000],["Neto por cobrar",5825000]],d:"Factura de venta FV-001",
+  v:[["Base",5000000],["IVA 19 %",950000],["Total factura",5950000],["Retención que nos practican 2,5 %",125000],["Neto por cobrar",5825000]],d:"Factura de venta FV-001",x:{p:"La papelería le vende al Colegio San José y el colegio queda debiendo. El colegio se queda con un pedacito (la retención) y lo paga a la DIAN a nombre de la papelería, así que ese valor es un abono a los impuestos de la papelería.",w:["El colegio nos queda debiendo el total menos la retención: 5.950.000 − 125.000 = 5.825.000. Lo que nos deben es algo que tenemos a favor: va al Débito.","La retención que nos hizo el colegio es dinero que ya quedó abonado a nuestros impuestos. Es un saldo a favor de la empresa: va al Débito.","La venta (sin IVA) es el ingreso que ganamos. Los ingresos van al Crédito.","El IVA que cobramos no es nuestro: se le debe a la DIAN. Va al Crédito."]},
   l:[[1305,5825000,0],[1355,125000,0],[4135,0,5000000],[2408,0,950000]]},
  {f:"12-nov",t:"Vende mercancía de contado, en efectivo, a clientes varios (factura FV-002).",
-  v:[["Base",1200000],["IVA 19 %",228000],["Total recibido",1428000]],d:"Venta de contado FV-002",
+  v:[["Base",1200000],["IVA 19 %",228000],["Total recibido",1428000]],d:"Venta de contado FV-002",x:{p:"Una venta normal en el mostrador: el cliente paga en efectivo y se lleva la mercancía.",w:["Entra dinero a la caja (venta + IVA): la caja aumenta y va al Débito.","La venta sin IVA es el ingreso de la empresa: va al Crédito.","El IVA cobrado se le debe a la DIAN: va al Crédito."]},
   l:[[1105,1428000,0],[4135,0,1200000],[2408,0,228000]]},
  {f:"14-nov",t:"Consigna en la cuenta corriente parte del efectivo de la caja.",
-  v:[["Valor consignado",2000000]],d:"Consignación de efectivo",
+  v:[["Valor consignado",2000000]],d:"Consignación de efectivo",x:{p:"Es como pasar plata de un bolsillo a otro: el dinero sale de la caja y entra al banco. La empresa no gana ni pierde nada.",w:["El banco recibe el dinero, aumenta: va al Débito.","La caja entrega el dinero, disminuye: va al Crédito."]},
   l:[[1110,2000000,0],[1105,0,2000000]]},
  {f:"15-nov",t:"Hace un abono a Distribuidora Escolar S.A.S. por transferencia (comprobante de egreso CE-001).",
-  v:[["Valor del abono",3000000]],d:"Abono a Distribuidora Escolar CE-001",
+  v:[["Valor del abono",3000000]],d:"Abono a Distribuidora Escolar CE-001",x:{p:"La papelería le paga una parte de lo que le debe a su proveedor.",w:["La deuda con el proveedor baja. Cuando una deuda disminuye, va al Débito (al revés de cuando nace).","El dinero sale del banco, que disminuye: va al Crédito."]},
   l:[[2205,3000000,0],[1110,0,3000000]]},
  {f:"18-nov",t:"Paga por transferencia el servicio de internet del mes a Conexión Total S.A.S. Por su cuantía no lleva retención en la fuente. El IVA de este servicio sí es descontable.",
-  v:[["Base",150000],["IVA 19 %",28500],["Total pagado",178500]],d:"Pago servicio de internet",
+  v:[["Base",150000],["IVA 19 %",28500],["Total pagado",178500]],d:"Pago servicio de internet",x:{p:"La papelería paga el internet del mes. Es un gasto para poder funcionar.",w:["El internet es un gasto del mes. Los gastos van al Débito.","El IVA del servicio se puede descontar después, igual que en las compras: va al Débito.","Del banco sale el total pagado (150.000 + 28.500): va al Crédito."]},
   l:[[5135,150000,0],[2408,28500,0],[1110,0,178500]]},
  {f:"20-nov",t:"El Colegio San José abona a su factura por transferencia (recibo de caja RC-001).",
-  v:[["Valor del abono",3000000]],d:"Abono del Colegio San José RC-001",
+  v:[["Valor del abono",3000000]],d:"Abono del Colegio San José RC-001",x:{p:"El Colegio San José paga una parte de lo que debía, con una transferencia.",w:["Entra dinero al banco, que aumenta: va al Débito.","El colegio ahora debe menos. Lo que nos deben disminuye: va al Crédito."]},
   l:[[1110,3000000,0],[1305,0,3000000]]},
  {f:"25-nov",t:"Paga en efectivo el arriendo del local de noviembre. El arrendador es una persona natural que no cobra IVA; la empresa le practica retención por arrendamiento del 3,5 %.",
-  v:[["Valor del arriendo",1500000],["IVA",0],["Retención 3,5 %",52500],["Neto pagado",1447500]],d:"Pago arriendo de noviembre",
+  v:[["Valor del arriendo",1500000],["IVA",0],["Retención 3,5 %",52500],["Neto pagado",1447500]],d:"Pago arriendo de noviembre",x:{p:"La papelería paga el arriendo del local. El dueño del local no cobra IVA, pero la papelería le retiene una parte para la DIAN.",w:["El arriendo es un gasto del mes completo (1.500.000): va al Débito.","La retención (3,5 % de 1.500.000) se le debe a la DIAN: va al Crédito.","De la caja sale lo que de verdad se le entregó al arrendador: 1.500.000 − 52.500 = 1.447.500. La caja disminuye: va al Crédito."]},
   l:[[5120,1500000,0],[2365,0,52500],[1105,0,1447500]]}
 ];
 // Todo lo demás se calcula a partir de las operaciones
@@ -281,6 +290,13 @@ const ejOps=()=>`<ol class="ej">${OPS.map(o=>`<li><span class="f">${o.f}.</span>
 const diarioRef=()=>`<details><summary>Ver el libro diario resuelto (referencia)</summary><div class="tw"><table><thead><tr><th>Asiento</th><th>Fecha</th><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th></tr></thead><tbody>${OPS.map((o,i)=>o.l.map(l=>`<tr><td>${i+1}</td><td>${o.f}</td><td>${l[0]}</td><td>${CAT[l[0]]}</td><td class="n">${l[1]?fmt(l[1]):""}</td><td class="n">${l[2]?fmt(l[2]):""}</td></tr>`).join("")).join("")}</tbody></table></div></details>`;
 const catRef=()=>`<details><summary>Ver el catálogo de cuentas (PUC)</summary><div class="tw"><table style="min-width:0"><tbody>${Object.entries(CAT).map(([c,n])=>`<tr><td>${c}</td><td>${n}</td></tr>`).join("")}</tbody></table></div></details>`;
 
+function explica(o,i){
+  const sd=o.l.reduce((a,l)=>a+l[1],0);
+  return `<details class="exp1"><summary>💬 ¿Qué pasó en el asiento ${i+1}? Explicación sencilla</summary>
+  <p>${o.x.p}</p><ul class="mov">${o.l.map((l,j)=>`<li><span class="lado ${l[1]?"deb":"cre"}">${l[1]?"Débito":"Crédito"}</span><div><b>${l[0]} · ${CAT[l[0]]}</b> · $${fmt(l[1]||l[2])}<br>${o.x.w[j]}</div></li>`).join("")}</ul>
+  <p class="cuadra">✔ Comprobación: débitos $${fmt(sd)} = créditos $${fmt(sd)}. Si tus dos columnas suman lo mismo, vas bien.</p>
+  <p class="note">Truco: lo que <b>entra o aumenta</b> (dinero, mercancía, equipos, gastos, lo que nos deben) va al <b>Débito</b>. Lo que <b>sale</b>, lo que <b>debemos</b> y lo que <b>ganamos</b> va al <b>Crédito</b>.</p></details>`;
+}
 function intro(d){
   return `<div class="band"><span class="eyebrow">Día ${d.n}${d.sub?" · "+d.sub:""}</span><h2>${d.t}</h2></div>
   <div class="cols"><div class="box"><h3>¿Qué es?</h3><p>${d.que}</p></div>
@@ -297,7 +313,7 @@ function day1(){
     h+=`<div class="asiento"><div class="ahead"><span class="lbl">Asiento ${i+1} · ${o.f}</span><span class="note">${o.t}</span>${vals(o)}</div><div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th><th class="ic">✓</th></tr></thead><tbody>`;
     o.l.forEach((_,j)=>{const k=`d1-${i}-${j}`;
       h+=`<tr><td><select class="cel" id="${k}-c" data-k="${k}-c" aria-label="Código asiento ${i+1} línea ${j+1}">${codeOpts}</select></td><td class="cuenta" id="${k}-n"></td><td>${numIn(k+"-d","Débito")}</td><td>${numIn(k+"-cr","Crédito")}</td><td class="ic" id="${k}-i"></td></tr>`});
-    h+=`<tr class="sum"><td></td><td><span class="msg" id="d1-${i}-m"></span></td><td class="n" id="d1-${i}-sd">0</td><td class="n" id="d1-${i}-sc">0</td><td></td></tr></tbody></table></div></div>`;
+    h+=`<tr class="sum"><td></td><td><span class="msg" id="d1-${i}-m"></span></td><td class="n" id="d1-${i}-sd">0</td><td class="n" id="d1-${i}-sc">0</td><td></td></tr></tbody></table></div>${explica(o,i)}</div>`;
   });
   return h;
 }
