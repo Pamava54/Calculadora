@@ -59,6 +59,14 @@ p{margin:0}
 .ej li{padding-left:2px}
 .ej .f{font-weight:700;color:var(--dc)}
 .note{font-size:.88rem;color:var(--muted)}
+.vals{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.val{display:inline-flex;flex-direction:column;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:3px 10px;line-height:1.25}
+.val small{font-size:.72rem;color:var(--muted)}
+.val b{font-variant-numeric:tabular-nums;font-size:.95rem;color:var(--ink)}
+.val.iva{border-color:var(--d1);background:var(--d1s)}
+.val.iva small,.val.iva b{color:var(--d1)}
+.val.ret{border-color:var(--d5);background:var(--d5s)}
+.val.ret small,.val.ret b{color:var(--d5)}
 details{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
 details summary{cursor:pointer;font-weight:700}
 details[open] summary{margin-bottom:10px}
@@ -110,15 +118,54 @@ tr.sum td{background:var(--bg);font-weight:700}
 .sheet-b .box{border:0;padding:0}
 html.sheet-open{scroll-padding-bottom:46vh}
 html.sheet-open .wrap{padding-bottom:calc(42vh + 24px)}
+/* encabezado fijo: título, nombre, nota, leyenda y pestañas siempre visibles */
+.stick{position:sticky;top:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;gap:12px;margin-inline:-16px;padding:10px 16px 10px;border-bottom:1px solid transparent}
+.stick.mini{border-bottom-color:var(--line);box-shadow:0 6px 14px rgba(0,0,0,.08);gap:8px;padding-block:6px 8px}
+.stick.mini .back,.stick.mini .top .sub{display:none}
+.stick.mini h1{font-size:1.15rem}
+.stick.mini .who label{flex-direction:row;align-items:center;gap:6px}
+.stick.mini .who input{padding:4px 8px;width:180px}
+.stick.mini .nota{padding:2px 12px;display:flex;align-items:baseline;gap:6px}
+.stick.mini .nota b{font-size:1.15rem}
+.stick.mini .legend{font-size:.78rem;gap:8px}
+.stick.mini .legend span:last-child{display:none}
+.stick.mini .tab{padding:5px 10px;flex-basis:130px}
+.stick.mini .tab .t{font-size:.85rem}
+@media (max-width:720px){
+  .stick.mini .legend{display:none}
+  .stick.mini .top{gap:6px;align-items:center}
+  .stick.mini .who label{font-size:0}
+  .stick.mini .who input{font-size:.9rem;width:150px}
+  .tab{flex-basis:128px}
+}
+/* calculadora flotante (igual a la del Taller de asientos) */
+.calc{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;width:min(310px,calc(100vw - 24px));font-family:var(--f-body)}
+.calc:not(.open){width:auto}
+.calc .ct{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;background:var(--d1);color:var(--surface);border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.calc.open .ct{border-radius:12px 12px 0 0}
+.calc .cb{display:none;background:var(--surface);border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;padding:10px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.calc.open .cb{display:block}
+.calc input{width:100%;font-family:ui-monospace,Consolas,monospace;font-size:16px;text-align:right;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--input);color:var(--ink)}
+.calc .cr{font-family:ui-monospace,Consolas,monospace;font-size:20px;font-weight:700;text-align:right;min-height:1.6em;margin:6px 2px;word-break:break-all}
+.calc .ck{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.calc .ck button{font:inherit;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 0;font-size:16px;font-weight:600;cursor:pointer;color:var(--ink)}
+.calc .ck button.op{background:var(--d1s);color:var(--d1)}
+.calc .ck button.eq{background:var(--d1);color:var(--surface);border-color:var(--d1)}
+.calc .cc{display:flex;gap:6px;margin-top:8px}
+.calc .cc button{font:inherit;flex:1;border:0;border-radius:8px;padding:7px;background:var(--d1s);color:var(--d1);font-weight:600;cursor:pointer}
+.calc .ct span:first-child{white-space:nowrap}
+.calc .ct small{font-size:.78rem}
+@media (max-width:720px){.calc .ct small{display:none}}
 </style>
 
 </head><body>
 <div class="wrap">
+  <div class="stick" id="stick">
   <header class="top">
     <div>
       <a class="back" href="index.html">← Centro de Calculadoras</a>
       <h1>Los 4 libros contables en 5 días</h1>
-      <p class="sub">Papelería Aprende S.A.S. · Noviembre de 2026 · IVA 19 % · Plan Único de Cuentas (PUC)</p>
+      <p class="sub">Papelería Aprende S.A.S. · Noviembre de 2026 · IVA 19 % · Retención en la fuente · PUC</p>
     </div>
     <div class="who">
       <label for="nombre">Nombre del estudiante<input id="nombre" data-k="nombre" placeholder="Escribe tu nombre" autocomplete="off"></label>
@@ -132,6 +179,7 @@ html.sheet-open .wrap{padding-bottom:calc(42vh + 24px)}
     <span>Escribe los valores sin puntos ni $ (ej. 1200000). Tu avance se guarda en este navegador.</span>
   </div>
   <nav class="tabs" id="tabs" role="tablist"></nav>
+  </div>
   <main id="days"></main>
 </div>
 
@@ -146,38 +194,67 @@ html.sheet-open .wrap{padding-bottom:calc(42vh + 24px)}
   </div>
 </aside>
 
+<div class="calc" id="calc"><button class="ct" id="calcT" type="button" aria-expanded="false"><span>🧮 Calculadora <small style="font-weight:500;opacity:.8">· arrástrala · Alt+C</small></span><span id="calcI">▲</span></button>
+<div class="cb"><input id="calcE" type="text" inputmode="decimal" autocomplete="off" placeholder="Escribe: 6000000 * 19 / 100 y Enter" aria-label="Operación"><div class="cr" id="calcR" aria-live="polite"></div>
+<div class="ck" id="calcK"></div><div class="cc"><button id="calcCp" type="button">Copiar resultado</button><button id="calcCl" type="button">Borrar</button></div></div></div>
+
 <script>
-const CAT={1105:"Caja",1110:"Bancos",1305:"Clientes",1435:"Mercancías no fabricadas por la empresa",1524:"Equipo de oficina",1528:"Equipo de computación y comunicación",2205:"Proveedores nacionales",2335:"Costos y gastos por pagar",2408:"Impuesto sobre las ventas por pagar (IVA)",3105:"Capital suscrito y pagado",4135:"Comercio al por mayor y al por menor",5120:"Arrendamientos",5135:"Servicios"};
+const CAT={1105:"Caja",1110:"Bancos",1305:"Clientes",1355:"Anticipo de impuestos (retención en la fuente a favor)",1435:"Mercancías no fabricadas por la empresa",1524:"Equipo de oficina",1528:"Equipo de computación y comunicación",2205:"Proveedores nacionales",2335:"Costos y gastos por pagar",2365:"Retención en la fuente",2408:"Impuesto sobre las ventas por pagar (IVA)",3105:"Capital suscrito y pagado",4135:"Comercio al por mayor y al por menor",5120:"Arrendamientos",5135:"Servicios"};
+// f: fecha · t: enunciado · v: valores que ve el estudiante · d: detalle para los auxiliares · l: [código, débito, crédito]
 const OPS=[
- {f:"1-nov",t:"Se crea Papelería Aprende S.A.S. Los socios aportan un capital de $10.000.000: entregan $2.000.000 en efectivo y consignan $8.000.000 en la cuenta bancaria de la empresa.",l:[[1105,2000000,0],[1110,8000000,0],[3105,0,10000000]]},
- {f:"3-nov",t:"Compra mercancía a Distribuidora Escolar S.A.S. por $3.000.000 más IVA del 19 %, a crédito (factura de compra FE-201). La empresa queda debiendo el total.",l:[[1435,3000000,0],[2408,570000,0],[2205,0,3570000]]},
- {f:"5-nov",t:"Compra un computador para la caja por $2.500.000 y lo paga con transferencia bancaria. En este ejercicio el computador no lleva IVA.",l:[[1528,2500000,0],[1110,0,2500000]]},
- {f:"10-nov",t:"Vende mercancía al Colegio San José por $4.000.000 más IVA del 19 %, a crédito (factura de venta FV-001). El colegio queda debiendo el total.",l:[[1305,4760000,0],[4135,0,4000000],[2408,0,760000]]},
- {f:"15-nov",t:"Hace un abono de $1.500.000 a Distribuidora Escolar S.A.S. con transferencia bancaria.",l:[[2205,1500000,0],[1110,0,1500000]]},
- {f:"20-nov",t:"El Colegio San José abona $1.000.000 en efectivo (recibo de caja RC-001).",l:[[1105,1000000,0],[1305,0,1000000]]},
- {f:"25-nov",t:"Paga en efectivo el arriendo del local de noviembre por $800.000. El arrendador es una persona que no cobra IVA.",l:[[5120,800000,0],[1105,0,800000]]}
+ {f:"1-nov",t:"Se constituye Papelería Aprende S.A.S. Los socios suscriben y pagan un capital de $20.000.000: entregan $3.000.000 en efectivo y consignan $17.000.000 en la cuenta corriente de la empresa.",
+  v:[["Efectivo",3000000],["Consignación",17000000],["Capital total",20000000]],d:"Aporte de los socios",
+  l:[[1105,3000000,0],[1110,17000000,0],[3105,0,20000000]]},
+ {f:"3-nov",t:"Compra mercancía a Distribuidora Escolar S.A.S. a crédito, factura electrónica FE-201. La empresa practica retención en la fuente por compras del 2,5 % sobre la base (sin IVA) y queda debiendo el neto.",
+  v:[["Base",6000000],["IVA 19 %",1140000],["Total factura",7140000],["Retención 2,5 %",150000],["Neto por pagar",6990000]],d:"Factura de compra FE-201",
+  l:[[1435,6000000,0],[2408,1140000,0],[2365,0,150000],[2205,0,6990000]]},
+ {f:"5-nov",t:"Compra a Tecnoandes S.A.S. un computador para la caja y lo paga con transferencia. Se le practica retención del 2,5 % sobre la base. Ojo: el IVA de un activo fijo no es descontable; se suma al costo del computador.",
+  v:[["Base",2800000],["IVA 19 %",532000],["Total factura",3332000],["Retención 2,5 %",70000],["Neto transferido",3262000]],d:"Compra de computador a Tecnoandes",
+  l:[[1528,3332000,0],[2365,0,70000],[1110,0,3262000]]},
+ {f:"8-nov",t:"Vende mercancía a crédito al Colegio San José, factura de venta FV-001. El colegio es agente de retención y le descuenta a la papelería una retención del 2,5 % sobre la base; esa retención queda como un anticipo de impuestos a favor de la empresa.",
+  v:[["Base",5000000],["IVA 19 %",950000],["Total factura",5950000],["Retención que nos practican 2,5 %",125000],["Neto por cobrar",5825000]],d:"Factura de venta FV-001",
+  l:[[1305,5825000,0],[1355,125000,0],[4135,0,5000000],[2408,0,950000]]},
+ {f:"12-nov",t:"Vende mercancía de contado, en efectivo, a clientes varios (factura FV-002).",
+  v:[["Base",1200000],["IVA 19 %",228000],["Total recibido",1428000]],d:"Venta de contado FV-002",
+  l:[[1105,1428000,0],[4135,0,1200000],[2408,0,228000]]},
+ {f:"14-nov",t:"Consigna en la cuenta corriente parte del efectivo de la caja.",
+  v:[["Valor consignado",2000000]],d:"Consignación de efectivo",
+  l:[[1110,2000000,0],[1105,0,2000000]]},
+ {f:"15-nov",t:"Hace un abono a Distribuidora Escolar S.A.S. por transferencia (comprobante de egreso CE-001).",
+  v:[["Valor del abono",3000000]],d:"Abono a Distribuidora Escolar CE-001",
+  l:[[2205,3000000,0],[1110,0,3000000]]},
+ {f:"18-nov",t:"Paga por transferencia el servicio de internet del mes a Conexión Total S.A.S. Por su cuantía no lleva retención en la fuente. El IVA de este servicio sí es descontable.",
+  v:[["Base",150000],["IVA 19 %",28500],["Total pagado",178500]],d:"Pago servicio de internet",
+  l:[[5135,150000,0],[2408,28500,0],[1110,0,178500]]},
+ {f:"20-nov",t:"El Colegio San José abona a su factura por transferencia (recibo de caja RC-001).",
+  v:[["Valor del abono",3000000]],d:"Abono del Colegio San José RC-001",
+  l:[[1110,3000000,0],[1305,0,3000000]]},
+ {f:"25-nov",t:"Paga en efectivo el arriendo del local de noviembre. El arrendador es una persona natural que no cobra IVA; la empresa le practica retención por arrendamiento del 3,5 %.",
+  v:[["Valor del arriendo",1500000],["IVA",0],["Retención 3,5 %",52500],["Neto pagado",1447500]],d:"Pago arriendo de noviembre",
+  l:[[5120,1500000,0],[2365,0,52500],[1105,0,1447500]]}
 ];
-const AUX=[
- {c:1105,n:"Caja",tipo:"activo",r:[["1-nov","Aporte de los socios en efectivo",2000000,0,2000000],["20-nov","Abono del Colegio San José",1000000,0,3000000],["25-nov","Pago arriendo de noviembre",0,800000,2200000]]},
- {c:1110,n:"Bancos",tipo:"activo",r:[["1-nov","Consignación del aporte de los socios",8000000,0,8000000],["5-nov","Transferencia compra de computador",0,2500000,5500000],["15-nov","Transferencia abono a Distribuidora Escolar",0,1500000,4000000]]},
- {c:1305,n:"Clientes · Colegio San José",tipo:"activo",r:[["10-nov","Factura de venta FV-001",4760000,0,4760000],["20-nov","Abono en efectivo RC-001",0,1000000,3760000]]},
- {c:2205,n:"Proveedores · Distribuidora Escolar S.A.S.",tipo:"pasivo",r:[["3-nov","Factura de compra FE-201",0,3570000,3570000],["15-nov","Abono por transferencia",1500000,0,2070000]]}
-];
-const MAY=[[1105,3000000,800000,2200000,"Deudor"],[1110,8000000,4000000,4000000,"Deudor"],[1305,4760000,1000000,3760000,"Deudor"],[1435,3000000,0,3000000,"Deudor"],[1528,2500000,0,2500000,"Deudor"],[2205,1500000,3570000,2070000,"Acreedor"],[2408,570000,760000,190000,"Acreedor"],[3105,0,10000000,10000000,"Acreedor"],[4135,0,4000000,4000000,"Acreedor"],[5120,800000,0,800000,"Deudor"]];
-const CLASE={1105:"Activo",1110:"Activo",1305:"Activo",1435:"Activo",1528:"Activo",2205:"Pasivo",2408:"Pasivo",3105:"Patrimonio",4135:"Ingreso",5120:"Gasto"};
-const INV=[["Cuadernos de 100 hojas",100,12000],["Cajas de colores x 12",50,20000],["Resmas de papel carta",40,20000]];
-const TOT=[["Total activos",15460000],["Total pasivos",2260000],["Utilidad del período (ingresos − gastos)",3200000],["Total patrimonio (capital + utilidad)",13200000],["Total pasivo + patrimonio",15460000]];
+// Todo lo demás se calcula a partir de las operaciones
+const AUXDEF=[[1105,"Caja","activo"],[1110,"Bancos","activo"],[1305,"Clientes · Colegio San José","activo"],[2205,"Proveedores · Distribuidora Escolar S.A.S.","pasivo"]];
+const AUX=AUXDEF.map(([c,n,tipo])=>{let sal=0;const r=[];OPS.forEach(o=>o.l.forEach(l=>{if(l[0]!==c)return;sal+=tipo==="activo"?l[1]-l[2]:l[2]-l[1];r.push([o.f,o.d,l[1],l[2],sal])}));return {c,n,tipo,r}});
+const MAY=(()=>{const m={};OPS.forEach(o=>o.l.forEach(([c,d,cr])=>{m[c]=m[c]||[c,0,0];m[c][1]+=d;m[c][2]+=cr}));
+  return Object.values(m).sort((a,b)=>a[0]-b[0]).map(([c,d,cr])=>[c,d,cr,Math.abs(d-cr),d>=cr?"Deudor":"Acreedor"])})();
+const CLASE={};MAY.forEach(m=>{CLASE[m[0]]=["","Activo","Pasivo","Patrimonio","Ingreso","Gasto"][String(m[0])[0]]});
+const sumBy=(f)=>MAY.filter(m=>f(String(m[0])[0])).reduce((a,m)=>a+(m[4]==="Deudor"?m[3]:-m[3]),0);
+const TOTDEU=MAY.filter(m=>m[4]==="Deudor").reduce((a,m)=>a+m[3],0);
+const ACT=sumBy(x=>x==="1"),PAS=-sumBy(x=>x==="2"),UTIL=-sumBy(x=>x==="4"||x==="5"),PAT=-sumBy(x=>x==="3")+UTIL;
+const INV=[["Cuadernos de 100 hojas",150,12000],["Cajas de colores x 12",100,22000],["Resmas de papel carta",80,25000]];
+const TOT=[["Total activos",ACT],["Total pasivos",PAS],["Utilidad del período (ingresos − gastos)",UTIL],["Total patrimonio (capital + utilidad)",PAT],["Total pasivo + patrimonio",PAS+PAT]];
 const EVAL=[
  {q:"¿En qué libro se anotan las operaciones una por una, en orden de fecha, con débito y crédito?",o:["Libro mayor y balances","Libro diario","Libro de inventarios y balances","Libro auxiliar"],a:1,e:"El libro diario registra cada operación en orden cronológico como un asiento."},
- {q:"El libro auxiliar de Clientes sirve para:",o:["Saber cuánto debe cada cliente y sus movimientos","Calcular la utilidad del mes","Comprobar que débitos y créditos son iguales","Registrar el capital de los socios"],a:0,e:"Los auxiliares detallan una cuenta por cada tercero (cliente, proveedor, banco)."},
- {q:"Proveedores tiene créditos por $3.570.000 y débitos por $1.500.000. Su saldo es:",o:["$2.070.000 deudor","$5.070.000 acreedor","$2.070.000 acreedor","$1.500.000 acreedor"],a:2,e:"Créditos mayores que débitos: 3.570.000 − 1.500.000 = 2.070.000, saldo acreedor."},
+ {q:"La empresa compra mercancía por $6.000.000 más IVA del 19 % y practica retención del 2,5 %. ¿Cuánto queda debiendo al proveedor?",o:["$7.140.000","$6.990.000","$6.850.000","$5.850.000"],a:1,e:"Total factura 6.000.000 + 1.140.000 = 7.140.000, menos la retención de 150.000 (2,5 % de la base) = 6.990.000."},
+ {q:"Proveedores tiene créditos por $6.990.000 y débitos por $3.000.000. Su saldo es:",o:["$3.990.000 deudor","$9.990.000 acreedor","$3.990.000 acreedor","$3.000.000 acreedor"],a:2,e:"Créditos mayores que débitos: 6.990.000 − 3.000.000 = 3.990.000, saldo acreedor."},
  {q:"En el balance de comprobación, ¿qué debe cumplirse para que cuadre?",o:["Los activos deben ser mayores que los pasivos","Total de saldos deudores = total de saldos acreedores","Todas las cuentas deben tener saldo deudor","Los ingresos deben ser iguales a los gastos"],a:1,e:"Si el registro está bien, la suma de los saldos deudores es igual a la de los acreedores."},
  {q:"Verdadero o falso: el libro de inventarios y balances muestra al detalle lo que la empresa tiene, lo que debe y su patrimonio en una fecha.",o:["Verdadero","Falso"],a:0,e:"Verdadero. Se resume en el estado de situación financiera, donde Activo = Pasivo + Patrimonio."}
 ];
 const DAYS=[
  {n:1,c:"d1",t:"Libro diario",
   que:"Es el libro donde se anotan todas las operaciones de la empresa, una por una, en el orden en que suceden. Cada anotación se llama asiento. Un asiento siempre tiene al menos una cuenta al débito y una al crédito, y las dos columnas suman lo mismo.",
-  pasos:["Lee la operación y pregúntate: ¿qué recibe la empresa y qué entrega?","Busca el código de cada cuenta en el catálogo (PUC).","Lo que entra o aumenta (un activo o un gasto) va al Débito.","De dónde sale el dinero, o lo que se debe (pasivo, capital, ingreso), va al Crédito.","Si hay IVA, calcula el 19 % de la base: en compras va al Débito y en ventas al Crédito.","Revisa que las sumas del asiento sean iguales."]},
+  pasos:["Lee la operación y pregúntate: ¿qué recibe la empresa y qué entrega?","Busca el código de cada cuenta en el catálogo (PUC).","Lo que entra o aumenta (un activo o un gasto) va al Débito.","De dónde sale el dinero, o lo que se debe (pasivo, capital, ingreso), va al Crédito.","IVA: en compras y servicios va al Débito (descontable); en ventas va al Crédito (generado). En un activo fijo el IVA se suma al costo del activo.","Retención en la fuente: si la practica la empresa, va al Crédito (2365, se le debe a la DIAN); si nos la practica el cliente, va al Débito (1355, anticipo a favor).","El proveedor o el cliente quedan por el neto: total factura menos retención.","Revisa que las sumas del asiento sean iguales."]},
  {n:2,c:"d2",t:"Libros auxiliares",
   que:"Detallan una cuenta del libro diario para saber con quién y cuánto. El auxiliar de Clientes dice cuánto debe cada cliente; el de Bancos muestra cada movimiento de la cuenta bancaria.",
   pasos:["Toma una cuenta, por ejemplo Caja.","Busca en el libro diario todas las líneas de esa cuenta, en orden de fecha.","Escribe cada valor en Débito o en Crédito, igual que en el diario.","Calcula el saldo después de cada línea.","Cuentas de activo (Caja, Bancos, Clientes): saldo anterior + débito − crédito.","Cuentas de pasivo (Proveedores): saldo anterior + crédito − débito."]},
@@ -195,11 +272,12 @@ const DAYS=[
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Number(n).toLocaleString("es-CO");
 const parse=v=>{const d=String(v||"").replace(/\D/g,"");return d===""?null:Number(d)};
-let store={}; try{store=JSON.parse(localStorage.getItem("libros5dias")||"{}")||{}}catch(e){store={}}
-const save=()=>{try{localStorage.setItem("libros5dias",JSON.stringify(store))}catch(e){}};
+let store={}; try{store=JSON.parse(localStorage.getItem("libros5dias-v2")||"{}")||{}}catch(e){store={}}
+const save=()=>{try{localStorage.setItem("libros5dias-v2",JSON.stringify(store))}catch(e){}};
 const numIn=(k,lab)=>`<input class="num" id="${k}" data-k="${k}" inputmode="numeric" autocomplete="off" aria-label="${lab}">`;
 const codeOpts=`<option value="">—</option>`+Object.keys(CAT).map(c=>`<option value="${c}">${c} – ${CAT[c]}</option>`).join("");
-const ejOps=()=>`<ol class="ej">${OPS.map(o=>`<li><span class="f">${o.f}.</span> ${o.t}</li>`).join("")}</ol>`;
+const vals=o=>`<div class="vals">${o.v.map(([k,n])=>`<span class="val${/IVA/.test(k)?" iva":/Retenci/.test(k)?" ret":""}"><small>${k}</small><b>$${fmt(n)}</b></span>`).join("")}</div>`;
+const ejOps=()=>`<ol class="ej">${OPS.map(o=>`<li><span class="f">${o.f}.</span> ${o.t}${vals(o)}</li>`).join("")}</ol>`;
 const diarioRef=()=>`<details><summary>Ver el libro diario resuelto (referencia)</summary><div class="tw"><table><thead><tr><th>Asiento</th><th>Fecha</th><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th></tr></thead><tbody>${OPS.map((o,i)=>o.l.map(l=>`<tr><td>${i+1}</td><td>${o.f}</td><td>${l[0]}</td><td>${CAT[l[0]]}</td><td class="n">${l[1]?fmt(l[1]):""}</td><td class="n">${l[2]?fmt(l[2]):""}</td></tr>`).join("")).join("")}</tbody></table></div></details>`;
 const catRef=()=>`<details><summary>Ver el catálogo de cuentas (PUC)</summary><div class="tw"><table style="min-width:0"><tbody>${Object.entries(CAT).map(([c,n])=>`<tr><td>${c}</td><td>${n}</td></tr>`).join("")}</tbody></table></div></details>`;
 
@@ -216,7 +294,7 @@ function footer(n){
 function day1(){
   let h=`<div class="box"><h3>El ejercicio</h3><p>Registra en el libro diario las operaciones de noviembre de Papelería Aprende S.A.S.:</p>${ejOps()}</div>${catRef()}<h3>Tu libro diario</h3>`;
   OPS.forEach((o,i)=>{
-    h+=`<div class="asiento"><div class="ahead"><span class="lbl">Asiento ${i+1} · ${o.f}</span><span class="note">${o.t}</span></div><div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th><th class="ic">✓</th></tr></thead><tbody>`;
+    h+=`<div class="asiento"><div class="ahead"><span class="lbl">Asiento ${i+1} · ${o.f}</span><span class="note">${o.t}</span>${vals(o)}</div><div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th><th class="ic">✓</th></tr></thead><tbody>`;
     o.l.forEach((_,j)=>{const k=`d1-${i}-${j}`;
       h+=`<tr><td><select class="cel" id="${k}-c" data-k="${k}-c" aria-label="Código asiento ${i+1} línea ${j+1}">${codeOpts}</select></td><td class="cuenta" id="${k}-n"></td><td>${numIn(k+"-d","Débito")}</td><td>${numIn(k+"-cr","Crédito")}</td><td class="ic" id="${k}-i"></td></tr>`});
     h+=`<tr class="sum"><td></td><td><span class="msg" id="d1-${i}-m"></span></td><td class="n" id="d1-${i}-sd">0</td><td class="n" id="d1-${i}-sc">0</td><td></td></tr></tbody></table></div></div>`;
@@ -224,7 +302,7 @@ function day1(){
   return h;
 }
 function day2(){
-  let h=`<div class="box"><h3>El ejercicio</h3><p>Con los asientos del Día 1, lleva los auxiliares de cuatro cuentas: Caja, Bancos, Clientes (Colegio San José) y Proveedores (Distribuidora Escolar S.A.S.). Ya tienes la fecha y el detalle de cada línea. Tú escribes el valor en Débito o en Crédito y calculas el saldo.</p><p class="note">Recuerda: Proveedores es una cuenta de pasivo, así que su saldo crece con los créditos.</p></div>${diarioRef()}<div class="aux">`;
+  let h=`<div class="box"><h3>El ejercicio</h3><p>Con los asientos del Día 1, lleva los auxiliares de cuatro cuentas: Caja, Bancos, Clientes (Colegio San José) y Proveedores (Distribuidora Escolar S.A.S.). Ya tienes la fecha y el detalle de cada línea. Tú escribes el valor en Débito o en Crédito y calculas el saldo.</p><p class="note">Recuerda: Proveedores es una cuenta de pasivo, así que su saldo crece con los créditos. Los valores son los del libro diario (netos de retención).</p></div>${diarioRef()}<div class="aux">`;
   AUX.forEach((a,i)=>{
     h+=`<div class="asiento"><div class="ahead"><span class="lbl">Auxiliar ${a.c} · ${a.n}</span><span class="note">Cuenta de ${a.tipo}: saldo = anterior ${a.tipo==="activo"?"+ débito − crédito":"+ crédito − débito"}</span></div><div class="tw"><table><thead><tr><th>Fecha</th><th>Detalle</th><th class="n">Débito</th><th class="n">Crédito</th><th class="n">Saldo</th><th class="ic">✓</th></tr></thead><tbody>`;
     a.r.forEach((r,j)=>{const k=`d2-${i}-${j}`;
@@ -234,7 +312,7 @@ function day2(){
   return h+`</div>`;
 }
 function day3(){
-  let h=`<div class="box"><h3>El ejercicio</h3><p>Pasa al libro mayor las 10 cuentas que tuvieron movimiento en noviembre. Para cada una, suma sus débitos y sus créditos del libro diario, calcula el saldo y elige si es deudor o acreedor.</p><p class="note">Ejemplo: Caja tiene débitos de 2.000.000 y 1.000.000 (total 3.000.000) y un crédito de 800.000. Su saldo es 2.200.000 deudor.</p></div>${diarioRef()}
+  let h=`<div class="box"><h3>El ejercicio</h3><p>Pasa al libro mayor las ${MAY.length} cuentas que tuvieron movimiento en noviembre. Para cada una, suma sus débitos y sus créditos del libro diario, calcula el saldo y elige si es deudor o acreedor.</p><p class="note">Ejemplo: Caja tiene débitos de 3.000.000 y 1.428.000 (total 4.428.000) y créditos de 2.000.000 y 1.447.500 (total 3.447.500). Su saldo es 980.500 deudor. Ojo con la cuenta 2408: tiene IVA descontable al débito e IVA generado al crédito.</p></div>${diarioRef()}
   <div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Total débitos</th><th class="n">Total créditos</th><th class="n">Saldo</th><th>Naturaleza</th><th class="ic">✓</th></tr></thead><tbody>`;
   MAY.forEach((m,i)=>{const k=`d3-${i}`;
     h+=`<tr><td>${m[0]}</td><td class="cuenta">${CAT[m[0]]}</td><td>${numIn(k+"-d","Total débitos")}</td><td>${numIn(k+"-cr","Total créditos")}</td><td>${numIn(k+"-s","Saldo")}</td><td><select class="cel" id="${k}-nt" data-k="${k}-nt" aria-label="Naturaleza"><option value="">—</option><option>Deudor</option><option>Acreedor</option></select></td><td class="ic" id="${k}-i"></td></tr>`});
@@ -249,7 +327,7 @@ function day4(){
   return h+`</tbody></table></div>`;
 }
 function day5(){
-  let h=`<div class="box"><h3>El ejercicio</h3><p><b>A.</b> El inventario de mercancías de la papelería tiene este detalle: 100 cuadernos de 100 hojas a $12.000 cada uno, 50 cajas de colores x 12 a $20.000 cada una y 40 resmas de papel carta a $20.000 cada una. Calcula el valor de cada artículo y el total.</p><p><b>B.</b> Clasifica cada cuenta como Activo, Pasivo, Patrimonio, Ingreso o Gasto.</p><p><b>C.</b> Con los saldos del Día 3, calcula los totales del estado de situación financiera al 30 de noviembre de 2026.</p><p class="note">Simplificación: en este taller no se registra el costo de ventas, por eso el inventario conserva el valor de la compra.</p></div>
+  let h=`<div class="box"><h3>El ejercicio</h3><p><b>A.</b> El inventario de mercancías de la papelería tiene este detalle: 150 cuadernos de 100 hojas a $12.000 cada uno, 100 cajas de colores x 12 a $22.000 cada una y 80 resmas de papel carta a $25.000 cada una. Calcula el valor de cada artículo y el total.</p><p><b>B.</b> Clasifica cada cuenta como Activo, Pasivo, Patrimonio, Ingreso o Gasto.</p><p><b>C.</b> Con los saldos del Día 3, calcula los totales del estado de situación financiera al 30 de noviembre de 2026.</p><p class="note">Simplificación: en este taller no se registra el costo de ventas, por eso el inventario conserva el valor de la compra.</p></div>
   <h3>A. Inventario detallado de mercancías</h3><div class="tw"><table><thead><tr><th>Artículo</th><th class="n">Cantidad</th><th class="n">Valor unitario</th><th class="n">Valor total</th><th class="ic">✓</th></tr></thead><tbody>`;
   INV.forEach((v,i)=>{h+=`<tr><td>${v[0]}</td><td class="n">${v[1]}</td><td class="n">${fmt(v[2])}</td><td>${numIn(`d5-i${i}`,"Valor total")}</td><td class="ic" id="d5-i${i}-i"></td></tr>`});
   h+=`<tr class="sum"><td colspan="3">Total inventario (debe coincidir con la cuenta 1435)</td><td>${numIn("d5-it","Total inventario")}</td><td class="ic" id="d5-it-i"></td></tr></tbody></table></div>
@@ -326,7 +404,7 @@ function check(){
     const a=chk(k+"-d",deu?m[3]:0),b=chk(k+"-cr",deu?0:m[3]); sumD+=a[2]||0; sumC+=b[2]||0;
     const good=a[1]&&b[1]; if(good)ok4++;
     icon($(`#${k}-i`),good?"ok":(a[0]==="err"||b[0]==="err"?"err":""));});
-  const t1=chk("d4-td",16260000),t2=chk("d4-tc",16260000);
+  const t1=chk("d4-td",TOTDEU),t2=chk("d4-tc",TOTDEU);
   const tg=t1[1]&&t2[1]; if(t1[1])ok4++; if(t2[1])ok4++;
   icon($("#d4-ti"),tg?"ok":(t1[0]==="err"||t2[0]==="err"?"err":""));
   const m4=$("#d4-m"); if(t1[2]!=null&&t2[2]!=null){const eq=t1[2]===t2[2];mark(m4,eq?"ok":"err");m4.textContent=eq?"✔ Cuadra":"✘ No cuadra"} else {mark(m4,"");m4.textContent=""}
@@ -334,7 +412,7 @@ function check(){
   // Día 5
   let ok5=0,tot5=0;
   INV.forEach((v,i)=>{tot5++;const a=chk(`d5-i${i}`,v[1]*v[2]); if(a[1])ok5++; icon($(`#d5-i${i}-i`),a[0])});
-  tot5++; {const a=chk("d5-it",3000000); if(a[1])ok5++; icon($("#d5-it-i"),a[0])}
+  tot5++; {const a=chk("d5-it",INV.reduce((x,v)=>x+v[1]*v[2],0)); if(a[1])ok5++; icon($("#d5-it-i"),a[0])}
   MAY.forEach((m,i)=>{tot5++;const s=$(`#d5-c${i}`),g=s.value===CLASE[m[0]]; mark(s,s.value?(g?"ok":"err"):""); icon($(`#d5-c${i}-i`),s.value?(g?"ok":"err"):""); if(g)ok5++});
   TOT.forEach((t,i)=>{tot5++;const a=chk(`d5-t${i}`,t[1]); if(a[1])ok5++; icon($(`#d5-t${i}-i`),a[0])});
   let okE=0;
@@ -356,13 +434,13 @@ function check(){
 
 // ---------- eventos ----------
 function show(n){curDay=n;if(typeof renderSheet==="function"&&!$("#sheet").hidden)renderSheet();DAYS.forEach(d=>{$("#day"+d.n).hidden=d.n!==n;$("#tab"+d.n).setAttribute("aria-selected",d.n===n)});
-  try{localStorage.setItem("libros5dias-tab",n)}catch(e){}}
+  try{localStorage.setItem("libros5dias-v2-tab",n)}catch(e){}}
 document.addEventListener("input",e=>{const el=e.target;if(!el.dataset.k)return;
   store[el.dataset.k]=el.type==="radio"?el.value:el.value; save(); check();});
 document.addEventListener("change",e=>{const el=e.target;if(!el.dataset.k)return;store[el.dataset.k]=el.value;save();check();});
 document.addEventListener("focusout",e=>{const el=e.target;if(el.classList&&el.classList.contains("num")){const v=parse(el.value);if(v!=null)el.value=fmt(v)}});
 document.addEventListener("click",e=>{
-  const g=e.target.closest("[data-go]"); if(g){show(+g.dataset.go); if(!g.classList.contains("tab"))window.scrollTo({top:0}); return;}
+  const g=e.target.closest("[data-go]"); if(g){show(+g.dataset.go); window.scrollTo({top:0}); return;}
   const r=e.target.closest("[data-reset]"); if(r){const n=r.dataset.reset,box=$("#rb"+n);
     box.dataset.html=box.innerHTML;
     box.innerHTML=`<span class="confirm">¿Borrar todo lo del Día ${n}? <button class="btn pri" data-yes="${n}">Sí, borrar</button><button class="btn" data-no="${n}">Cancelar</button></span>`; return;}
@@ -397,8 +475,53 @@ $("#sheetClose").addEventListener("click",()=>setSheet(false));
 document.addEventListener("click",e=>{const b=e.target.closest("[data-sv]"); if(b){sheetView=b.dataset.sv;renderSheet();}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden)setSheet(false)});
 
-let start=1; try{start=+localStorage.getItem("libros5dias-tab")||1}catch(e){}
+let start=1; try{start=+localStorage.getItem("libros5dias-v2-tab")||1}catch(e){}
 show(start>=1&&start<=5?start:1); check();
+
+/* ---------- encabezado fijo ---------- */
+(function(){const st=$("#stick");let mini=false;
+  const upd=()=>{const y=scrollY;if(!mini&&y>90){mini=true;st.classList.add("mini")}else if(mini&&y<20){mini=false;st.classList.remove("mini")}};
+  addEventListener("scroll",upd,{passive:true});upd();
+  const pad=()=>{document.documentElement.style.scrollPaddingTop=(st.offsetHeight+12)+"px"};
+  try{new ResizeObserver(pad).observe(st)}catch(e){addEventListener("resize",pad)}pad();
+})();
+const KEYP="libros5dias-v2-";
+const fmtK=v=>Number(v).toLocaleString("es-CO",{maximumFractionDigits:2});
+/* ---------- calculadora flotante ---------- */
+(function(){const box=$("#calc"),T=$("#calcT"),Ei=$("#calcE"),R=$("#calcR");let last=null;
+  const set=o=>{box.classList.toggle("open",o);T.setAttribute("aria-expanded",o);$("#calcI").textContent=o?"▼":"▲";try{localStorage.setItem(KEYP+"calc",o?"1":"0")}catch(e){}};
+  try{set(localStorage.getItem(KEYP+"calc")==="1")}catch(e){}
+  let moved=false;
+  T.onclick=()=>{if(moved){moved=false;return}set(!box.classList.contains("open"));if(box.classList.contains("open"))Ei.focus()};
+  /* arrastrar la calculadora desde su barra */
+  const clamp=(x,y)=>{const w=box.offsetWidth,h=box.offsetHeight;return [Math.min(Math.max(0,x),innerWidth-w),Math.min(Math.max(0,y),innerHeight-h)]};
+  const place=(x,y)=>{[x,y]=clamp(x,y);box.style.left=x+"px";box.style.top=y+"px";box.style.right="auto";box.style.bottom="auto"};
+  try{const p=JSON.parse(localStorage.getItem(KEYP+"calcpos")||"null");if(p)place(p[0],p[1])}catch(e){}
+  addEventListener("resize",()=>{if(box.style.left)place(parseFloat(box.style.left),parseFloat(box.style.top))});
+  if(T.style){T.style.touchAction="none";T.style.cursor="grab"}
+  T.addEventListener("pointerdown",e=>{const r=box.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,sx=e.clientX,sy=e.clientY;moved=false;
+    const mv=ev2=>{if(!moved&&Math.hypot(ev2.clientX-sx,ev2.clientY-sy)<5)return;moved=true;place(ev2.clientX-dx,ev2.clientY-dy)};
+    const up=()=>{removeEventListener("pointermove",mv);removeEventListener("pointerup",up);if(moved){try{localStorage.setItem(KEYP+"calcpos",JSON.stringify([parseFloat(box.style.left),parseFloat(box.style.top)]))}catch(e){}setTimeout(()=>{moved=false},0)}};
+    addEventListener("pointermove",mv);addEventListener("pointerup",up)});
+  /* teclado: Alt+C abre y enfoca; Esc la minimiza */
+  addEventListener("keydown",e=>{if(e.altKey&&(e.key==="c"||e.key==="C")){e.preventDefault();set(true);Ei.focus();Ei.select()}else if(e.key==="Escape"&&box.contains(document.activeElement)){set(false);document.activeElement.blur()}});
+  const ev=s=>{s=String(s).replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").replace(/\s|\$/g,"");if(!s)return null;
+    s=s.replace(/(\d)\.(?=\d{3}(\D|$))/g,"$1").replace(/,/g,".");if(!/^[0-9+\-*\/().]+$/.test(s))return NaN;
+    try{const v=Function('"use strict";return ('+s+')')();return typeof v==="number"&&isFinite(v)?v:NaN}catch(e){return NaN}};
+  const show=()=>{const v=ev(Ei.value);last=v;R.textContent=v===null?"":isNaN(v)?"Revisa la operación":"= "+fmtK(Math.round(v*100)/100).replace("$","")};
+  Ei.oninput=show;Ei.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();const v=ev(Ei.value);if(v!==null&&!isNaN(v)){Ei.value=String(Math.round(v*100)/100).replace(".",",");show()}}};
+  const keys=["7","8","9","÷","4","5","6","×","1","2","3","−","0",",","⌫","+","(",")","C","="];
+  $("#calcK").innerHTML=keys.map(k=>`<button type="button" data-ck="${k}" class="${"÷×−+".includes(k)?"op":k==="="?"eq":""}">${k}</button>`).join("");
+  $("#calcK").onclick=e=>{const k=e.target.dataset&&e.target.dataset.ck;if(!k)return;
+    if(k==="C")Ei.value="";else if(k==="⌫")Ei.value=Ei.value.slice(0,-1);
+    else if(k==="="){const v=ev(Ei.value);if(v!==null&&!isNaN(v))Ei.value=String(Math.round(v*100)/100).replace(".",",")}
+    else Ei.value+=k;show()};
+  $("#calcCl").onclick=()=>{Ei.value="";show();Ei.focus()};
+  $("#calcCp").onclick=()=>{if(last==null||isNaN(last))return;const t=String(Math.round(last*100)/100).replace(".",",");const done=()=>{$("#calcCp").textContent="¡Copiado!";setTimeout(()=>$("#calcCp").textContent="Copiar resultado",1200)};
+    try{navigator.clipboard.writeText(t).then(done,()=>{Ei.value=t;Ei.select()})}catch(e){Ei.value=t;Ei.select()}};
+})();
+
+
 </script>
 
 </body></html>
