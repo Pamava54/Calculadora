@@ -68,6 +68,13 @@ p{margin:0}
 .lado.deb{background:var(--d2s);color:var(--d2);border:1px solid var(--d2)}
 .lado.cre{background:var(--d4s);color:var(--d4);border:1px solid var(--d4)}
 .cuadra{font-weight:700;color:var(--ok)}
+.ref summary,.fact summary{color:var(--dc,var(--d1))}
+.ref p{margin:6px 0}
+.fact{margin-top:8px;padding:6px 12px}
+.fact summary{font-size:.92rem}
+.guia{display:flex;flex-direction:column;gap:10px;padding-left:1.3em}
+.guia ul{margin:4px 0;padding-left:1.2em;display:flex;flex-direction:column;gap:2px}
+td.tot{font-weight:800;font-size:1.05rem}
 .vals{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .val{display:inline-flex;flex-direction:column;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:3px 10px;line-height:1.25}
 .val small{font-size:.72rem;color:var(--muted)}
@@ -214,8 +221,8 @@ const OPS=[
  {f:"1-nov",t:"Se constituye Papelería Aprende S.A.S. Los socios suscriben y pagan un capital de $20.000.000: entregan $3.000.000 en efectivo y consignan $17.000.000 en la cuenta corriente de la empresa.",
   v:[["Efectivo",3000000],["Consignación",17000000],["Capital total",20000000]],d:"Aporte de los socios",x:{p:"Los dueños (socios) ponen dinero para arrancar el negocio. Ese dinero entra a la empresa por dos lados: una parte a la caja (billetes) y otra al banco.",w:["La caja recibe dinero, o sea que aumenta. Lo que aumenta en la empresa va al Débito.","El banco también recibe dinero y aumenta, así que también va al Débito.","¿De dónde salió el dinero? De los socios. Ese aporte es el patrimonio de los dueños y va al Crédito."]},
   l:[[1105,3000000,0],[1110,17000000,0],[3105,0,20000000]]},
- {f:"3-nov",t:"Compra mercancía a Distribuidora Escolar S.A.S. a crédito, factura electrónica FE-201. La empresa practica retención en la fuente por compras del 2,5 % sobre la base (sin IVA) y queda debiendo el neto.",
-  v:[["Base",6000000],["IVA 19 %",1140000],["Total factura",7140000],["Retención 2,5 %",150000],["Neto por pagar",6990000]],d:"Factura de compra FE-201",x:{p:"La papelería compra cuadernos, colores y papel para venderlos, y no los paga todavía. Además se queda con un pedacito de la factura (la retención) porque la ley le pide entregárselo a la DIAN.",w:["Llega mercancía para vender: el inventario aumenta. Va al Débito solo por la base, sin IVA.","El IVA que pagamos al comprar después se puede descontar del IVA que cobremos en las ventas. Por eso va al Débito.","La retención (2,5 % de la base) no se le paga al proveedor: se le debe a la DIAN. Una deuda nueva va al Crédito.","Al proveedor le quedamos debiendo el total de la factura menos la retención: 7.140.000 − 150.000 = 6.990.000. Es una deuda, va al Crédito."]},
+ {f:"3-nov",t:"Compra mercancía a Distribuidora Escolar S.A.S. a crédito, factura electrónica FE-201 (cuadernos, cajas de colores y resmas de papel; mira el detalle). La empresa practica retención en la fuente por compras del 2,5 % sobre la base (sin IVA) y queda debiendo el neto.",
+  v:[["Base",6000000],["IVA 19 %",1140000],["Total factura",7140000],["Retención 2,5 %",150000],["Neto por pagar",6990000]],d:"Factura de compra FE-201",inv:true,x:{p:"La papelería compra cuadernos, colores y papel para venderlos, y no los paga todavía. Además se queda con un pedacito de la factura (la retención) porque la ley le pide entregárselo a la DIAN.",w:["Llega mercancía para vender: el inventario aumenta. Va al Débito solo por la base, sin IVA.","El IVA que pagamos al comprar después se puede descontar del IVA que cobremos en las ventas. Por eso va al Débito.","La retención (2,5 % de la base) no se le paga al proveedor: se le debe a la DIAN. Una deuda nueva va al Crédito.","Al proveedor le quedamos debiendo el total de la factura menos la retención: 7.140.000 − 150.000 = 6.990.000. Es una deuda, va al Crédito."]},
   l:[[1435,6000000,0],[2408,1140000,0],[2365,0,150000],[2205,0,6990000]]},
  {f:"5-nov",t:"Compra a Tecnoandes S.A.S. un computador para la caja y lo paga con transferencia. Se le practica retención del 2,5 % sobre la base. Ojo: el IVA de un activo fijo no es descontable; se suma al costo del computador.",
   v:[["Base",2800000],["IVA 19 %",532000],["Total factura",3332000],["Retención 2,5 %",70000],["Neto transferido",3262000]],d:"Compra de computador a Tecnoandes",x:{p:"La papelería compra un computador para usarlo en el negocio (no para venderlo). Lo paga desde el banco y retiene una parte para la DIAN.",w:["El computador es un bien de la empresa que aumenta: va al Débito. Aquí va por el total con IVA (2.800.000 + 532.000), porque el IVA de un activo fijo no se descuenta: se vuelve parte de lo que costó el equipo.","La retención (2,5 % de 2.800.000) no se le paga al vendedor: se le debe a la DIAN. Va al Crédito.","Del banco sale lo que de verdad se transfirió: 3.332.000 − 70.000 = 3.262.000. Si sale dinero, el banco disminuye y va al Crédito."]},
@@ -272,7 +279,7 @@ const DAYS=[
   pasos:["Elige una cuenta.","Suma todos sus débitos del libro diario.","Suma todos sus créditos.","Saldo = la suma mayor menos la menor.","Si ganan los débitos, el saldo es deudor; si ganan los créditos, es acreedor.","Si una columna no tiene movimientos, escribe 0."]},
  {n:4,c:"d4",t:"Libro mayor y balances",sub:"Parte 2 · Balance de comprobación",
   que:"Es la lista de todas las cuentas con sus saldos. Sirve para comprobar que el registro está bien hecho: la suma de los saldos deudores debe ser igual a la de los saldos acreedores.",
-  pasos:["Copia el saldo de cada cuenta que calculaste el Día 3.","Si el saldo es deudor, escríbelo en la columna Deudor; si es acreedor, en Acreedor. Deja la otra vacía.","Suma cada columna.","Si los dos totales son iguales, el balance cuadra.","Si no cuadra, busca un saldo en la columna equivocada o un error de suma."]},
+  pasos:["Copia el saldo de cada cuenta que calculaste el Día 3.","Si el saldo es deudor, escríbelo en la columna Deudor; si es acreedor, en Acreedor. Deja la otra vacía.","La tabla suma cada columna sola, abajo en TOTALES.","Si los dos totales son iguales, el balance cuadra.","Si no cuadra, busca un saldo en la columna equivocada o un error de suma."]},
  {n:5,c:"d5",t:"Libro de inventarios y balances",
   que:"Muestra al detalle lo que la empresa tiene (activos), lo que debe (pasivos) y lo que pertenece a los socios (patrimonio) en una fecha. Se resume en el estado de situación financiera.",
   pasos:["Haz el inventario detallado: cantidad × valor unitario.","Clasifica cada cuenta. El primer dígito del código da la pista: 1 Activo, 2 Pasivo, 3 Patrimonio, 4 Ingreso, 5 Gasto.","Suma los activos y suma los pasivos.","Utilidad del período = ingresos − gastos.","Patrimonio = capital + utilidad.","Comprueba que Activo = Pasivo + Patrimonio."]}
@@ -286,7 +293,10 @@ const save=()=>{try{localStorage.setItem("libros5dias-v2",JSON.stringify(store))
 const numIn=(k,lab)=>`<input class="num" id="${k}" data-k="${k}" inputmode="numeric" autocomplete="off" aria-label="${lab}">`;
 const codeOpts=`<option value="">—</option>`+Object.keys(CAT).map(c=>`<option value="${c}">${c} – ${CAT[c]}</option>`).join("");
 const vals=o=>`<div class="vals">${o.v.map(([k,n])=>`<span class="val${/IVA/.test(k)?" iva":/Retenci/.test(k)?" ret":""}"><small>${k}</small><b>$${fmt(n)}</b></span>`).join("")}</div>`;
-const ejOps=()=>`<ol class="ej">${OPS.map(o=>`<li><span class="f">${o.f}.</span> ${o.t}${vals(o)}</li>`).join("")}</ol>`;
+const factura=(abierta)=>{const base=INV.reduce((x,v)=>x+v[1]*v[2],0),iva=base*19/100;
+  return `<details class="fact"${abierta?" open":""}><summary>🧾 Ver el detalle de la factura FE-201 (qué se compró)</summary><div class="tw"><table style="min-width:440px"><thead><tr><th>Artículo</th><th>Cantidad</th><th>Valor unitario</th><th>Valor total</th></tr></thead><tbody>${INV.map(v=>`<tr><td>${v[0]}</td><td class="n">${v[1]}</td><td class="n">$${fmt(v[2])}</td><td class="n">$${fmt(v[1]*v[2])}</td></tr>`).join("")}<tr class="sum"><td colspan="3">Base (subtotal sin IVA)</td><td class="n">$${fmt(base)}</td></tr><tr><td colspan="3">IVA 19 %</td><td class="n">$${fmt(iva)}</td></tr><tr class="sum"><td colspan="3">Total factura</td><td class="n">$${fmt(base+iva)}</td></tr></tbody></table></div></details>`};
+const ejOps=()=>`<ol class="ej">${OPS.map(o=>`<li><span class="f">${o.f}.</span> ${o.t}${vals(o)}${o.inv?factura():""}</li>`).join("")}</ol>`;
+const mayorRef=()=>`<details class="ref"><summary>📘 Ver el libro mayor resuelto (Día 3)</summary><div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th>Total débitos</th><th>Total créditos</th><th>Saldo</th><th>Naturaleza</th></tr></thead><tbody>${MAY.map(m=>`<tr><td>${m[0]}</td><td>${CAT[m[0]]}</td><td class="n">${fmt(m[1])}</td><td class="n">${fmt(m[2])}</td><td class="n"><b>${fmt(m[3])}</b></td><td>${m[4]}</td></tr>`).join("")}</tbody></table></div></details>`;
 const diarioRef=()=>`<details><summary>Ver el libro diario resuelto (referencia)</summary><div class="tw"><table><thead><tr><th>Asiento</th><th>Fecha</th><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th></tr></thead><tbody>${OPS.map((o,i)=>o.l.map(l=>`<tr><td>${i+1}</td><td>${o.f}</td><td>${l[0]}</td><td>${CAT[l[0]]}</td><td class="n">${l[1]?fmt(l[1]):""}</td><td class="n">${l[2]?fmt(l[2]):""}</td></tr>`).join("")).join("")}</tbody></table></div></details>`;
 const catRef=()=>`<details><summary>Ver el catálogo de cuentas (PUC)</summary><div class="tw"><table style="min-width:0"><tbody>${Object.entries(CAT).map(([c,n])=>`<tr><td>${c}</td><td>${n}</td></tr>`).join("")}</tbody></table></div></details>`;
 
@@ -310,7 +320,7 @@ function footer(n){
 function day1(){
   let h=`<div class="box"><h3>El ejercicio</h3><p>Registra en el libro diario las operaciones de noviembre de Papelería Aprende S.A.S.:</p>${ejOps()}</div>${catRef()}<h3>Tu libro diario</h3>`;
   OPS.forEach((o,i)=>{
-    h+=`<div class="asiento"><div class="ahead"><span class="lbl">Asiento ${i+1} · ${o.f}</span><span class="note">${o.t}</span>${vals(o)}</div><div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th><th class="ic">✓</th></tr></thead><tbody>`;
+    h+=`<div class="asiento"><div class="ahead"><span class="lbl">Asiento ${i+1} · ${o.f}</span><span class="note">${o.t}</span>${vals(o)}${o.inv?factura():""}</div><div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th><th class="ic">✓</th></tr></thead><tbody>`;
     o.l.forEach((_,j)=>{const k=`d1-${i}-${j}`;
       h+=`<tr><td><select class="cel" id="${k}-c" data-k="${k}-c" aria-label="Código asiento ${i+1} línea ${j+1}">${codeOpts}</select></td><td class="cuenta" id="${k}-n"></td><td>${numIn(k+"-d","Débito")}</td><td>${numIn(k+"-cr","Crédito")}</td><td class="ic" id="${k}-i"></td></tr>`});
     h+=`<tr class="sum"><td></td><td><span class="msg" id="d1-${i}-m"></span></td><td class="n" id="d1-${i}-sd">0</td><td class="n" id="d1-${i}-sc">0</td><td></td></tr></tbody></table></div>${explica(o,i)}</div>`;
@@ -335,21 +345,37 @@ function day3(){
   return h+`</tbody></table></div>`;
 }
 function day4(){
-  let h=`<div class="box"><h3>El ejercicio</h3><p>Arma el balance de comprobación de Papelería Aprende S.A.S. al 30 de noviembre de 2026. Usa los saldos del Día 3: cada saldo va en su columna (Deudor o Acreedor). Al final suma las dos columnas.</p></div>
+  let h=`<div class="box"><h3>El ejercicio</h3><p>Arma el balance de comprobación de Papelería Aprende S.A.S. al 30 de noviembre de 2026. Usa los saldos del Día 3: cada saldo va en su columna (Deudor o Acreedor). Los totales de abajo se suman solos a medida que escribes.</p></div>${mayorRef()}
   <div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Saldo deudor</th><th class="n">Saldo acreedor</th><th class="ic">✓</th></tr></thead><tbody>`;
   MAY.forEach((m,i)=>{const k=`d4-${i}`;
     h+=`<tr><td>${m[0]}</td><td class="cuenta">${CAT[m[0]]}</td><td>${numIn(k+"-d","Saldo deudor")}</td><td>${numIn(k+"-cr","Saldo acreedor")}</td><td class="ic" id="${k}-i"></td></tr>`});
-  h+=`<tr class="sum"><td></td><td>TOTALES <span class="msg" id="d4-m"></span></td><td>${numIn("d4-td","Total deudor")}</td><td>${numIn("d4-tc","Total acreedor")}</td><td class="ic" id="d4-ti"></td></tr>`;
+  h+=`<tr class="sum"><td></td><td>TOTALES (automático) <span class="msg" id="d4-m"></span></td><td class="n tot" id="d4-td">0</td><td class="n tot" id="d4-tc">0</td><td></td></tr>`;
   return h+`</tbody></table></div>`;
 }
+function origenESF(){
+  const li=f=>MAY.filter(m=>f(String(m[0])[0])).map(m=>`<li>${m[0]} · ${CAT[m[0]]}: <b>$${fmt(m[3])}</b></li>`).join("");
+  return `<details class="ref"><summary>❓ ¿De dónde sale cada total? (guía paso a paso)</summary>
+  <p>Todos los valores salen de los <b>saldos del libro mayor</b> (Día 3). La clasificación de la parte B te dice en qué grupo va cada cuenta. Tú haces las sumas con la calculadora.</p>
+  <ol class="guia">
+  <li><b>Total activos</b> = suma de las cuentas que empiezan por <b>1</b> (lo que la empresa tiene y lo que le deben):<ul>${li(x=>x==="1")}</ul></li>
+  <li><b>Total pasivos</b> = suma de las cuentas que empiezan por <b>2</b> (lo que la empresa debe):<ul>${li(x=>x==="2")}</ul><span class="note">El IVA (2408) va por su saldo: IVA cobrado menos IVA descontable.</span></li>
+  <li><b>Utilidad del período</b> = ingresos (cuentas que empiezan por <b>4</b>) menos gastos (cuentas que empiezan por <b>5</b>):<ul>${li(x=>x==="4")}${li(x=>x==="5").replace(/<li>/g,'<li>menos ')}</ul></li>
+  <li><b>Total patrimonio</b> = capital (cuenta que empieza por <b>3</b>) más la utilidad del paso 3:<ul>${li(x=>x==="3")}</ul></li>
+  <li><b>Total pasivo + patrimonio</b> = resultado del paso 2 + resultado del paso 4. Debe darte <b>igual</b> al total de activos del paso 1: Activo = Pasivo + Patrimonio.</li>
+  </ol></details>`;
+}
 function day5(){
-  let h=`<div class="box"><h3>El ejercicio</h3><p><b>A.</b> El inventario de mercancías de la papelería tiene este detalle: 150 cuadernos de 100 hojas a $12.000 cada uno, 100 cajas de colores x 12 a $22.000 cada una y 80 resmas de papel carta a $25.000 cada una. Calcula el valor de cada artículo y el total.</p><p><b>B.</b> Clasifica cada cuenta como Activo, Pasivo, Patrimonio, Ingreso o Gasto.</p><p><b>C.</b> Con los saldos del Día 3, calcula los totales del estado de situación financiera al 30 de noviembre de 2026.</p><p class="note">Simplificación: en este taller no se registra el costo de ventas, por eso el inventario conserva el valor de la compra.</p></div>
-  <h3>A. Inventario detallado de mercancías</h3><div class="tw"><table><thead><tr><th>Artículo</th><th class="n">Cantidad</th><th class="n">Valor unitario</th><th class="n">Valor total</th><th class="ic">✓</th></tr></thead><tbody>`;
+  let h=`<div class="box"><h3>El ejercicio</h3><p><b>A.</b> El inventario de mercancías de la papelería (lo que se compró el 3 de noviembre en la factura FE-201) tiene este detalle: 150 cuadernos de 100 hojas a $12.000 cada uno, 100 cajas de colores x 12 a $22.000 cada una y 80 resmas de papel carta a $25.000 cada una. Calcula el valor de cada artículo y el total.</p><p><b>B.</b> Clasifica cada cuenta como Activo, Pasivo, Patrimonio, Ingreso o Gasto.</p><p><b>C.</b> Con los saldos del Día 3, calcula los totales del estado de situación financiera al 30 de noviembre de 2026. Abre la guía "¿De dónde sale cada total?" si no sabes por dónde empezar.</p><p class="note">Simplificación: en este taller no se registra el costo de ventas, por eso el inventario conserva el valor de la compra.</p></div>
+  ${mayorRef()}<h3>A. Inventario detallado de mercancías</h3>
+  <details class="ref" open><summary>❓ ¿De dónde salen los cuadernos, los colores y las resmas?</summary>
+  <p>Salen de la <b>compra del 3 de noviembre</b> (asiento 2 del Día 1, factura FE-201 de Distribuidora Escolar S.A.S.). Esa factura trae los tres artículos y suman <b>$${fmt(INV.reduce((x,v)=>x+v[1]*v[2],0))}</b>, que es justo el saldo de la cuenta 1435 Mercancías en el libro mayor.</p>
+  <p>El libro de inventarios "abre" ese valor: en vez de un solo número, muestra artículo por artículo cuánto hay y cuánto vale (cantidad × valor unitario).</p>
+  <p class="note">Simplificación del taller: no se registra el costo de lo vendido, por eso al 30 de noviembre el inventario vale lo mismo que se compró.</p>${factura()}</details><div class="tw"><table><thead><tr><th>Artículo</th><th class="n">Cantidad</th><th class="n">Valor unitario</th><th class="n">Valor total</th><th class="ic">✓</th></tr></thead><tbody>`;
   INV.forEach((v,i)=>{h+=`<tr><td>${v[0]}</td><td class="n">${v[1]}</td><td class="n">${fmt(v[2])}</td><td>${numIn(`d5-i${i}`,"Valor total")}</td><td class="ic" id="d5-i${i}-i"></td></tr>`});
   h+=`<tr class="sum"><td colspan="3">Total inventario (debe coincidir con la cuenta 1435)</td><td>${numIn("d5-it","Total inventario")}</td><td class="ic" id="d5-it-i"></td></tr></tbody></table></div>
   <h3>B. Clasificación de las cuentas</h3><div class="tw"><table><thead><tr><th>Código</th><th>Cuenta</th><th class="n">Saldo</th><th>Clase</th><th class="ic">✓</th></tr></thead><tbody>`;
   MAY.forEach((m,i)=>{h+=`<tr><td>${m[0]}</td><td class="cuenta">${CAT[m[0]]}</td><td class="n">${fmt(m[3])}</td><td><select class="cel" id="d5-c${i}" data-k="d5-c${i}" aria-label="Clase"><option value="">—</option>${["Activo","Pasivo","Patrimonio","Ingreso","Gasto"].map(x=>`<option>${x}</option>`).join("")}</select></td><td class="ic" id="d5-c${i}-i"></td></tr>`});
-  h+=`</tbody></table></div><h3>C. Estado de situación financiera</h3><div class="tw"><table style="min-width:420px"><tbody>`;
+  h+=`</tbody></table></div><h3>C. Estado de situación financiera</h3>${origenESF()}<div class="tw"><table style="min-width:420px"><tbody>`;
   TOT.forEach((t,i)=>{h+=`<tr><td>${t[0]}</td><td style="width:200px">${numIn(`d5-t${i}`,t[0])}</td><td class="ic" id="d5-t${i}-i"></td></tr>`});
   h+=`</tbody></table></div><div class="box"><h3>Evaluación final · 5 preguntas</h3>`;
   EVAL.forEach((q,i)=>{h+=`<div class="q"><p><b>${i+1}.</b> ${q.q}</p>${q.o.map((o,j)=>`<label id="q${i}-${j}-l"><input type="radio" name="q${i}" id="q${i}-${j}" data-k="q${i}" value="${j}"> ${o}</label>`).join("")}<p class="exp" id="q${i}-e" hidden>${q.e}</p></div>`});
@@ -420,11 +446,9 @@ function check(){
     const a=chk(k+"-d",deu?m[3]:0),b=chk(k+"-cr",deu?0:m[3]); sumD+=a[2]||0; sumC+=b[2]||0;
     const good=a[1]&&b[1]; if(good)ok4++;
     icon($(`#${k}-i`),good?"ok":(a[0]==="err"||b[0]==="err"?"err":""));});
-  const t1=chk("d4-td",TOTDEU),t2=chk("d4-tc",TOTDEU);
-  const tg=t1[1]&&t2[1]; if(t1[1])ok4++; if(t2[1])ok4++;
-  icon($("#d4-ti"),tg?"ok":(t1[0]==="err"||t2[0]==="err"?"err":""));
-  const m4=$("#d4-m"); if(t1[2]!=null&&t2[2]!=null){const eq=t1[2]===t2[2];mark(m4,eq?"ok":"err");m4.textContent=eq?"✔ Cuadra":"✘ No cuadra"} else {mark(m4,"");m4.textContent=""}
-  sc[4]=[ok4,MAY.length+2];
+  $("#d4-td").textContent=fmt(sumD); $("#d4-tc").textContent=fmt(sumC);
+  const m4=$("#d4-m"); if(!sumD&&!sumC){mark(m4,"");m4.textContent=""} else if(sumD===sumC&&ok4===MAY.length){mark(m4,"ok");m4.textContent="✔ Cuadra"} else if(sumD===sumC){mark(m4,"");m4.textContent="Sumas iguales, revisa las cuentas en rojo"} else {mark(m4,"err");m4.textContent="✘ Todavía no cuadra"}
+  sc[4]=[ok4,MAY.length];
   // Día 5
   let ok5=0,tot5=0;
   INV.forEach((v,i)=>{tot5++;const a=chk(`d5-i${i}`,v[1]*v[2]); if(a[1])ok5++; icon($(`#d5-i${i}-i`),a[0])});
@@ -438,11 +462,11 @@ function check(){
   sc[5]=[ok5,tot5,okE,EVAL.length];
 
   // puntajes
-  const pct={1:ok1/tot1,2:ok2/tot2,3:ok3/MAY.length,4:ok4/(MAY.length+2),5:0.5*ok5/tot5+0.5*okE/EVAL.length};
+  const pct={1:ok1/tot1,2:ok2/tot2,3:ok3/MAY.length,4:ok4/MAY.length,5:0.5*ok5/tot5+0.5*okE/EVAL.length};
   $("#sc1").textContent=`${ok1} de ${tot1} líneas correctas`;
   $("#sc2").textContent=`${ok2} de ${tot2} líneas correctas`;
   $("#sc3").textContent=`${ok3} de ${MAY.length} cuentas correctas`;
-  $("#sc4").textContent=`${ok4} de ${MAY.length+2} correctas`;
+  $("#sc4").textContent=`${ok4} de ${MAY.length} cuentas correctas`;
   $("#sc5").textContent=`actividad ${ok5} de ${tot5} · evaluación ${okE} de ${EVAL.length}`;
   let nota=0; for(let n=1;n<=5;n++){nota+=2*pct[n]; $("#tsc"+n).textContent=Math.round(pct[n]*100)+" %"}
   $("#nota").textContent=(Math.round(nota*10)/10).toLocaleString("es-CO",{minimumFractionDigits:1,maximumFractionDigits:1});
