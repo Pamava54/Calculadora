@@ -1930,6 +1930,14 @@ add({
       el('p', {}, LIBROS.desc), el('div', { class: 'go' }, 'Abrir el taller'),
       el('a', { class: 'stretch', href: LIBROS_URL, 'aria-label': 'Abrir ' + LIBROS.title }));
   }
+  const EFIN_URL = 'taller-estados.html';
+  const EFIN = { title: 'Taller estados financieros', desc: 'Elabora los cinco estados de una empresa: resultados, cambios en el patrimonio, situación financiera, flujo de efectivo y notas, con revisión verde o roja al instante, explicaciones sencillas y nota sobre 10.', hay: 'taller estados financieros situacion resultados cambios patrimonio flujo efectivo notas niif balance' };
+  function efinCard() {
+    return el('article', { class: 'card-t taller-c', 'data-cat': 'con' },
+      el('div', { class: 'top' }, el('div', { class: 'cap', 'aria-hidden': 'true' }, '∑'), el('div', {}, el('div', { class: 'cat' }, 'Taller práctico'), el('h3', {}, EFIN.title))),
+      el('p', {}, EFIN.desc), el('div', { class: 'go' }, 'Abrir el taller'),
+      el('a', { class: 'stretch', href: EFIN_URL, 'aria-label': 'Abrir ' + EFIN.title }));
+  }
   const ESTADOS_URL = 'estados.html';
   const ESTADOS = { title: 'Estados financieros resueltos', desc: 'Los cinco estados de la Unidad 4 ya diligenciados con una empresa de ejemplo: situación financiera, resultados, cambios en el patrimonio, flujos de efectivo y notas. Al pasar el mouse sobre cada total se explica cómo se calcula y por qué cambió.', hay: 'estados financieros resueltos ejemplo situacion financiera balance resultados patrimonio flujos efectivo notas totales unidad 4' };
   function estadosCard() {
@@ -1950,13 +1958,14 @@ add({
       if (q) list.sort((a, b) => (norm(b.title).includes(q) ? 1 : 0) - (norm(a.title).includes(q) ? 1 : 0));
       const showT = (catF === 'all' || catF === 'con') && (!q || q.split(/\s+/).every(w => norm(TALLER.hay).includes(w))) && catF !== 'fav';
       const showL = (catF === 'all' || catF === 'con') && (!q || q.split(/\s+/).every(w => norm(LIBROS.hay).includes(w))) && catF !== 'fav';
+      const showF = (catF === 'all' || catF === 'con') && (!q || q.split(/\s+/).every(w => norm(EFIN.hay).includes(w))) && catF !== 'fav';
       const showE = catF === 'all' && (!q || q.split(/\s+/).every(w => norm(ESTADOS.hay).includes(w))) && catF !== 'fav';
-      const head = q ? ((list.length + (showT ? 1 : 0) + (showL ? 1 : 0) + (showE ? 1 : 0)) + (list.length === 1 ? ' resultado para “' + Q.trim() + '”' : ' resultados para “' + Q.trim() + '”')) : 'Sus favoritas';
-      if (!list.length && !showT && !showL && !showE) {
+      const head = q ? ((list.length + (showT ? 1 : 0) + (showL ? 1 : 0) + (showF ? 1 : 0) + (showE ? 1 : 0)) + (list.length === 1 ? ' resultado para “' + Q.trim() + '”' : ' resultados para “' + Q.trim() + '”')) : 'Sus favoritas';
+      if (!list.length && !showT && !showL && !showF && !showE) {
         box.append(el('div', { class: 'empty' }, el('b', {}, q ? 'No encontramos esa calculadora' : 'Aún no tiene favoritas'), q ? 'Pruebe con otra palabra, por ejemplo “cuota”, “iva” o “inventario”.' : 'Toque la estrella de cualquier calculadora para tenerla a mano aquí.'));
         return;
       }
-      box.append(el('div', { class: 'sec' }, el('div', { class: 'sec-h' }, el('div', {}, el('h2', {}, head))), el('div', { class: 'grid' }, showT ? tallerCard() : null, showL ? librosCard() : null, showE ? estadosCard() : null, list.map(toolCard))));
+      box.append(el('div', { class: 'sec' }, el('div', { class: 'sec-h' }, el('div', {}, el('h2', {}, head))), el('div', { class: 'grid' }, showT ? tallerCard() : null, showL ? librosCard() : null, showF ? efinCard() : null, showE ? estadosCard() : null, list.map(toolCard))));
       return;
     }
     if (catF === 'all') {
@@ -1968,8 +1977,8 @@ add({
     CATS.filter(c => catF === 'all' || c.id === catF).forEach(c => {
       const list = TOOLS.filter(t => CAT_OF[t.id] === c.id);
       box.append(el('section', { class: 'sec', 'data-cat': c.id, id: 'cat-' + c.id },
-        el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, c.glyph), el('div', {}, el('h2', {}, c.name), el('p', {}, c.desc)), el('span', { class: 'n' }, list.length + ' calculadoras' + (c.id === 'con' ? ' + 2 talleres' : ''))),
-        el('div', { class: 'grid' }, c.id === 'con' ? tallerCard() : null, c.id === 'con' ? librosCard() : null, list.map(toolCard))));
+        el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, c.glyph), el('div', {}, el('h2', {}, c.name), el('p', {}, c.desc)), el('span', { class: 'n' }, list.length + ' calculadoras' + (c.id === 'con' ? ' + 3 talleres' : ''))),
+        el('div', { class: 'grid' }, c.id === 'con' ? tallerCard() : null, c.id === 'con' ? librosCard() : null, c.id === 'con' ? efinCard() : null, list.map(toolCard))));
     });
     if (catF === 'all') box.append(el('section', { class: 'sec sec-apart', 'data-cat': 'lab', id: 'cat-est' },
       el('div', { class: 'sec-h' }, el('div', { class: 'gl', 'aria-hidden': 'true' }, '≡'), el('div', {}, el('h2', {}, 'Estados financieros resueltos'), el('p', {}, 'Material de clase: ejemplos ya diligenciados para explicar y estudiar'))),
