@@ -75,6 +75,21 @@ p{margin:0}
 .guia{display:flex;flex-direction:column;gap:10px;padding-left:1.3em}
 .guia ul{margin:4px 0;padding-left:1.2em;display:flex;flex-direction:column;gap:2px}
 td.tot{font-weight:800;font-size:1.05rem}
+.ana h4{font-family:var(--f-display);font-size:1rem;margin:14px 0 6px}
+.esf td.ex{color:var(--muted);font-size:.9rem;min-width:260px}
+.esf tr.grp td{font-weight:700;color:var(--dc);background:var(--ds);font-size:.85rem;text-transform:uppercase;letter-spacing:.04em}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-top:4px solid var(--dc);border-radius:8px;background:var(--surface);padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.kpi small{color:var(--muted);font-weight:700}
+.kpi b{font-family:var(--f-display);font-size:1.4rem;color:var(--dc);font-variant-numeric:tabular-nums}
+.kpi span{font-size:.86rem;color:var(--muted)}
+.concl{display:flex;flex-direction:column;gap:6px;padding-left:1.3em}
+/* marca de agua */
+.wm{position:fixed;inset:0;z-index:60;pointer-events:none;background-repeat:repeat;background-size:360px 220px;opacity:.07;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='220'%3E%3Ctext x='180' y='120' text-anchor='middle' transform='rotate(-24 180 110)' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%231C2632'%3EPAMAVA soluciones%3C/text%3E%3C/svg%3E")}
+:root[data-theme="dark"] .wm{opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='220'%3E%3Ctext x='180' y='120' text-anchor='middle' transform='rotate(-24 180 110)' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23E5EAF0'%3EPAMAVA soluciones%3C/text%3E%3C/svg%3E")}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .wm{opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='220'%3E%3Ctext x='180' y='120' text-anchor='middle' transform='rotate(-24 180 110)' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23E5EAF0'%3EPAMAVA soluciones%3C/text%3E%3C/svg%3E")}}
+@media print{.wm{position:fixed}}
 .vals{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .val{display:inline-flex;flex-direction:column;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:3px 10px;line-height:1.25}
 .val small{font-size:.72rem;color:var(--muted)}
@@ -175,6 +190,7 @@ html.sheet-open .wrap{padding-bottom:calc(42vh + 24px)}
 </style>
 
 </head><body>
+<div class="wm" aria-hidden="true"></div>
 <div class="wrap">
   <div class="stick" id="stick">
   <header class="top">
@@ -211,7 +227,7 @@ html.sheet-open .wrap{padding-bottom:calc(42vh + 24px)}
 </aside>
 
 <div class="calc" id="calc"><button class="ct" id="calcT" type="button" aria-expanded="false"><span>🧮 Calculadora <small style="font-weight:500;opacity:.8">· arrástrala · Alt+C</small></span><span id="calcI">▲</span></button>
-<div class="cb"><input id="calcE" type="text" inputmode="decimal" autocomplete="off" placeholder="Escribe: 6000000 * 19 / 100 y Enter" aria-label="Operación"><div class="cr" id="calcR" aria-live="polite"></div>
+<div class="cb"><input id="calcE" type="text" inputmode="decimal" autocomplete="off" placeholder="Escribe: 6.000.000 × 19 ÷ 100 y Enter" aria-label="Operación"><div class="cr" id="calcR" aria-live="polite"></div>
 <div class="ck" id="calcK"></div><div class="cc"><button id="calcCp" type="button">Copiar resultado</button><button id="calcCl" type="button">Borrar</button></div></div></div>
 
 <script>
@@ -364,6 +380,57 @@ function origenESF(){
   <li><b>Total pasivo + patrimonio</b> = resultado del paso 2 + resultado del paso 4. Debe darte <b>igual</b> al total de activos del paso 1: Activo = Pasivo + Patrimonio.</li>
   </ol></details>`;
 }
+function analisisESF(){
+  const sal=c=>{const m=MAY.find(x=>x[0]===c);return m?m[3]:0};
+  const row=(c,extra)=>`<tr><td>${c} · ${CAT[c]}</td><td class="n">$${fmt(sal(c))}</td><td class="ex">${extra}</td></tr>`;
+  const AC=[1105,1110,1305,1355,1435].reduce((a,c)=>a+sal(c),0), ANC=sal(1528);
+  const pct=(a,b)=>(a/b*100).toLocaleString("es-CO",{maximumFractionDigits:1})+" %";
+  const dec=(a,b)=>(a/b).toLocaleString("es-CO",{maximumFractionDigits:2});
+  const sub=(t,v)=>`<tr class="sum"><td>${t}</td><td class="n">$${fmt(v)}</td><td></td></tr>`;
+  const head=t=>`<tr class="grp"><td colspan="3">${t}</td></tr>`;
+  return `<details class="ref ana"><summary>📊 Análisis del trabajo: ¿qué nos dice el estado de situación financiera? (ábrelo al terminar la parte C)</summary>
+  <p>Este es el estado de situación financiera de <b>Papelería Aprende S.A.S. al 30 de noviembre de 2026</b>, armado con todo lo que hiciste en los 5 días: los asientos (Día 1) se pasaron a los auxiliares (Día 2), se resumieron en el mayor (Día 3), se comprobaron en el balance (Día 4) y aquí se ordenan en una sola foto de la empresa.</p>
+  <div class="tw"><table class="esf"><thead><tr><th>Cuenta</th><th>Valor</th><th>¿Qué significa? (en palabras sencillas)</th></tr></thead><tbody>
+  ${head("ACTIVOS · lo que la empresa tiene y lo que le deben")}
+  ${head("Activo corriente · se vuelve dinero en menos de un año")}
+  ${row(1105,"Los billetes que hay en la caja de la papelería.")}
+  ${row(1110,"El dinero en la cuenta del banco. Es lo que más tiene la empresa.")}
+  ${row(1305,"Lo que todavía nos debe el Colegio San José. Es dinero que va a entrar.")}
+  ${row(1355,"La retención que nos hizo el colegio. Es un abono a nuestros impuestos: lo descontamos cuando paguemos a la DIAN.")}
+  ${row(1435,"Los cuadernos, colores y resmas que tenemos para vender (el inventario detallado de la parte A).")}
+  ${sub("Total activo corriente",AC)}
+  ${head("Activo no corriente · bienes para usar, no para vender")}
+  ${row(1528,"El computador de la caja. Incluye su IVA porque el IVA de un activo fijo se suma a su costo.")}
+  ${sub("Total activo no corriente",ANC)}
+  ${sub("TOTAL ACTIVOS",ACT)}
+  ${head("PASIVOS · lo que la empresa debe (todo es a corto plazo)")}
+  ${row(2205,"Lo que todavía le debemos a Distribuidora Escolar por la mercancía.")}
+  ${row(2365,"Las retenciones que le hicimos al proveedor, al vendedor del computador y al arrendador. Ese dinero es de la DIAN y hay que pagárselo.")}
+  ${row(2408,"El IVA que cobramos en las ventas menos el IVA que pagamos en compras y servicios. Esa diferencia se le paga a la DIAN.")}
+  ${sub("TOTAL PASIVOS",PAS)}
+  ${head("PATRIMONIO · lo que es de los dueños")}
+  ${row(3105,"El dinero que pusieron los socios al crear la empresa.")}
+  <tr><td>Utilidad del período</td><td class="n">$${fmt(UTIL)}</td><td class="ex">Lo que ganó la empresa en noviembre: ventas $${fmt(sal(4135))} menos arriendo $${fmt(sal(5120))} y servicios $${fmt(sal(5135))}.</td></tr>
+  ${sub("TOTAL PATRIMONIO",PAT)}
+  ${sub("TOTAL PASIVO + PATRIMONIO",PAS+PAT)}
+  </tbody></table></div>
+  <p class="cuadra">✔ Activo $${fmt(ACT)} = Pasivo $${fmt(PAS)} + Patrimonio $${fmt(PAT)}. La ecuación contable cuadra: todo lo que la empresa tiene, o lo debe a alguien o es de los dueños.</p>
+  <h4>¿Cómo le fue a la empresa? Cuatro preguntas sencillas</h4>
+  <div class="kpis">
+   <div class="kpi"><small>¿Puede pagar sus deudas?</small><b>${dec(AC,PAS)}</b><span>Razón corriente = activo corriente ÷ pasivo. Por cada $1 que debe, tiene $${dec(AC,PAS)} para pagar. Más de 1 es bueno.</span></div>
+   <div class="kpi"><small>¿Le queda dinero para trabajar?</small><b>$${fmt(AC-PAS)}</b><span>Capital de trabajo = activo corriente − pasivo. Es lo que le sobra después de pagar todo lo que debe a corto plazo.</span></div>
+   <div class="kpi"><small>¿Cuánto de la empresa es prestado?</small><b>${pct(PAS,ACT)}</b><span>Endeudamiento = pasivo ÷ activo. De cada $100 que tiene, solo $${(PAS/ACT*100).toLocaleString("es-CO",{maximumFractionDigits:0})} son de terceros; el resto es de los socios.</span></div>
+   <div class="kpi"><small>¿Ganó o perdió?</small><b>$${fmt(UTIL)}</b><span>Ganó. Equivale al ${pct(UTIL,sal(3105))} del capital que pusieron los socios.</span></div>
+  </div>
+  <h4>Conclusiones</h4>
+  <ul class="concl">
+   <li><b>La empresa está sana:</b> tiene mucho más de lo que debe y casi todo es de los socios.</li>
+   <li><b>Tiene mucho dinero quieto en el banco</b> (${pct(sal(1110),ACT)} de los activos). Podría usarlo para comprar más mercancía o pagarle al proveedor.</li>
+   <li><b>Debe cobrarle al Colegio San José</b> los $${fmt(sal(1305))} que aún le debe, para que la cartera no se quede sin recoger.</li>
+   <li><b>Debe separar el dinero de la DIAN:</b> la retención ($${fmt(sal(2365))}) y el IVA por pagar ($${fmt(sal(2408))}) no son de la empresa.</li>
+   <li><b>Ojo con la utilidad:</b> en este taller no se restó el costo de la mercancía vendida, por eso la ganancia se ve más grande de lo real. En la contabilidad completa, la mercancía que sale del inventario al vender se vuelve un costo y baja la utilidad.</li>
+  </ul></details>`;
+}
 function day5(){
   let h=`<div class="box"><h3>El ejercicio</h3><p><b>A.</b> El inventario de mercancías de la papelería (lo que se compró el 3 de noviembre en la factura FE-201) tiene este detalle: 150 cuadernos de 100 hojas a $12.000 cada uno, 100 cajas de colores x 12 a $22.000 cada una y 80 resmas de papel carta a $25.000 cada una. Calcula el valor de cada artículo y el total.</p><p><b>B.</b> Clasifica cada cuenta como Activo, Pasivo, Patrimonio, Ingreso o Gasto.</p><p><b>C.</b> Con los saldos del Día 3, calcula los totales del estado de situación financiera al 30 de noviembre de 2026. Abre la guía "¿De dónde sale cada total?" si no sabes por dónde empezar.</p><p class="note">Simplificación: en este taller no se registra el costo de ventas, por eso el inventario conserva el valor de la compra.</p></div>
   ${mayorRef()}<h3>A. Inventario detallado de mercancías</h3>
@@ -377,7 +444,7 @@ function day5(){
   MAY.forEach((m,i)=>{h+=`<tr><td>${m[0]}</td><td class="cuenta">${CAT[m[0]]}</td><td class="n">${fmt(m[3])}</td><td><select class="cel" id="d5-c${i}" data-k="d5-c${i}" aria-label="Clase"><option value="">—</option>${["Activo","Pasivo","Patrimonio","Ingreso","Gasto"].map(x=>`<option>${x}</option>`).join("")}</select></td><td class="ic" id="d5-c${i}-i"></td></tr>`});
   h+=`</tbody></table></div><h3>C. Estado de situación financiera</h3>${origenESF()}<div class="tw"><table style="min-width:420px"><tbody>`;
   TOT.forEach((t,i)=>{h+=`<tr><td>${t[0]}</td><td style="width:200px">${numIn(`d5-t${i}`,t[0])}</td><td class="ic" id="d5-t${i}-i"></td></tr>`});
-  h+=`</tbody></table></div><div class="box"><h3>Evaluación final · 5 preguntas</h3>`;
+  h+=`</tbody></table></div>${analisisESF()}<div class="box"><h3>Evaluación final · 5 preguntas</h3>`;
   EVAL.forEach((q,i)=>{h+=`<div class="q"><p><b>${i+1}.</b> ${q.q}</p>${q.o.map((o,j)=>`<label id="q${i}-${j}-l"><input type="radio" name="q${i}" id="q${i}-${j}" data-k="q${i}" value="${j}"> ${o}</label>`).join("")}<p class="exp" id="q${i}-e" hidden>${q.e}</p></div>`});
   return h+`</div>`;
 }
@@ -549,13 +616,23 @@ const fmtK=v=>Number(v).toLocaleString("es-CO",{maximumFractionDigits:2});
     s=s.replace(/(\d)\.(?=\d{3}(\D|$))/g,"$1").replace(/,/g,".");if(!/^[0-9+\-*\/().]+$/.test(s))return NaN;
     try{const v=Function('"use strict";return ('+s+')')();return typeof v==="number"&&isFinite(v)?v:NaN}catch(e){return NaN}};
   const show=()=>{const v=ev(Ei.value);last=v;R.textContent=v===null?"":isNaN(v)?"Revisa la operación":"= "+fmtK(Math.round(v*100)/100).replace("$","")};
-  Ei.oninput=show;Ei.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();const v=ev(Ei.value);if(v!==null&&!isNaN(v)){Ei.value=String(Math.round(v*100)/100).replace(".",",");show()}}};
+  /* pone los puntos de miles mientras se escribe (la coma es el decimal) */
+  const grp=s=>{s=String(s).replace(/\.$/,",").replace(/\*/g,"×").replace(/\//g,"÷");
+    return s.replace(/[\d.]+(,\d*)?/g,m=>{let [i,d]=m.split(",");i=i.replace(/\./g,"").replace(/^0+(?=\d)/,"").replace(/\B(?=(\d{3})+(?!\d))/g,".");return d!==undefined?i+","+d:i})};
+  const refmt=()=>{let pos=Ei.selectionStart==null?Ei.value.length:Ei.selectionStart;
+    if(pos>0&&Ei.value[pos-1]==="."&&!/^\d{3}/.test(Ei.value.slice(pos))){Ei.value=Ei.value.slice(0,pos-1)+","+Ei.value.slice(pos)}
+    const before=Ei.value.slice(0,pos).replace(/\./g,"").length;
+    const nv=grp(Ei.value);if(nv===Ei.value)return;Ei.value=nv;
+    let k=0,c=0;while(k<nv.length&&c<before){if(nv[k]!==".")c++;k++}
+    try{Ei.setSelectionRange(k,k)}catch(e){}};
+  const res=v=>grp(String(Math.round(v*100)/100).replace(".",","));
+  Ei.oninput=()=>{refmt();show()};Ei.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();const v=ev(Ei.value);if(v!==null&&!isNaN(v)){Ei.value=res(v);show()}}};
   const keys=["7","8","9","÷","4","5","6","×","1","2","3","−","0",",","⌫","+","(",")","C","="];
   $("#calcK").innerHTML=keys.map(k=>`<button type="button" data-ck="${k}" class="${"÷×−+".includes(k)?"op":k==="="?"eq":""}">${k}</button>`).join("");
   $("#calcK").onclick=e=>{const k=e.target.dataset&&e.target.dataset.ck;if(!k)return;
     if(k==="C")Ei.value="";else if(k==="⌫")Ei.value=Ei.value.slice(0,-1);
-    else if(k==="="){const v=ev(Ei.value);if(v!==null&&!isNaN(v))Ei.value=String(Math.round(v*100)/100).replace(".",",")}
-    else Ei.value+=k;show()};
+    else if(k==="="){const v=ev(Ei.value);if(v!==null&&!isNaN(v))Ei.value=res(v)}
+    else Ei.value=grp(Ei.value+k);show()};
   $("#calcCl").onclick=()=>{Ei.value="";show();Ei.focus()};
   $("#calcCp").onclick=()=>{if(last==null||isNaN(last))return;const t=String(Math.round(last*100)/100).replace(".",",");const done=()=>{$("#calcCp").textContent="¡Copiado!";setTimeout(()=>$("#calcCp").textContent="Copiar resultado",1200)};
     try{navigator.clipboard.writeText(t).then(done,()=>{Ei.value=t;Ei.select()})}catch(e){Ei.value=t;Ei.select()}};
