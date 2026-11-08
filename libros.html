@@ -66,13 +66,15 @@ details[open] summary{margin-bottom:10px}
 table{border-collapse:collapse;width:100%;min-width:620px;font-variant-numeric:tabular-nums}
 th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}
 th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bg);font-weight:700}
-td.n,th.n{text-align:right}
+td.n{text-align:right}
+th,th.n{text-align:center}
 .asiento{display:flex;flex-direction:column;gap:8px}
 .ahead{display:flex;flex-direction:column;gap:2px}
 .ahead .lbl{font-weight:700;color:var(--dc)}
 input.num,select.cel{font:inherit;font-size:.95rem;width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:5px;background:var(--input);color:var(--ink);font-variant-numeric:tabular-nums}
 input.num{text-align:right;min-width:110px}
 select.cel{min-width:90px}
+select.cel[data-k$="-c"]{min-width:230px}
 .ok{background:var(--okbg)!important;border-color:var(--ok)!important;color:var(--ok)!important}
 .err{background:var(--errbg)!important;border-color:var(--err)!important;color:var(--err)!important}
 .ic{width:42px;text-align:center;font-weight:800;font-size:1.05rem}
@@ -196,7 +198,7 @@ const parse=v=>{const d=String(v||"").replace(/\D/g,"");return d===""?null:Numbe
 let store={}; try{store=JSON.parse(localStorage.getItem("libros5dias")||"{}")||{}}catch(e){store={}}
 const save=()=>{try{localStorage.setItem("libros5dias",JSON.stringify(store))}catch(e){}};
 const numIn=(k,lab)=>`<input class="num" id="${k}" data-k="${k}" inputmode="numeric" autocomplete="off" aria-label="${lab}">`;
-const codeOpts=`<option value="">—</option>`+Object.keys(CAT).map(c=>`<option value="${c}">${c}</option>`).join("");
+const codeOpts=`<option value="">—</option>`+Object.keys(CAT).map(c=>`<option value="${c}">${c} – ${CAT[c]}</option>`).join("");
 const ejOps=()=>`<ol class="ej">${OPS.map(o=>`<li><span class="f">${o.f}.</span> ${o.t}</li>`).join("")}</ol>`;
 const diarioRef=()=>`<details><summary>Ver el libro diario resuelto (referencia)</summary><div class="tw"><table><thead><tr><th>Asiento</th><th>Fecha</th><th>Código</th><th>Cuenta</th><th class="n">Débito</th><th class="n">Crédito</th></tr></thead><tbody>${OPS.map((o,i)=>o.l.map(l=>`<tr><td>${i+1}</td><td>${o.f}</td><td>${l[0]}</td><td>${CAT[l[0]]}</td><td class="n">${l[1]?fmt(l[1]):""}</td><td class="n">${l[2]?fmt(l[2]):""}</td></tr>`).join("")).join("")}</tbody></table></div></details>`;
 const catRef=()=>`<details><summary>Ver el catálogo de cuentas (PUC)</summary><div class="tw"><table style="min-width:0"><tbody>${Object.entries(CAT).map(([c,n])=>`<tr><td>${c}</td><td>${n}</td></tr>`).join("")}</tbody></table></div></details>`;
