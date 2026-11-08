@@ -1,0 +1,613 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Taller Conciliación Bancaria</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: cuaderno de trabajo por días — pestañas de día arriba, cada día con su color suave, explicación, ejercicio escrito y tabla para llenar */
+:root{
+  --bg:#F5F7FA; --surface:#FFFFFF; --ink:#1C2632; --muted:#5A6777; --line:#D7DEE7;
+  --input:#FFF8DC; --ok:#17713F; --okbg:#DCF2E3; --err:#B3261E; --errbg:#FCE2DF;
+  --d1:#3A6BA0; --d1s:#E5EDF7; --d2:#357F62; --d2s:#E2F1EA; --d3:#A86F14; --d3s:#F8EEDC;
+  --d4:#65569E; --d4s:#ECE8F6; --d5:#B65345; --d5s:#F8E5E1;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11161C; --surface:#19212A; --ink:#E5EAF0; --muted:#9BA8B6; --line:#2C3743;
+  --input:#2B2817; --ok:#74D49C; --okbg:#173826; --err:#FF8E84; --errbg:#44201C;
+  --d1:#8DB5E3; --d1s:#1C2A3B; --d2:#82C9A9; --d2s:#18302A; --d3:#E5B464; --d3s:#33291A;
+  --d4:#B5A8E6; --d4s:#272338; --d5:#EE9C8F; --d5s:#3A2320; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161C; --surface:#19212A; --ink:#E5EAF0; --muted:#9BA8B6; --line:#2C3743;
+  --input:#2B2817; --ok:#74D49C; --okbg:#173826; --err:#FF8E84; --errbg:#44201C;
+  --d1:#8DB5E3; --d1s:#1C2A3B; --d2:#82C9A9; --d2s:#18302A; --d3:#E5B464; --d3s:#33291A;
+  --d4:#B5A8E6; --d4s:#272338; --d5:#EE9C8F; --d5s:#3A2320; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(1.6rem,4vw,2.3rem);font-weight:800}
+h2{font-size:1.45rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+.top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.back{display:inline-block;margin-bottom:8px;color:var(--d1);font-weight:700;text-decoration:none}
+.back:hover{text-decoration:underline}
+.top .sub{color:var(--muted);margin-top:4px}
+.who{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.who label{font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.who input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--input);color:var(--ink);min-width:0;width:220px;max-width:100%}
+.nota{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 14px;text-align:center}
+.nota b{font-family:var(--f-display);font-size:1.6rem;display:block;font-variant-numeric:tabular-nums}
+.nota span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.tab{flex:1 0 150px;font:inherit;text-align:left;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;border-top:4px solid var(--dc)}
+.tab small{color:var(--muted);font-size:.78rem}
+.tab .t{font-weight:700;font-size:.95rem}
+.tab .sc{font-size:.8rem;font-variant-numeric:tabular-nums;color:var(--dc);font-weight:700}
+.tab[aria-selected="true"]{background:var(--ds);border-color:var(--dc)}
+.tab:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--dc,var(--d1));outline-offset:2px}
+.day{display:flex;flex-direction:column;gap:16px}
+.band{background:var(--ds);border-left:6px solid var(--dc);border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.band .eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dc);font-weight:700}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:720px){.cols{grid-template-columns:1fr}}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.box ol,.box ul{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.ej{display:flex;flex-direction:column;gap:10px}
+.ej li{padding-left:2px}
+.ej .f{font-weight:700;color:var(--dc)}
+.note{font-size:.88rem;color:var(--muted)}
+.exp1{border-left:5px solid var(--dc);background:var(--ds)}
+.exp1 summary{color:var(--dc)}
+.exp1 p{margin:6px 0}
+.mov{list-style:none;padding:0!important;margin:8px 0!important;display:flex;flex-direction:column;gap:8px}
+.mov li{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.lado{flex:0 0 auto;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border-radius:4px;padding:2px 8px;margin-top:2px}
+.lado.deb{background:var(--d2s);color:var(--d2);border:1px solid var(--d2)}
+.lado.cre{background:var(--d4s);color:var(--d4);border:1px solid var(--d4)}
+.cuadra{font-weight:700;color:var(--ok)}
+.ref summary,.fact summary{color:var(--dc,var(--d1))}
+.ref p{margin:6px 0}
+.fact{margin-top:8px;padding:6px 12px}
+.fact summary{font-size:.92rem}
+.guia{display:flex;flex-direction:column;gap:10px;padding-left:1.3em}
+.guia ul{margin:4px 0;padding-left:1.2em;display:flex;flex-direction:column;gap:2px}
+td.tot{font-weight:800;font-size:1.05rem}
+.ana h4{font-family:var(--f-display);font-size:1rem;margin:14px 0 6px}
+.esf td.ex{color:var(--muted);font-size:.9rem;min-width:260px}
+.esf tr.grp td{font-weight:700;color:var(--dc);background:var(--ds);font-size:.85rem;text-transform:uppercase;letter-spacing:.04em}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-top:4px solid var(--dc);border-radius:8px;background:var(--surface);padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.kpi small{color:var(--muted);font-weight:700}
+.kpi b{font-family:var(--f-display);font-size:1.4rem;color:var(--dc);font-variant-numeric:tabular-nums}
+.kpi span{font-size:.86rem;color:var(--muted)}
+.concl{display:flex;flex-direction:column;gap:6px;padding-left:1.3em}
+/* marca de agua */
+.wm{position:fixed;inset:0;z-index:60;pointer-events:none;background-repeat:repeat;background-size:360px 220px;opacity:.07;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='220'%3E%3Ctext x='180' y='120' text-anchor='middle' transform='rotate(-24 180 110)' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%231C2632'%3EPAMAVA soluciones%3C/text%3E%3C/svg%3E")}
+:root[data-theme="dark"] .wm{opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='220'%3E%3Ctext x='180' y='120' text-anchor='middle' transform='rotate(-24 180 110)' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23E5EAF0'%3EPAMAVA soluciones%3C/text%3E%3C/svg%3E")}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .wm{opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='220'%3E%3Ctext x='180' y='120' text-anchor='middle' transform='rotate(-24 180 110)' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23E5EAF0'%3EPAMAVA soluciones%3C/text%3E%3C/svg%3E")}}
+@media print{.wm{position:fixed}}
+.vals{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.val{display:inline-flex;flex-direction:column;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:3px 10px;line-height:1.25}
+.val small{font-size:.72rem;color:var(--muted)}
+.val b{font-variant-numeric:tabular-nums;font-size:.95rem;color:var(--ink)}
+.val.iva{border-color:var(--d1);background:var(--d1s)}
+.val.iva small,.val.iva b{color:var(--d1)}
+.val.ret{border-color:var(--d5);background:var(--d5s)}
+.val.ret small,.val.ret b{color:var(--d5)}
+details{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+details summary{cursor:pointer;font-weight:700}
+details[open] summary{margin-bottom:10px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bg);font-weight:700}
+td.n{text-align:right}
+th,th.n{text-align:center}
+.asiento{display:flex;flex-direction:column;gap:8px}
+.ahead{display:flex;flex-direction:column;gap:2px}
+.ahead .lbl{font-weight:700;color:var(--dc)}
+input.num,select.cel{font:inherit;font-size:.95rem;width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:5px;background:var(--input);color:var(--ink);font-variant-numeric:tabular-nums}
+input.num{text-align:right;min-width:110px}
+select.cel{min-width:90px}
+select.cel[data-k$="-c"]{min-width:230px}
+.ok{background:var(--okbg)!important;border-color:var(--ok)!important;color:var(--ok)!important}
+.err{background:var(--errbg)!important;border-color:var(--err)!important;color:var(--err)!important}
+.ic{width:42px;text-align:center;font-weight:800;font-size:1.05rem}
+.ic.ok,.ic.err{border-radius:5px}
+.cuenta{color:var(--muted);font-size:.92rem;min-width:180px}
+tr.sum td{background:var(--bg);font-weight:700}
+.msg{font-size:.88rem;font-weight:700;padding:2px 8px;border-radius:5px;display:inline-block}
+.foot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}
+.score{font-family:var(--f-display);font-size:1.15rem}
+.score b{color:var(--dc)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;cursor:pointer;border-radius:6px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.btn.pri{background:var(--dc);border-color:var(--dc);color:var(--surface);font-weight:700}
+.confirm{display:flex;gap:8px;align-items:center;font-size:.9rem}
+.aux{display:grid;grid-template-columns:1fr;gap:16px}
+.q{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}
+.q:last-child{border-bottom:0}
+.q label{display:flex;gap:8px;align-items:flex-start;padding:6px 10px;border:1px solid var(--line);border-radius:6px;cursor:pointer}
+.q .exp{font-size:.88rem;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.85rem;color:var(--muted);align-items:center}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--line);vertical-align:-2px;margin-right:4px}
+@media (prefers-reduced-motion: no-preference){.tab,.btn{transition:background .15s,border-color .15s}}
+
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:999px;padding:12px 18px;background:var(--dc,var(--d1));color:var(--surface);box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:4px solid var(--dc,var(--d1));box-shadow:0 -6px 24px rgba(0,0,0,.2);max-height:42vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet-in{width:100%;max-width:980px;margin:0 auto;min-height:0;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sheet-h{display:flex;gap:8px;align-items:center;justify-content:space-between;padding-block:8px;border-bottom:1px solid var(--line)}
+.sheet-t{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sheet-t .lbl{font-weight:700;color:var(--dc);margin-right:6px}
+.stab{font:inherit;font-size:.9rem;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px}
+.stab[aria-pressed="true"]{background:var(--dc);border-color:var(--dc);color:var(--surface);font-weight:700}
+.sheet-b{overflow:auto;padding-block:10px;min-height:0}
+.sheet-b .box{border:0;padding:0}
+html.sheet-open{scroll-padding-bottom:46vh}
+html.sheet-open .wrap{padding-bottom:calc(42vh + 24px)}
+/* encabezado fijo: título, nombre, nota, leyenda y pestañas siempre visibles */
+.stick{position:sticky;top:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;gap:12px;margin-inline:-16px;padding:10px 16px 10px;border-bottom:1px solid transparent}
+.stick.mini{border-bottom-color:var(--line);box-shadow:0 6px 14px rgba(0,0,0,.08);gap:8px;padding-block:6px 8px}
+.stick.mini .back,.stick.mini .top .sub{display:none}
+.stick.mini h1{font-size:1.15rem}
+.stick.mini .who label{flex-direction:row;align-items:center;gap:6px}
+.stick.mini .who input{padding:4px 8px;width:180px}
+.stick.mini .nota{padding:2px 12px;display:flex;align-items:baseline;gap:6px}
+.stick.mini .nota b{font-size:1.15rem}
+.stick.mini .legend{font-size:.78rem;gap:8px}
+.stick.mini .legend span:last-child{display:none}
+.stick.mini .tab{padding:5px 10px;flex-basis:130px}
+.stick.mini .tab .t{font-size:.85rem}
+@media (max-width:720px){
+  .stick.mini .legend{display:none}
+  .stick.mini .top{gap:6px;align-items:center}
+  .stick.mini .who label{font-size:0}
+  .stick.mini .who input{font-size:.9rem;width:150px}
+  .tab{flex-basis:128px}
+}
+/* calculadora flotante (igual a la del Taller de asientos) */
+.calc{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;width:min(310px,calc(100vw - 24px));font-family:var(--f-body)}
+.calc:not(.open){width:auto}
+.calc .ct{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;background:var(--d1);color:var(--surface);border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.calc.open .ct{border-radius:12px 12px 0 0}
+.calc .cb{display:none;background:var(--surface);border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;padding:10px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.calc.open .cb{display:block}
+.calc input{width:100%;font-family:ui-monospace,Consolas,monospace;font-size:16px;text-align:right;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--input);color:var(--ink)}
+.calc .cr{font-family:ui-monospace,Consolas,monospace;font-size:20px;font-weight:700;text-align:right;min-height:1.6em;margin:6px 2px;word-break:break-all}
+.calc .ck{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.calc .ck button{font:inherit;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 0;font-size:16px;font-weight:600;cursor:pointer;color:var(--ink)}
+.calc .ck button.op{background:var(--d1s);color:var(--d1)}
+.calc .ck button.eq{background:var(--d1);color:var(--surface);border-color:var(--d1)}
+.calc .cc{display:flex;gap:6px;margin-top:8px}
+.calc .cc button{font:inherit;flex:1;border:0;border-radius:8px;padding:7px;background:var(--d1s);color:var(--d1);font-weight:600;cursor:pointer}
+.calc .ct span:first-child{white-space:nowrap}
+.calc .ct small{font-size:.78rem}
+@media (max-width:720px){.calc .ct small{display:none}}
+
+/* ---- taller estados financieros ---- */
+.st td.lab{font-size:.93rem;min-width:200px}
+.st tr.grp td{font-weight:700;color:var(--dc);background:var(--ds);font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
+.st tr.big td{background:var(--ds);font-weight:800;border-top:2px solid var(--dc)}
+.st tr.fixr td{background:var(--bg);color:var(--muted);font-weight:700}
+.st td.dash{color:var(--muted);text-align:center}
+.st td.c25{color:var(--muted);font-size:.9rem;min-width:110px}
+select.acc{min-width:260px}
+.ecp input.num{min-width:120px}
+.docs{display:flex;flex-direction:column;gap:8px}
+.doc{border-left:5px solid var(--d1);padding:8px 12px}
+.doc summary{color:var(--d1)}
+.doc ol{padding-left:1.3em;display:flex;flex-direction:column;gap:6px;margin:6px 0}
+.notas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px}
+.nota-c{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--dc);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.nota-c .nh{display:flex;gap:8px;align-items:baseline}
+.nn{font-size:.75rem;font-weight:800;color:var(--dc);background:var(--ds);border-radius:4px;padding:2px 8px;text-transform:uppercase}
+.nota-c table{min-width:0}
+.nota-c td{border-bottom:1px solid var(--line)}
+.nota-c input.num{min-width:120px}
+.nota-c select.cel{min-width:0;max-width:260px}
+.concg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:820px){.concg{grid-template-columns:1fr}}
+.cbox{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--dc);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.cbox table{min-width:0}
+.cbox input.num{min-width:120px}
+.cuadra2{font-weight:700;font-size:1.05rem;padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.st select.cel{min-width:220px}
+.st tbody td:first-child:not(.lab){white-space:nowrap}
+</style>
+
+</head><body>
+<div class="wm" aria-hidden="true"></div>
+<div class="wrap">
+  <div class="stick" id="stick">
+  <header class="top">
+    <div>
+      <a class="back" href="index.html">← Centro de Calculadoras</a>
+      <h1>Taller conciliación bancaria</h1>
+      <p class="sub">Almacén El Mirador S.A.S. · Banco del Tolima (ficticio) · Noviembre de 2026 · PUC</p>
+    </div>
+    <div class="who">
+      <label for="nombre">Nombre del estudiante<input id="nombre" data-k="nombre" placeholder="Escribe tu nombre" autocomplete="off"></label>
+      <div class="nota"><span>Nota</span><b id="nota">0,0</b><span>sobre 10</span></div>
+    </div>
+  </header>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--input)"></i>Escribe aquí</span>
+    <span><i class="sw" style="background:var(--okbg)"></i>Correcto ✔</span>
+    <span><i class="sw" style="background:var(--errbg)"></i>Error ✘, revisa</span>
+    <span>Escribe los valores sin puntos ni $ (ej. 1200000). Si resta, usa signo menos (ej. -3000000). Tu avance se guarda en este navegador.</span>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  </div>
+  <main id="days"></main>
+</div>
+
+<button class="fab" id="fab" type="button" aria-expanded="false" aria-controls="sheet">Ver ejercicio</button>
+<aside class="sheet" id="sheet" hidden aria-label="Ejercicio del paso">
+  <div class="sheet-in">
+    <div class="sheet-h">
+      <div class="sheet-t"><span class="lbl" id="sheetDay"></span><button class="stab" type="button" data-sv="ej" aria-pressed="true">Ejercicio</button><button class="stab" type="button" data-sv="pa" aria-pressed="false">Paso a paso</button></div>
+      <button class="btn" type="button" id="sheetClose">Cerrar</button>
+    </div>
+    <div class="sheet-b" id="sheetBody"></div>
+  </div>
+</aside>
+
+<div class="calc" id="calc"><button class="ct" id="calcT" type="button" aria-expanded="false"><span>🧮 Calculadora <small style="font-weight:500;opacity:.8">· arrástrala · Alt+C</small></span><span id="calcI">▲</span></button>
+<div class="cb"><input id="calcE" type="text" inputmode="decimal" autocomplete="off" placeholder="Escribe: 6.000.000 × 19 ÷ 100 y Enter" aria-label="Operación"><div class="cr" id="calcR" aria-live="polite"></div>
+<div class="ck" id="calcK"></div><div class="cc"><button id="calcCp" type="button">Copiar resultado</button><button id="calcCl" type="button">Borrar</button></div></div></div>
+
+<script>
+const CAT={1105:"Caja",1110:"Bancos",1305:"Clientes",2205:"Proveedores nacionales",2365:"Retención en la fuente",2408:"Impuesto sobre las ventas por pagar (IVA)",4135:"Comercio al por mayor y al por menor (ventas)",4210:"Ingresos financieros (intereses)",5105:"Gastos de personal",5115:"Impuestos (GMF 4 × 1.000)",5120:"Arrendamientos",5135:"Servicios",5305:"Gastos financieros (comisiones bancarias)"};
+const EMP="Almacén El Mirador S.A.S.", BANCO="Banco del Tolima (ficticio)", CTA="cuenta corriente 045-123456-7";
+const SI=12500000; // saldo inicial 1-nov (octubre quedó conciliado sin partidas pendientes)
+// Libro auxiliar de Bancos de la empresa: [fecha, detalle, débito, crédito]
+const LIB=[
+ ["2-nov","Consignación ventas RC-101",3200000,0],
+ ["5-nov","Cheque 0451 · Distriandes S.A.S. (proveedor)",0,1850000],
+ ["9-nov","Consignación ventas RC-102",2400000,0],
+ ["12-nov","Cheque 0452 · Arriendo del local",0,2000000],
+ ["15-nov","Transferencia · Pago de nómina",0,4600000],
+ ["18-nov","Cheque 0453 · Servicios públicos",0,860000],
+ ["22-nov","Consignación ventas RC-103",1750000,0],
+ ["26-nov","Cheque 0454 · Papelería Central",0,950000],
+ ["29-nov","Cheque 0455 · Honorarios del contador",0,1200000],
+ ["30-nov","Consignación ventas RC-104",2300000,0]
+];
+// Extracto bancario: [fecha, descripción, cargos (débitos del banco), abonos (créditos del banco)]
+const EXT=[
+ ["2-nov","Consignación",0,3200000],
+ ["7-nov","Cheque pagado 0451",1850000,0],
+ ["9-nov","Consignación",0,2400000],
+ ["14-nov","Cheque pagado 0452",2000000,0],
+ ["15-nov","Pago nómina",4600000,0],
+ ["20-nov","Cheque pagado 0453",680000,0],
+ ["22-nov","Consignación",0,1705000],
+ ["24-nov","Transferencia recibida · Colegio San José",0,1000000],
+ ["30-nov","Abono de intereses",0,35000],
+ ["30-nov","Comisión por manejo de cuenta",25000,0],
+ ["30-nov","IVA sobre comisión",4750,0],
+ ["30-nov","GMF 4 × 1.000",36520,0]
+];
+const SL=LIB.reduce((s,r)=>s+r[2]-r[3],SI), SE=EXT.reduce((s,r)=>s-r[2]+r[3],SI);
+const OPL=["Sí aparece en el extracto, con el mismo valor","No aparece en el extracto","Aparece en el extracto, pero con otro valor"];
+const OPE=["Sí aparece en el libro, con el mismo valor","No aparece en el libro","Aparece en el libro, pero con otro valor"];
+const RL=[0,0,0,0,0,2,2,1,1,1], RE=[0,0,0,0,0,2,2,1,1,1,1,1];
+const TIPOS=["Consignación en tránsito","Cheque pendiente de cobro","Nota crédito no registrada en libros","Nota débito no registrada en libros","Error en libros (de la empresa)","Error del banco"];
+const DONDE=["En la conciliación, al lado del extracto (no lleva asiento)","En los libros de la empresa (lleva asiento de ajuste)"];
+// Partidas conciliatorias: [descripción, tipo, dónde, explicación]
+const PART=[
+ ["Cheque 0453 · libro $860.000, extracto $680.000",4,1,"La copia del cheque dice $680.000: la empresa lo anotó mal ($180.000 de más). El error es de la empresa, se corrige con un asiento."],
+ ["Consignación del 22-nov · libro $1.750.000, extracto $1.705.000",5,0,"El volante sellado por el banco dice $1.750.000: el banco abonó $45.000 de menos. El error es del banco; la empresa no hace asiento, le pide al banco que corrija."],
+ ["Cheque 0454 · Papelería Central · $950.000",1,0,"La empresa ya giró el cheque, pero el proveedor no lo ha cobrado. El banco todavía no lo ha descontado."],
+ ["Cheque 0455 · Honorarios · $1.200.000",1,0,"Igual que el anterior: girado el 29-nov y todavía no cobrado."],
+ ["Consignación RC-104 del 30-nov · $2.300.000",0,0,"Se consignó el último día y el banco la abonará en diciembre. Ya está en el libro, pero no en el extracto."],
+ ["Transferencia recibida del Colegio San José · $1.000.000",2,1,"El cliente pagó por transferencia y la empresa no lo sabía. Es dinero que sí entró: hay que registrarlo."],
+ ["Abono de intereses · $35.000",2,1,"El banco pagó intereses. Es un ingreso que la empresa no ha registrado."],
+ ["Comisión por manejo de cuenta · $25.000",3,1,"El banco cobró su comisión. Es un gasto que la empresa no ha registrado."],
+ ["IVA sobre la comisión · $4.750",3,1,"Es el 19 % de la comisión. La empresa es responsable de IVA, así que lo toma como IVA descontable."],
+ ["GMF 4 × 1.000 · $36.520",3,1,"El impuesto del 4 por mil que cobra el banco sobre los retiros. Es un gasto que no está en libros."]
+];
+const CPL=950000+1200000, CT=2300000, EB=45000, NC=1035000, ND=66270, EL=180000;
+const AJ=SE+CT-CPL+EB, AJL=SL+NC-ND+EL;
+// Asientos de ajuste: [descripción, líneas [código, débito, crédito], explicación]
+const ASI=[
+ {t:"Registrar la transferencia del Colegio San José ($1.000.000).",l:[[1110,1000000,0],[1305,0,1000000]],x:["Entró dinero al banco: Bancos aumenta y va al Débito.","El colegio ya pagó: lo que nos debe (Clientes) disminuye y va al Crédito."]},
+ {t:"Registrar los intereses que abonó el banco ($35.000).",l:[[1110,35000,0],[4210,0,35000]],x:["Entró dinero al banco: Bancos va al Débito.","Los intereses son un ingreso: van al Crédito."]},
+ {t:"Registrar la comisión por manejo ($25.000) y su IVA ($4.750).",l:[[5305,25000,0],[2408,4750,0],[1110,0,29750]],x:["La comisión es un gasto financiero: va al Débito.","El IVA pagado es descontable: va al Débito en la cuenta de IVA.","Del banco salió el total, 25.000 + 4.750 = 29.750: Bancos va al Crédito."]},
+ {t:"Registrar el GMF 4 × 1.000 ($36.520).",l:[[5115,36520,0],[1110,0,36520]],x:["El GMF es un impuesto que paga la empresa: es un gasto y va al Débito.","Salió dinero del banco: Bancos va al Crédito."]},
+ {t:"Corregir el cheque 0453, anotado por $860.000 cuando era de $680.000.",l:[[1110,180000,0],[5135,0,180000]],x:["En el libro se rebajaron del banco $180.000 de más. Se devuelven: Bancos va al Débito.","El gasto de servicios también quedó $180.000 más alto. Se disminuye: va al Crédito."]}
+];
+
+// ---------- utilidades ----------
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmt=n=>Number(n).toLocaleString("es-CO",{maximumFractionDigits:0});
+const fmtS=n=>n<0?"−"+fmt(-n):fmt(n);
+const parse=v=>{const t=String(v||"");const d=t.replace(/\D/g,"");if(d==="")return null;const neg=/^\s*[-−(]/.test(t);return neg?-Number(d):Number(d)};
+let store={}; try{store=JSON.parse(localStorage.getItem("conc-v1")||"{}")||{}}catch(e){store={}}
+const save=()=>{try{localStorage.setItem("conc-v1",JSON.stringify(store))}catch(e){}};
+const numIn=(k,lab)=>`<input class="num" id="${k}" data-k="${k}" inputmode="text" autocomplete="off" aria-label="${lab}">`;
+const selIn=(k,lab,opts)=>`<select class="cel" id="${k}" data-k="${k}" aria-label="${lab}"><option value="">— elige —</option>${opts.map((o,j)=>`<option value="${j}">${o}</option>`).join("")}</select>`;
+const codeOpts=`<option value="">— elige la cuenta —</option>`+Object.keys(CAT).map(c=>`<option value="${c}">${c} – ${CAT[c]}</option>`).join("");
+const exp=(t,html,open)=>`<details class="ref"${open?" open":""}><summary>${t}</summary>${html}</details>`;
+const LINES=[]; // {tab,id,kind:"t"|"s",e|a}
+const T=(tab,id,e,o={})=>{LINES.push({tab,id,kind:"t",e,...o});return numIn(id,o.lab||"Valor")};
+const S=(tab,id,a,opts,lab)=>{LINES.push({tab,id,kind:"s",a});return selIn(id,lab||"Elige",opts)};
+
+// documentos
+const libRows=(withRun)=>{let s=SI;return `<tr class="fixr"><td>1-nov</td><td>Saldo inicial</td><td></td><td></td><td class="n">${fmt(SI)}</td></tr>`+LIB.map(r=>{s+=r[2]-r[3];return `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="n">${r[2]?fmt(r[2]):""}</td><td class="n">${r[3]?fmt(r[3]):""}</td><td class="n">${fmt(s)}</td></tr>`}).join("")};
+const extRows=()=>{let s=SI;return `<tr class="fixr"><td>1-nov</td><td>Saldo anterior</td><td></td><td></td><td class="n">${fmt(SI)}</td></tr>`+EXT.map(r=>{s+=r[3]-r[2];return `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="n">${r[2]?fmt(r[2]):""}</td><td class="n">${r[3]?fmt(r[3]):""}</td><td class="n">${fmt(s)}</td></tr>`}).join("")};
+const docLib=()=>`<details class="doc"><summary>📄 Documento 1 · Libro auxiliar de Bancos (de la empresa) · noviembre</summary><p class="note">Lo que la empresa anotó. Débito = entra dinero al banco; Crédito = sale dinero.</p><div class="tw"><table><thead><tr><th>Fecha</th><th>Detalle</th><th>Débito</th><th>Crédito</th><th>Saldo</th></tr></thead><tbody>${libRows()}</tbody></table></div></details>`;
+const docExt=()=>`<details class="doc"><summary>📄 Documento 2 · Extracto bancario de noviembre (del banco)</summary><p class="note">${BANCO} · ${CTA}. Lo que el banco anotó. Ojo: para el banco, un <b>cargo</b> es dinero que sale y un <b>abono</b> es dinero que entra.</p><div class="tw"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Cargos (−)</th><th>Abonos (+)</th><th>Saldo</th></tr></thead><tbody>${extRows()}</tbody></table></div></details>`;
+const docSop=()=>`<details class="doc"><summary>📄 Documento 3 · Soportes y datos adicionales</summary><ol>
+ <li>Copia del <b>cheque 0453</b> (servicios públicos): girado por <b>$680.000</b>.</li>
+ <li><b>Volante de consignación del 22-nov</b>, sellado por el banco: <b>$1.750.000</b>.</li>
+ <li>Los cheques 0454 y 0455 se entregaron a los proveedores a finales de mes.</li>
+ <li>La consignación RC-104 se hizo el 30-nov después del horario bancario.</li>
+ <li>La empresa es responsable de IVA: el IVA de la comisión bancaria es descontable. El GMF se registra como gasto de impuestos.</li>
+ <li>La conciliación de octubre quedó sin partidas pendientes: los dos saldos iniciales son iguales ($${fmt(SI)}).</li></ol></details>`;
+const docs=()=>`<div class="docs">${docLib()}${docExt()}${docSop()}</div>`;
+const ejBox=txt=>`<div class="box"><h3>El ejercicio</h3>${txt}${docs()}</div>`;
+
+const DAYS=[
+ {n:1,c:"d1",t:"Paso 1 · Comparar el libro con el extracto",tc:"Comparar (puntear)",
+  que:"Conciliar es <b>comparar lo que anotó la empresa</b> (libro auxiliar de Bancos) <b>con lo que anotó el banco</b> (extracto) para encontrar por qué los saldos no son iguales. El primer paso es <b>puntear</b>: revisar renglón por renglón qué está en los dos lados.",
+  pasos:["Toma el primer renglón del libro y búscalo en el extracto (mismo concepto y valor).","Si está igual en los dos, marca “Sí aparece… con el mismo valor”.","Si no lo encuentras, marca “No aparece”.","Si lo encuentras pero el valor es distinto, marca “con otro valor”.","Haz lo mismo con cada renglón del extracto.","Escribe los dos saldos finales y la diferencia entre ellos."]},
+ {n:2,c:"d2",t:"Paso 2 · Clasificar las partidas conciliatorias",tc:"Clasificar partidas",
+  que:"Las <b>partidas conciliatorias</b> son los renglones que no coincidieron en el paso 1. Cada una tiene un nombre y una regla: unas se ajustan en la conciliación (las que el banco aún no ve) y otras en los libros (las que la empresa no ha registrado o registró mal).",
+  pasos:["Está en el libro pero no en el extracto: si es consignación → <b>consignación en tránsito</b>; si es cheque → <b>cheque pendiente de cobro</b>.","Está en el extracto pero no en el libro: si suma (abono) → <b>nota crédito</b>; si resta (cargo) → <b>nota débito</b>.","Está en los dos con valores distintos: revisa el soporte (Documento 3) para saber si se equivocó la empresa o el banco.","Lo que el banco no ha visto o lo que el banco hizo mal → se ajusta en la conciliación.","Lo que la empresa no ha registrado o registró mal → asiento de ajuste en libros."]},
+ {n:3,c:"d3",t:"Paso 3 · Elaborar la conciliación bancaria",tc:"Conciliación",
+  que:"Con las partidas clasificadas se arma el formato de conciliación. Se usa el método de <b>saldos ajustados</b>: se corrige el saldo del extracto y se corrige el saldo de libros, y los dos deben llegar al <b>mismo valor</b>, que es el dinero real de la empresa en el banco.",
+  pasos:["Lado del banco: parte del saldo del extracto.","Suma las consignaciones en tránsito (ya se hicieron, el banco las verá después).","Resta los cheques pendientes de cobro (ya se giraron, el banco los descontará después).","Corrige el error del banco (suma lo que abonó de menos).","Lado de libros: parte del saldo del libro. Suma las notas crédito, resta las notas débito y corrige el error de la empresa.","Los dos saldos ajustados deben ser iguales."]},
+ {n:4,c:"d4",t:"Paso 4 · Registrar los asientos de ajuste",tc:"Asientos de ajuste",
+  que:"Todo lo que se ajustó en el <b>lado de libros</b> necesita un asiento contable para que el libro quede bien. Lo del lado del banco <b>no lleva asiento</b>: se arregla solo cuando el banco registra (o corrige) la partida.",
+  pasos:["Haz un asiento por cada nota crédito, nota débito y error en libros.","Nota crédito (entra dinero): Bancos al Débito.","Nota débito (sale dinero): Bancos al Crédito.","Busca la otra cuenta: ingreso, gasto, cliente o impuesto.","Revisa que débitos y créditos sumen igual."]},
+ {n:5,c:"d5",t:"Paso 5 · Saldo final y cierre",tc:"Saldo final",
+  que:"Después de los asientos de ajuste, el libro de Bancos debe quedar con el <b>saldo ajustado</b> de la conciliación. Ese es el valor que va en el estado de situación financiera. Las partidas del lado del banco quedan pendientes para revisarlas el mes siguiente.",
+  pasos:["Parte del saldo del libro antes de ajustes.","Suma o resta el efecto de cada asiento de ajuste en Bancos.","El saldo final debe ser igual al saldo ajustado del paso 3.","Decide qué hacer con las partidas que quedaron pendientes.","Responde la evaluación final."]}
+];
+function intro(d){return `<div class="band"><span class="eyebrow">Paso ${d.n} de 5</span><h2>${d.t.replace(/^Paso \d · /,"")}</h2></div>
+  <div class="cols"><div class="box"><h3>¿Qué es?</h3><p>${d.que}</p></div><div class="box"><h3>Paso a paso</h3><ol>${d.pasos.map(p=>`<li>${p}</li>`).join("")}</ol></div></div>`}
+function footer(n){return `<div class="foot"><p class="score">${DAYS[n-1].tc}: <b id="sc${n}">0</b></p><div class="btns" id="rb${n}">
+  <button class="btn" data-reset="${n}">Reiniciar</button>${n<5?`<button class="btn pri" data-go="${n+1}">Siguiente paso →</button>`:""}</div></div>`}
+
+function tab1(){
+  let h=ejBox(`<p>${EMP} tiene su ${CTA} en el ${BANCO}. Compara el <b>libro auxiliar de Bancos</b> con el <b>extracto de noviembre de 2026</b>: en cada renglón elige si aparece en el otro documento.</p><p class="note">Consejo: abre los dos documentos o usa el botón “Ver ejercicio” para tenerlos a la vista.</p>`);
+  let s=SI;
+  h+=`<h3>A. Renglones del libro auxiliar de Bancos (empresa)</h3><div class="tw"><table class="st"><thead><tr><th>Fecha</th><th style="text-align:left">Detalle</th><th>Débito</th><th>Crédito</th><th>¿Está en el extracto?</th><th class="ic">✓</th></tr></thead><tbody>`;
+  LIB.forEach((r,i)=>{h+=`<tr><td>${r[0]}</td><td class="lab">${r[1]}</td><td class="n">${r[2]?fmt(r[2]):""}</td><td class="n">${r[3]?fmt(r[3]):""}</td><td>${S(1,"pl-"+i,RL[i],OPL,"¿Está en el extracto?")}</td><td class="ic" id="pl-${i}-i"></td></tr>`});
+  h+=`</tbody></table></div>`;
+  h+=`<h3>B. Renglones del extracto bancario</h3><div class="tw"><table class="st"><thead><tr><th>Fecha</th><th style="text-align:left">Descripción</th><th>Cargos (−)</th><th>Abonos (+)</th><th>¿Está en el libro?</th><th class="ic">✓</th></tr></thead><tbody>`;
+  EXT.forEach((r,i)=>{h+=`<tr><td>${r[0]}</td><td class="lab">${r[1]}</td><td class="n">${r[2]?fmt(r[2]):""}</td><td class="n">${r[3]?fmt(r[3]):""}</td><td>${S(1,"pe-"+i,RE[i],OPE,"¿Está en el libro?")}</td><td class="ic" id="pe-${i}-i"></td></tr>`});
+  h+=`</tbody></table></div>`;
+  h+=`<h3>C. Saldos al 30 de noviembre</h3><div class="tw"><table class="st" style="min-width:420px"><tbody>
+   <tr><td class="lab">Saldo final según el libro auxiliar de Bancos</td><td>${T(1,"s-lib",SL,{lab:"Saldo libro"})}</td><td class="ic" id="s-lib-i"></td></tr>
+   <tr><td class="lab">Saldo final según el extracto bancario</td><td>${T(1,"s-ext",SE,{lab:"Saldo extracto"})}</td><td class="ic" id="s-ext-i"></td></tr>
+   <tr class="big"><td class="lab">Diferencia (extracto − libro)</td><td>${T(1,"s-dif",SE-SL,{lab:"Diferencia"})}</td><td class="ic" id="s-dif-i"></td></tr></tbody></table></div>`;
+  h+=exp("💬 Explicación sencilla: ¿por qué no son iguales los saldos?",`<p>La empresa y el banco anotan los mismos movimientos, pero <b>no al mismo tiempo</b> y a veces <b>se equivocan</b>. Por ejemplo:</p><ul class="guia"><li>La empresa anota un cheque el día que lo entrega; el banco lo anota el día que el proveedor lo cobra.</li><li>El banco cobra comisiones e impuestos y la empresa se entera cuando llega el extracto.</li><li>Alguien escribe mal un número.</li></ul><p>Por eso la diferencia de <b>$${fmt(SE-SL)}</b> no es dinero perdido: hay que explicarla renglón por renglón. Eso es conciliar.</p><p class="note">Ojo con los nombres: lo que en el libro de la empresa es <b>débito</b> (entra dinero), en el extracto aparece como <b>abono</b>. Lo que en el libro es <b>crédito</b> (sale dinero), en el extracto es un <b>cargo</b>.</p>`);
+  return h;
+}
+function tab2(){
+  let h=ejBox(`<p>Estas son las <b>10 partidas que no coincidieron</b> en el paso 1. Para cada una elige <b>qué es</b> y <b>dónde se ajusta</b>.</p><p class="note">Para los dos renglones con valores diferentes, revisa el Documento 3: la copia del cheque y el volante de consignación dicen cuál es el valor real.</p>`);
+  h+=exp("❓ Tabla de ayuda: los 6 tipos de partidas",`<div class="tw"><table><thead><tr><th>Tipo</th><th>¿Dónde está?</th><th>¿Qué pasó?</th><th>¿Dónde se ajusta?</th></tr></thead><tbody>
+   <tr><td><b>Consignación en tránsito</b></td><td>Solo en libros</td><td>Se consignó, el banco la registra después.</td><td>Conciliación: se suma al extracto</td></tr>
+   <tr><td><b>Cheque pendiente de cobro</b></td><td>Solo en libros</td><td>Se giró, el beneficiario no lo ha cobrado.</td><td>Conciliación: se resta al extracto</td></tr>
+   <tr><td><b>Nota crédito</b></td><td>Solo en extracto (abono)</td><td>El banco sumó dinero: intereses, transferencias recibidas.</td><td>Libros: asiento, Bancos al débito</td></tr>
+   <tr><td><b>Nota débito</b></td><td>Solo en extracto (cargo)</td><td>El banco descontó: comisiones, IVA, GMF, chequeras.</td><td>Libros: asiento, Bancos al crédito</td></tr>
+   <tr><td><b>Error en libros</b></td><td>En los dos, distinto valor</td><td>La empresa anotó mal (el soporte lo confirma).</td><td>Libros: asiento de corrección</td></tr>
+   <tr><td><b>Error del banco</b></td><td>En los dos, distinto valor</td><td>El banco anotó mal (el soporte lo confirma).</td><td>Conciliación + carta al banco</td></tr></tbody></table></div>`,true);
+  h+=`<div class="tw"><table class="st"><thead><tr><th style="text-align:left">Partida</th><th>¿Qué es?</th><th>¿Dónde se ajusta?</th><th class="ic">✓</th></tr></thead><tbody>`;
+  PART.forEach((p,i)=>{h+=`<tr><td class="lab">${i+1}. ${p[0]}</td><td>${S(2,`pt-${i}`,p[1],TIPOS,"¿Qué es?")}</td><td>${S(2,`pd-${i}`,p[2],DONDE,"¿Dónde se ajusta?")}</td><td class="ic" id="pr-${i}-i"></td></tr>`});
+  h+=`</tbody></table></div>`;
+  h+=exp("💬 Explicación sencilla de cada partida",`<ol class="guia">${PART.map(p=>`<li><b>${p[0]}:</b> ${TIPOS[p[1]]}. ${p[3]}</li>`).join("")}</ol>`);
+  return h;
+}
+function tab3(){
+  let h=ejBox(`<p>Elabora la <b>conciliación bancaria de ${EMP} al 30 de noviembre de 2026</b> por el método de saldos ajustados. Usa las partidas que clasificaste en el paso 2.</p><p class="note">Si hay varias partidas del mismo tipo, súmalas (por ejemplo, los dos cheques pendientes).</p>`);
+  h+=`<div class="concg"><div class="cbox"><h3>🏦 Lado del banco</h3><table class="st"><tbody>
+   <tr><td class="lab">Saldo según extracto al 30-nov</td><td>${T(3,"c-se",SE)}</td><td class="ic" id="c-se-i"></td></tr>
+   <tr><td class="lab">Más: consignaciones en tránsito</td><td>${T(3,"c-ct",CT)}</td><td class="ic" id="c-ct-i"></td></tr>
+   <tr><td class="lab">Menos: cheques pendientes de cobro</td><td>${T(3,"c-cp",CPL)}</td><td class="ic" id="c-cp-i"></td></tr>
+   <tr><td class="lab">Más: error del banco (abonó de menos)</td><td>${T(3,"c-eb",EB)}</td><td class="ic" id="c-eb-i"></td></tr>
+   <tr class="big"><td class="lab">= Saldo ajustado del banco</td><td>${T(3,"c-ab",AJ)}</td><td class="ic" id="c-ab-i"></td></tr></tbody></table></div>
+  <div class="cbox"><h3>📒 Lado de libros</h3><table class="st"><tbody>
+   <tr><td class="lab">Saldo según libro al 30-nov</td><td>${T(3,"c-sl",SL)}</td><td class="ic" id="c-sl-i"></td></tr>
+   <tr><td class="lab">Más: notas crédito no registradas</td><td>${T(3,"c-nc",NC)}</td><td class="ic" id="c-nc-i"></td></tr>
+   <tr><td class="lab">Menos: notas débito no registradas</td><td>${T(3,"c-nd",ND)}</td><td class="ic" id="c-nd-i"></td></tr>
+   <tr><td class="lab">Más: error en libros (cheque anotado de más)</td><td>${T(3,"c-el",EL)}</td><td class="ic" id="c-el-i"></td></tr>
+   <tr class="big"><td class="lab">= Saldo ajustado de libros</td><td>${T(3,"c-al",AJL)}</td><td class="ic" id="c-al-i"></td></tr></tbody></table></div></div>
+  <p class="cuadra2" id="c-msg"></p>`;
+  h+=exp("❓ ¿De dónde sale cada valor?",`<ul class="guia"><li><b>Consignaciones en tránsito:</b> RC-104 por $2.300.000.</li><li><b>Cheques pendientes:</b> 0454 ($950.000) + 0455 ($1.200.000).</li><li><b>Error del banco:</b> el volante dice $1.750.000 y el banco abonó $1.705.000; la diferencia se suma.</li><li><b>Notas crédito:</b> transferencia del Colegio San José ($1.000.000) + intereses ($35.000).</li><li><b>Notas débito:</b> comisión ($25.000) + IVA ($4.750) + GMF ($36.520).</li><li><b>Error en libros:</b> el cheque era de $680.000 y se anotó por $860.000; se rebajó $180.000 de más, por eso se suma.</li></ul><p class="note">Haz las sumas con la calculadora.</p>`);
+  h+=exp("💬 Explicación sencilla de la conciliación",`<p>Imagina dos personas que llevan la cuenta del mismo dinero: la empresa y el banco. Cada una corrige su número con lo que le faltaba saber:</p><ul class="guia"><li>Al <b>banco</b> le faltaba saber que hay una consignación en camino (suma), que hay cheques que todavía no le cobran (resta) y que se equivocó en una consignación (suma).</li><li>A la <b>empresa</b> le faltaba saber que el banco le abonó dinero (suma), que le cobró comisiones e impuestos (resta) y que ella misma anotó mal un cheque (suma).</li></ul><p>Cuando los dos corrigen, llegan al <b>mismo número</b>: $${fmt(AJ)}. Ese es el dinero real que la empresa tiene en el banco.</p>`);
+  return h;
+}
+const AG={};
+function tab4(){
+  let h=ejBox(`<p>Registra los <b>asientos de ajuste</b> de las partidas del lado de libros. En cada renglón elige la cuenta (verás el código y el nombre) y escribe el valor en Débito o en Crédito.</p><p class="note">Las partidas del lado del banco (tránsito, cheques pendientes y error del banco) no llevan asiento.</p>`);
+  ASI.forEach((a,i)=>{AG[i]=a;
+    h+=`<div class="asiento"><div class="ahead"><span class="lbl">Ajuste ${i+1} · 30-nov</span><span class="note">${a.t}</span></div><div class="tw"><table class="st"><thead><tr><th>Código y cuenta</th><th>Débito</th><th>Crédito</th><th class="ic">✓</th></tr></thead><tbody>`;
+    a.l.forEach((_,j)=>{const k=`aj-${i}-${j}`;LINES.push({tab:4,id:k,kind:"a"});
+      h+=`<tr><td><select class="cel acc" id="${k}-c" data-k="${k}-c" aria-label="Cuenta ajuste ${i+1} línea ${j+1}">${codeOpts}</select></td><td>${numIn(k+"-d","Débito")}</td><td>${numIn(k+"-cr","Crédito")}</td><td class="ic" id="${k}-i"></td></tr>`});
+    const sd=a.l.reduce((s,l)=>s+l[1],0);
+    h+=`<tr class="sum"><td><span class="msg" id="aj-${i}-m"></span></td><td class="n" id="aj-${i}-sd">0</td><td class="n" id="aj-${i}-sc">0</td><td></td></tr></tbody></table></div>`;
+    h+=`<details class="exp1"><summary>💬 ¿Qué pasó en el ajuste ${i+1}? Explicación sencilla</summary><ul class="mov">${a.l.map((l,j)=>`<li><span class="lado ${l[1]?"deb":"cre"}">${l[1]?"Débito":"Crédito"}</span><div><b>${l[0]} · ${CAT[l[0]]}</b> · $${fmt(l[1]||l[2])}<br>${a.x[j]}</div></li>`).join("")}</ul><p class="cuadra">✔ Débitos $${fmt(sd)} = créditos $${fmt(sd)}.</p></details></div>`;});
+  return h;
+}
+function tab5(){
+  let h=ejBox(`<p>Actualiza el <b>libro auxiliar de Bancos</b> con los asientos de ajuste y comprueba que el saldo final sea igual al saldo ajustado de la conciliación. Escribe el efecto de cada ajuste en Bancos: positivo si aumenta, con signo menos si disminuye.</p>`);
+  const ef=[1000000,35000,-29750,-36520,180000];
+  h+=`<div class="tw"><table class="st" style="min-width:460px"><tbody><tr class="fixr"><td class="lab">Saldo del libro antes de ajustes</td><td class="n">${fmt(SL)}</td><td></td></tr>
+   ${ASI.map((a,i)=>`<tr><td class="lab">Ajuste ${i+1}: ${a.t.replace(/^(Registrar|Corregir) /,"").replace(/\.$/,"")}</td><td>${T(5,"f-"+i,ef[i])}</td><td class="ic" id="f-${i}-i"></td></tr>`).join("")}
+   <tr class="big"><td class="lab">= Saldo final de Bancos en libros</td><td>${T(5,"f-sf",AJL)}</td><td class="ic" id="f-sf-i"></td></tr></tbody></table></div>`;
+  h+=`<h3>¿Qué se hace con lo que quedó pendiente?</h3><div class="tw"><table class="st"><tbody>
+   <tr><td class="lab">Consignación RC-104 y cheques 0454 y 0455</td><td>${S(5,"f-q1",1,["Se anulan en libros","Se revisan en el extracto de diciembre: deben aparecer","Se registran otra vez"],"Pendientes")}</td><td class="ic" id="f-q1-i"></td></tr>
+   <tr><td class="lab">Consignación del 22-nov abonada de menos por el banco</td><td>${S(5,"f-q2",2,["Se hace un asiento en libros","No se hace nada","Se envía una carta al banco con el volante para que abone los $45.000"],"Error del banco")}</td><td class="ic" id="f-q2-i"></td></tr>
+   <tr><td class="lab">¿Cuál saldo de Bancos va en el estado de situación financiera?</td><td>${S(5,"f-q3",2,["El saldo del extracto","El saldo del libro antes de ajustes","El saldo ajustado"],"Saldo para estados")}</td><td class="ic" id="f-q3-i"></td></tr></tbody></table></div>`;
+  h+=exp("📊 Análisis y conclusiones de la conciliación",`<ul class="guia"><li>La diferencia inicial de <b>$${fmt(SE-SL)}</b> quedó totalmente explicada: no falta ni sobra dinero.</li><li>El dinero real en el banco al 30-nov es <b>$${fmt(AJ)}</b>.</li><li>El banco le cobró a la empresa <b>$${fmt(ND)}</b> en comisiones, IVA y GMF en el mes: conviene revisarlos cada mes.</li><li>El cliente pagó por transferencia sin avisar: hay que revisar el extracto con frecuencia para no cobrarle dos veces.</li><li>Hubo dos errores de digitación (uno de la empresa y uno del banco): por eso siempre se guardan los soportes.</li><li>Cheques por <b>$${fmt(CPL)}</b> y una consignación por <b>$${fmt(CT)}</b> deben aparecer en el extracto de diciembre.</li></ul>`);
+  h+=`<div class="box"><h3>Evaluación final · 5 preguntas</h3>`;
+  EVAL.forEach((q,i)=>{h+=`<div class="q"><p><b>${i+1}.</b> ${q.q}</p>${q.o.map((o,j)=>`<label id="q${i}-${j}-l"><input type="radio" name="q${i}" id="q${i}-${j}" data-k="q${i}" value="${j}"> ${o}</label>`).join("")}<p class="exp" id="q${i}-e" hidden>${q.e}</p></div>`});
+  return h+`</div>`;
+}
+const EVAL=[
+ {q:"La conciliación bancaria sirve para:",o:["Calcular el IVA del mes","Explicar las diferencias entre el saldo de libros y el saldo del extracto","Pagar a los proveedores","Hacer el estado de resultados"],a:1,e:"Se comparan los dos registros del mismo dinero para encontrar y explicar cada diferencia."},
+ {q:"Un cheque que la empresa ya giró pero que el proveedor no ha cobrado es:",o:["Una nota débito","Una consignación en tránsito","Un cheque pendiente de cobro","Un error del banco"],a:2,e:"Está en libros pero todavía no en el extracto. En la conciliación se resta al saldo del extracto."},
+ {q:"Verdadero o falso: las notas débito y notas crédito del banco que no estaban en libros requieren asiento de ajuste.",o:["Verdadero","Falso"],a:0,e:"Verdadero. La empresa no las había registrado; con el asiento, el libro de Bancos queda correcto."},
+ {q:"El GMF (4 × 1.000) que aparece en el extracto es:",o:["Una nota crédito","Una nota débito","Una consignación en tránsito","Un ingreso financiero"],a:1,e:"Es un cargo que hace el banco: disminuye el saldo. En libros se registra como gasto de impuestos con crédito a Bancos."},
+ {q:"Si el banco abonó una consignación por menos valor del real, la empresa debe:",o:["Hacer un asiento disminuyendo Bancos","Sumar la diferencia al saldo del extracto en la conciliación y pedir al banco la corrección","Ignorar la diferencia","Restarla del saldo de libros"],a:1,e:"El error es del banco: no se toca el libro. Se ajusta en la conciliación y se reclama al banco con el soporte."}
+];
+
+// ---------- render ----------
+const tabs=$("#tabs"), days=$("#days");
+DAYS.forEach(d=>{
+  tabs.insertAdjacentHTML("beforeend",`<button class="tab" role="tab" id="tab${d.n}" aria-selected="false" style="--dc:var(--${d.c});--ds:var(--${d.c}s)" data-go="${d.n}"><small>Paso ${d.n}</small><span class="t">${d.tc}</span><span class="sc" id="tsc${d.n}">0 %</span></button>`);
+  const body=[tab1,tab2,tab3,tab4,tab5][d.n-1]();
+  days.insertAdjacentHTML("beforeend",`<section class="day" id="day${d.n}" role="tabpanel" hidden style="--dc:var(--${d.c});--ds:var(--${d.c}s)">${intro(d)}${body}${footer(d.n)}</section>`);
+});
+$$("[data-k]").forEach(el=>{const v=store[el.dataset.k]; if(v==null)return;
+  if(el.type==="radio") el.checked=(el.value===v); else if(el.tagName==="SELECT") el.value=v; else el.value=el.classList.contains("num")&&parse(v)!=null?fmtS(parse(v)):v;});
+
+// ---------- revisión ----------
+const mark=(el,s)=>{if(!el)return;el.classList.remove("ok","err");if(s)el.classList.add(s)};
+const icon=(el,s)=>{if(!el)return;mark(el,s);el.textContent=s==="ok"?"✔":s==="err"?"✘":""};
+function chk(id,e){const el=$("#"+id),v=parse(el.value);let s="",c;
+  if(e!==0){c=v===e; s=v===null?"":(c?"ok":"err")} else {c=(v===null||v===0); s=v===null?"":(v===0?"ok":"err")}
+  mark(el,s); return [s,c,v];}
+function check(){
+  const ok={1:0,2:0,3:0,4:0,5:0},tot={1:0,2:0,3:0,4:0,5:0};
+  // asientos de ajuste (cualquier orden dentro del asiento)
+  Object.entries(AG).forEach(([i,a])=>{let sd=0,scr=0;const used={};
+    a.l.forEach((_,j)=>{const k=`aj-${i}-${j}`,sel=$(`#${k}-c`),code=sel.value,dEl=$(`#${k}-d`),cEl=$(`#${k}-cr`);
+      const dv=parse(dEl.value),cv=parse(cEl.value);sd+=dv||0;scr+=cv||0;
+      const sol=a.l.find(l=>String(l[0])===code);used[code]=(used[code]||0)+1;const codeOk=!!sol&&used[code]===1;
+      mark(sel,code?(codeOk?"ok":"err"):"");let st="",good=false;
+      if(codeOk){const x=chk(`${k}-d`,sol[1]),y=chk(`${k}-cr`,sol[2]);good=x[1]&&y[1]&&(x[2]!==null||y[2]!==null);st=good?"ok":(x[0]==="err"||y[0]==="err"?"err":"")}
+      else{mark(dEl,"");mark(cEl,"");st=code?"err":""}
+      icon($(`#${k}-i`),st);LINES.find(l=>l.id===k).good=good;});
+    $(`#aj-${i}-sd`).textContent=fmt(sd);$(`#aj-${i}-sc`).textContent=fmt(scr);
+    const m=$(`#aj-${i}-m`);if(!sd&&!scr){mark(m,"");m.textContent=""}else if(sd===scr){mark(m,"ok");m.textContent="✔ Sumas iguales"}else{mark(m,"err");m.textContent="✘ Las sumas no cuadran"}});
+  LINES.forEach(l=>{tot[l.tab]++;
+    if(l.kind==="t"){const a=chk(l.id,l.e);l.good=a[1]&&a[2]!==null;icon($(`#${l.id}-i`),a[0])}
+    else if(l.kind==="s"){const s=$("#"+l.id),g=s.value!==""&&+s.value===l.a;mark(s,s.value?(g?"ok":"err"):"");l.good=g;l.st=s.value?(g?"ok":"err"):"";const ic=$(`#${l.id}-i`);if(ic)icon(ic,l.st)}
+    if(l.good)ok[l.tab]++;});
+  PART.forEach((_,i)=>{const a=LINES.find(l=>l.id===`pt-${i}`),b=LINES.find(l=>l.id===`pd-${i}`);icon($(`#pr-${i}-i`),a.good&&b.good?"ok":(a.st==="err"||b.st==="err")?"err":"")});
+  // mensaje de la conciliación
+  const ab=parse($("#c-ab").value),al=parse($("#c-al").value),m=$("#c-msg");
+  if(ab==null||al==null){mark(m,"");m.textContent="Cuando escribas los dos saldos ajustados, aquí verás si la conciliación cuadra."}
+  else if(ab===al&&ab===AJ){mark(m,"ok");m.textContent="✔ ¡Conciliado! Los dos saldos ajustados son iguales: $"+fmt(AJ)}
+  else{mark(m,"err");m.textContent="✘ Todavía no cuadra: diferencia de $"+fmt(Math.abs(ab-al))+(ab===al?" (iguales, pero revisa los valores en rojo)":"")}
+  let okE=0;
+  EVAL.forEach((q,i)=>{q.o.forEach((_,j)=>mark($(`#q${i}-${j}-l`),""));
+    const r=$(`input[name="q${i}"]:checked`),e=$(`#q${i}-e`);
+    if(r){const j=+r.value,g=j===q.a;mark($(`#q${i}-${j}-l`),g?"ok":"err");if(g)okE++;e.hidden=false}else e.hidden=true;});
+  const pct={};for(let n=1;n<=4;n++)pct[n]=ok[n]/tot[n];pct[5]=.5*ok[5]/tot[5]+.5*okE/EVAL.length;
+  for(let n=1;n<=4;n++)$("#sc"+n).textContent=`${ok[n]} de ${tot[n]} correctas`;
+  $("#sc5").textContent=`actividad ${ok[5]} de ${tot[5]} · evaluación ${okE} de ${EVAL.length}`;
+  let nota=0;for(let n=1;n<=5;n++){nota+=2*pct[n];$("#tsc"+n).textContent=Math.round(pct[n]*100)+" %"}
+  $("#nota").textContent=(Math.round(nota*10)/10).toLocaleString("es-CO",{minimumFractionDigits:1,maximumFractionDigits:1});
+}
+
+// ---------- eventos ----------
+function show(n){curDay=n;if(typeof renderSheet==="function"&&!$("#sheet").hidden)renderSheet();DAYS.forEach(d=>{$("#day"+d.n).hidden=d.n!==n;$("#tab"+d.n).setAttribute("aria-selected",d.n===n)});
+  try{localStorage.setItem("conc-v1-tab",n)}catch(e){}}
+document.addEventListener("input",e=>{const el=e.target;if(!el.dataset||!el.dataset.k)return;store[el.dataset.k]=el.value;save();check();});
+document.addEventListener("change",e=>{const el=e.target;if(!el.dataset||!el.dataset.k)return;store[el.dataset.k]=el.value;save();check();});
+document.addEventListener("focusout",e=>{const el=e.target;if(el.classList&&el.classList.contains("num")){const v=parse(el.value);if(v!=null)el.value=fmtS(v)}});
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]"); if(g){show(+g.dataset.go); window.scrollTo({top:0}); return;}
+  const r=e.target.closest("[data-reset]"); if(r){const n=r.dataset.reset,box=$("#rb"+n);
+    box.dataset.html=box.innerHTML;
+    box.innerHTML=`<span class="confirm">¿Borrar todo lo de este paso? <button class="btn pri" data-yes="${n}">Sí, borrar</button><button class="btn" data-no="${n}">Cancelar</button></span>`; return;}
+  const y=e.target.closest("[data-yes]"); if(y){const n=y.dataset.yes;
+    $$(`#day${n} [data-k]`).forEach(el=>{delete store[el.dataset.k]; if(el.type==="radio")el.checked=false; else el.value=""});
+    save(); check(); const box=$("#rb"+n); box.innerHTML=box.dataset.html; return;}
+  const no=e.target.closest("[data-no]"); if(no){const box=$("#rb"+no.dataset.no); box.innerHTML=box.dataset.html;}
+});
+
+// ---------- panel del ejercicio ----------
+let curDay=1, sheetView="ej";
+function renderSheet(){
+  const sec=$("#day"+curDay); if(!sec)return;
+  const d=DAYS[curDay-1];
+  $("#sheet").style.setProperty("--dc","var(--"+d.c+")");
+  $("#fab").style.setProperty("--dc","var(--"+d.c+")");
+  $("#sheetDay").textContent=d.t;
+  $$(".stab").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.sv===sheetView)));
+  const boxes=[...sec.querySelectorAll(".box")];
+  const src=sheetView==="ej"?boxes.find(b=>b.querySelector("h3")&&b.querySelector("h3").textContent.trim()==="El ejercicio"):sec.querySelector(".cols .box:nth-child(2)");
+  const body=$("#sheetBody"); body.textContent="";
+  if(src){const c=src.cloneNode(true); c.removeAttribute("id"); c.querySelectorAll("[id]").forEach(x=>x.removeAttribute("id")); body.appendChild(c);}
+}
+function setSheet(open){
+  $("#sheet").hidden=!open; $("#fab").hidden=open;
+  $("#fab").setAttribute("aria-expanded",String(open));
+  document.documentElement.classList.toggle("sheet-open",open);
+  if(open)renderSheet();
+}
+$("#fab").addEventListener("click",()=>setSheet(true));
+$("#sheetClose").addEventListener("click",()=>setSheet(false));
+document.addEventListener("click",e=>{const b=e.target.closest("[data-sv]"); if(b){sheetView=b.dataset.sv;renderSheet();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden)setSheet(false)});
+
+let start=1; try{start=+localStorage.getItem("conc-v1-tab")||1}catch(e){}
+show(start>=1&&start<=5?start:1); check();
+
+/* ---------- encabezado fijo ---------- */
+(function(){const st=$("#stick");let mini=false;
+  const upd=()=>{const y=scrollY;if(!mini&&y>90){mini=true;st.classList.add("mini")}else if(mini&&y<20){mini=false;st.classList.remove("mini")}};
+  addEventListener("scroll",upd,{passive:true});upd();
+  const pad=()=>{document.documentElement.style.scrollPaddingTop=(st.offsetHeight+12)+"px"};
+  try{new ResizeObserver(pad).observe(st)}catch(e){addEventListener("resize",pad)}pad();
+})();
+const KEYP="conc-v1-";
+const fmtK=v=>Number(v).toLocaleString("es-CO",{maximumFractionDigits:2});
+/* ---------- calculadora flotante ---------- */
+(function(){const box=$("#calc"),T=$("#calcT"),Ei=$("#calcE"),R=$("#calcR");let last=null;
+  const set=o=>{box.classList.toggle("open",o);T.setAttribute("aria-expanded",o);$("#calcI").textContent=o?"▼":"▲";try{localStorage.setItem(KEYP+"calc",o?"1":"0")}catch(e){}};
+  try{set(localStorage.getItem(KEYP+"calc")==="1")}catch(e){}
+  let moved=false;
+  T.onclick=()=>{if(moved){moved=false;return}set(!box.classList.contains("open"));if(box.classList.contains("open"))Ei.focus()};
+  /* arrastrar la calculadora desde su barra */
+  const clamp=(x,y)=>{const w=box.offsetWidth,h=box.offsetHeight;return [Math.min(Math.max(0,x),innerWidth-w),Math.min(Math.max(0,y),innerHeight-h)]};
+  const place=(x,y)=>{[x,y]=clamp(x,y);box.style.left=x+"px";box.style.top=y+"px";box.style.right="auto";box.style.bottom="auto"};
+  try{const p=JSON.parse(localStorage.getItem(KEYP+"calcpos")||"null");if(p)place(p[0],p[1])}catch(e){}
+  addEventListener("resize",()=>{if(box.style.left)place(parseFloat(box.style.left),parseFloat(box.style.top))});
+  if(T.style){T.style.touchAction="none";T.style.cursor="grab"}
+  T.addEventListener("pointerdown",e=>{const r=box.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,sx=e.clientX,sy=e.clientY;moved=false;
+    const mv=ev2=>{if(!moved&&Math.hypot(ev2.clientX-sx,ev2.clientY-sy)<5)return;moved=true;place(ev2.clientX-dx,ev2.clientY-dy)};
+    const up=()=>{removeEventListener("pointermove",mv);removeEventListener("pointerup",up);if(moved){try{localStorage.setItem(KEYP+"calcpos",JSON.stringify([parseFloat(box.style.left),parseFloat(box.style.top)]))}catch(e){}setTimeout(()=>{moved=false},0)}};
+    addEventListener("pointermove",mv);addEventListener("pointerup",up)});
+  /* teclado: Alt+C abre y enfoca; Esc la minimiza */
+  addEventListener("keydown",e=>{if(e.altKey&&(e.key==="c"||e.key==="C")){e.preventDefault();set(true);Ei.focus();Ei.select()}else if(e.key==="Escape"&&box.contains(document.activeElement)){set(false);document.activeElement.blur()}});
+  const ev=s=>{s=String(s).replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").replace(/\s|\$/g,"");if(!s)return null;
+    s=s.replace(/(\d)\.(?=\d{3}(\D|$))/g,"$1").replace(/,/g,".");if(!/^[0-9+\-*\/().]+$/.test(s))return NaN;
+    try{const v=Function('"use strict";return ('+s+')')();return typeof v==="number"&&isFinite(v)?v:NaN}catch(e){return NaN}};
+  const show=()=>{const v=ev(Ei.value);last=v;R.textContent=v===null?"":isNaN(v)?"Revisa la operación":"= "+fmtK(Math.round(v*100)/100).replace("$","")};
+  /* pone los puntos de miles mientras se escribe (la coma es el decimal) */
+  const grp=s=>{s=String(s).replace(/\.$/,",").replace(/\*/g,"×").replace(/\//g,"÷");
+    return s.replace(/[\d.]+(,\d*)?/g,m=>{let [i,d]=m.split(",");i=i.replace(/\./g,"").replace(/^0+(?=\d)/,"").replace(/\B(?=(\d{3})+(?!\d))/g,".");return d!==undefined?i+","+d:i})};
+  const refmt=()=>{let pos=Ei.selectionStart==null?Ei.value.length:Ei.selectionStart;
+    if(pos>0&&Ei.value[pos-1]==="."&&!/^\d{3}/.test(Ei.value.slice(pos))){Ei.value=Ei.value.slice(0,pos-1)+","+Ei.value.slice(pos)}
+    const before=Ei.value.slice(0,pos).replace(/\./g,"").length;
+    const nv=grp(Ei.value);if(nv===Ei.value)return;Ei.value=nv;
+    let k=0,c=0;while(k<nv.length&&c<before){if(nv[k]!==".")c++;k++}
+    try{Ei.setSelectionRange(k,k)}catch(e){}};
+  const res=v=>grp(String(Math.round(v*100)/100).replace(".",","));
+  Ei.oninput=()=>{refmt();show()};Ei.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();const v=ev(Ei.value);if(v!==null&&!isNaN(v)){Ei.value=res(v);show()}}};
+  const keys=["7","8","9","÷","4","5","6","×","1","2","3","−","0",",","⌫","+","(",")","C","="];
+  $("#calcK").innerHTML=keys.map(k=>`<button type="button" data-ck="${k}" class="${"÷×−+".includes(k)?"op":k==="="?"eq":""}">${k}</button>`).join("");
+  $("#calcK").onclick=e=>{const k=e.target.dataset&&e.target.dataset.ck;if(!k)return;
+    if(k==="C")Ei.value="";else if(k==="⌫")Ei.value=Ei.value.slice(0,-1);
+    else if(k==="="){const v=ev(Ei.value);if(v!==null&&!isNaN(v))Ei.value=res(v)}
+    else Ei.value=grp(Ei.value+k);show()};
+  $("#calcCl").onclick=()=>{Ei.value="";show();Ei.focus()};
+  $("#calcCp").onclick=()=>{if(last==null||isNaN(last))return;const t=String(Math.round(last*100)/100).replace(".",",");const done=()=>{$("#calcCp").textContent="¡Copiado!";setTimeout(()=>$("#calcCp").textContent="Copiar resultado",1200)};
+    try{navigator.clipboard.writeText(t).then(done,()=>{Ei.value=t;Ei.select()})}catch(e){Ei.value=t;Ei.select()}};
+})();
+
+
+</script>
+
+</body></html>
